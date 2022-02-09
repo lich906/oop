@@ -1,1 +1,1 @@
-# oop
+# OOP labs repository
