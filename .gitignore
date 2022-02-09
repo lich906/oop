@@ -1,0 +1,4 @@
+.vs/
+labs/**/.vs/
+labs/**/*.vcxproj*
+labs/**/*.sln
