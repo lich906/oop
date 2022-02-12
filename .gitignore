@@ -1,4 +1,3 @@
 .vs/
 labs/**/.vs/
-labs/**/*.vcxproj*
-labs/**/*.sln
+labs/**/Debug/
