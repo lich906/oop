@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 #include <optional>
 #include <string>
 
@@ -17,19 +18,42 @@ bool isNumber(std::string str)
 	return true;
 }
 
+int DigitToInt(unsigned char digit)
+{
+	std::map<unsigned char, int> castMap = {
+		{ '0', 0 },
+		{ '1', 1 },
+		{ '2', 2 },
+		{ '3', 3 },
+		{ '4', 4 },
+		{ '5', 5 },
+		{ '6', 6 },
+		{ '7', 7 },
+		{ '8', 8 },
+		{ '9', 9 },
+	};
+
+	return castMap[digit];
+}
+
 std::optional<unsigned char> StringToByte(std::string str)
 {
-	int num = std::stoi(str);
+	unsigned char byte = 0;
 
-	if (num > 0xff || num < 0)
+	for (unsigned char ch : str)
 	{
-		std::cout << "Error: Argument value " << num << " is out of range. (0 - 255)\n";
-		return std::nullopt;
+		if ((byte * 10 + DigitToInt(ch)) > 0xff)
+		{
+			std::cout << "Error: Argument value is out of range. (0 - 255)\n";
+			return std::nullopt;
+		}
+		else
+		{
+			byte = byte * 10 + DigitToInt(ch);
+		}
 	}
-	else
-	{
-		return static_cast<unsigned char>(num);
-	}
+
+	return byte;
 }
 
 std::optional<unsigned char> ParseArg(int argc, char* argv[])
@@ -44,7 +68,7 @@ std::optional<unsigned char> ParseArg(int argc, char* argv[])
 
 	if (!isNumber(arg))
 	{
-		std::cout << "Error: Argument is not a number.\n";
+		std::cout << "Error: Argument is not a valid number. (0 - 255)\n";
 		return std::nullopt;
 	}
 
@@ -59,13 +83,24 @@ std::optional<unsigned char> ParseArg(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
-	std::optional<unsigned char> byte = ParseArg(argc, argv);
+	std::optional<unsigned char> arg = ParseArg(argc, argv);
 
-	if (byte.has_value())
+	if (!arg.has_value())
 	{
-		std::cout << +byte.value() << "\n";
-		return 0;
+		return 1;
 	}
 
-	return 1;
+	unsigned char byte = arg.value();
+	unsigned char invertedByte = 0;
+
+	for (int i = 0; i < 8; ++i)
+	{
+		invertedByte <<= 1;
+		invertedByte += byte & 1;
+		byte >>= 1;
+	}
+
+	std::cout << +invertedByte << "\n";
+
+	return 0;
 }
