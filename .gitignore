@@ -1,3 +1,4 @@
 .vs/
 labs/**/.vs/
 labs/**/Debug/
+labs/**/Release/

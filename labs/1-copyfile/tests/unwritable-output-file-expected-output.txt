@@ -1,1 +1,1 @@
-Error was occured while opening "C:\Users\Andrey\oop-labs\labs\1-copyfile\Debug\1-copyfile.exe" output file.
+Error was occured while opening output file.

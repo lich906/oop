@@ -1,1 +1,1 @@
-Error was occured while opening "tests\non-existing-input-file.txt" input file.
+Error was occured while opening input file.

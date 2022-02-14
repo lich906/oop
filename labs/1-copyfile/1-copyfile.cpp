@@ -2,12 +2,12 @@
 #include <iostream>
 #include <optional>
 
-#define ARGUMENTS_COUNT 3
+constexpr auto ARGUMENTS_COUNT = 3;
 
 struct Args
 {
-	char* inputFile;
-	char* outputFile;
+	std::string inputFilePath;
+	std::string outputFilePath;
 };
 
 std::optional<Args> ParseArgs(int argc, char* argv[])
@@ -22,30 +22,21 @@ std::optional<Args> ParseArgs(int argc, char* argv[])
 	return parsedArgs;
 }
 
-std::optional<std::ifstream> OpenInputStream(char* fileName)
+int ValidateStreams(std::ifstream& inStream, std::ofstream& outStream)
 {
-	std::ifstream stream;
-	stream.open(fileName);
-
-	if (!stream.is_open())
+	if (!inStream.is_open())
 	{
-		return std::nullopt;
+		std::cout << "Error was occured while opening input file.\n";
+		return 1;
 	}
 
-	return stream;
-}
-
-std::optional<std::ofstream> OpenOutputStream(char* fileName)
-{
-	std::ofstream stream;
-	stream.open(fileName);
-
-	if (!stream.is_open())
+	if (!outStream.is_open())
 	{
-		return std::nullopt;
+		std::cout << "Error was occured while opening output file.\n";
+		return 1;
 	}
 
-	return stream;
+	return 0;
 }
 
 int CopyFile(std::ifstream& inStream, std::ofstream& outStream)
@@ -80,25 +71,19 @@ int main(int argc, char* argv[])
 
 	if (!args.has_value())
 	{
-		std::cout << "Invalid arguments count. Usage 1-copyfile <input file path> <output file path>\n";
+		std::cout << "Invalid arguments count. Usage: 1-copyfile.exe <input file path> <output file path>\n";
 		return 1;
 	}
 
-	std::optional<std::ifstream> inputFile = OpenInputStream(args->inputFile);
+	std::ifstream inputFile;
+	inputFile.open(args->inputFilePath);
+	std::ofstream outputFile;
+	outputFile.open(args->outputFilePath);
 
-	if (!inputFile.has_value())
+	if (ValidateStreams(inputFile, outputFile))
 	{
-		std::cout << "Error was occured while opening \"" << args->inputFile << "\" input file.\n";
 		return 1;
 	}
 
-	std::optional<std::ofstream> outputFile = OpenOutputStream(args->outputFile);
-
-	if (!outputFile.has_value())
-	{
-		std::cout << "Error was occured while opening \"" << args->outputFile << "\" output file.\n";
-		return 1;
-	}
-
-	return CopyFile(inputFile.value(), outputFile.value());
+	return CopyFile(inputFile, outputFile);
 }
