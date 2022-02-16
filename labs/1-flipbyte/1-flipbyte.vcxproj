@@ -94,6 +94,12 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>$(ProjectDir)tests\run.bat $(TargetPath)</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Executing test script</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -123,6 +129,12 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>$(ProjectDir)tests\run.bat $(TargetPath)</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Executing test script</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -142,6 +154,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="1-flipbyte.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="tests\0.txt" />
+    <Text Include="tests\0000056.txt" />
+    <Text Include="tests\123.txt" />
+    <Text Include="tests\129.txt" />
+    <Text Include="tests\230.txt" />
+    <Text Include="tests\255.txt" />
+    <Text Include="tests\invalid-arguments-count.txt" />
+    <Text Include="tests\not-a-number.txt" />
+    <Text Include="tests\out-of-range.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="tests\run.bat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

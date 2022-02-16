@@ -81,6 +81,19 @@ std::optional<unsigned char> ParseArg(int argc, char* argv[])
 	return parsedByte.value();
 }
 
+unsigned char flipByte(unsigned char byte)
+{
+	unsigned char flippedByte = 0;
+	for (int i = 0; i < 8; ++i)
+	{
+		flippedByte <<= 1;
+		flippedByte += byte & 1;
+		byte >>= 1;
+	}
+
+	return flippedByte;
+}
+
 int main(int argc, char* argv[])
 {
 	std::optional<unsigned char> arg = ParseArg(argc, argv);
@@ -91,16 +104,7 @@ int main(int argc, char* argv[])
 	}
 
 	unsigned char byte = arg.value();
-	unsigned char invertedByte = 0;
-
-	for (int i = 0; i < 8; ++i)
-	{
-		invertedByte <<= 1;
-		invertedByte += byte & 1;
-		byte >>= 1;
-	}
-
-	std::cout << +invertedByte << "\n";
+	std::cout << +flipByte(byte) << "\n";
 
 	return 0;
 }

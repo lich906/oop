@@ -19,4 +19,20 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="tests\not-a-number.txt" />
+    <Text Include="tests\invalid-arguments-count.txt" />
+    <Text Include="tests\230.txt" />
+    <Text Include="tests\0000056.txt" />
+    <Text Include="tests\out-of-range.txt" />
+    <Text Include="tests\123.txt" />
+    <Text Include="tests\0.txt" />
+    <Text Include="tests\255.txt" />
+    <Text Include="tests\129.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="tests\run.bat">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>
