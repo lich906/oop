@@ -20,20 +20,7 @@ bool isNumber(std::string str)
 
 int DigitToInt(unsigned char digit)
 {
-	std::map<unsigned char, int> castMap = {
-		{ '0', 0 },
-		{ '1', 1 },
-		{ '2', 2 },
-		{ '3', 3 },
-		{ '4', 4 },
-		{ '5', 5 },
-		{ '6', 6 },
-		{ '7', 7 },
-		{ '8', 8 },
-		{ '9', 9 },
-	};
-
-	return castMap[digit];
+	return digit - '0';
 }
 
 std::optional<unsigned char> StringToByte(std::string str)
