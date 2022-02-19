@@ -3,7 +3,7 @@
 #include <optional>
 #include <string>
 
-#define ARGUMENTS_COUNT 2
+constexpr auto ARGUMENTS_COUNT = 2
 
 bool isNumber(std::string str)
 {
