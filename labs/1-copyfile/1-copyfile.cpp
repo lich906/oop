@@ -41,10 +41,10 @@ int ValidateStreams(std::ifstream& inStream, std::ofstream& outStream)
 
 int CopyFile(std::ifstream& inStream, std::ofstream& outStream)
 {
-	char buf;
-	while (inStream.read(&buf, sizeof buf))
+	char ch;
+	while (inStream.get(ch))
 	{
-		if (!outStream.put(buf))
+		if (!outStream.put(ch))
 		{
 			break;
 		}
