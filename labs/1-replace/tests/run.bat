@@ -1,8 +1,8 @@
-@echo off
+п»ї@echo off
 
 set PROGRAM_PATH="%~1"
 
-rem Неверное количество параметров
+rem РќРµРІРµСЂРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РїР°СЂР°РјРµС‚СЂРѕРІ
 %PROGRAM_PATH% tests\12312312345.txt %TEMP%\out.txt > %TEMP%\out.txt
 if NOT ERRORLEVEL 1 goto err
 fc %TEMP%\out.txt tests\invalid-args.expect.txt
@@ -13,19 +13,19 @@ if NOT ERRORLEVEL 1 goto err
 fc %TEMP%\out.txt tests\invalid-args.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Несуществующий входной файл
+rem РќРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ РІС…РѕРґРЅРѕР№ С„Р°Р№Р»
 %PROGRAM_PATH% tests\cba.txt %TEMP%\out.txt 1 2 > %TEMP%\out.txt
 if NOT ERRORLEVEL 1 goto err
 fc %TEMP%\out.txt tests\bad-input-file.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Исполняемая программа в качестве выходного файла
+rem РСЃРїРѕР»РЅСЏРµРјР°СЏ РїСЂРѕРіСЂР°РјРјР° РІ РєР°С‡РµСЃС‚РІРµ РІС‹С…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°
 %PROGRAM_PATH% tests\brown-fox.txt %PROGRAM_PATH% fox dog > %TEMP%\out.txt
 if NOT ERRORLEVEL 1 goto err
 fc %TEMP%\out.txt tests\bad-output-file.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Пустая строка поиска
+rem РџСѓСЃС‚Р°СЏ СЃС‚СЂРѕРєР° РїРѕРёСЃРєР°
 %PROGRAM_PATH% tests\brown-fox.txt %TEMP%\empty-search-string.txt "" hello > %TEMP%\out.txt
 if ERRORLEVEL 1 goto err
 fc %TEMP%\empty-search-string.txt tests\brown-fox.txt
@@ -33,19 +33,19 @@ if ERRORLEVEL 1 goto err
 fc %TEMP%\out.txt tests\empty-search-string.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Замена "ma" на "mama"
+rem Р—Р°РјРµРЅР° "ma" РЅР° "mama"
 %PROGRAM_PATH% tests\mama.txt %TEMP%\mama.txt ma mama
 if ERRORLEVEL 1 goto err
 fc %TEMP%\mama.txt tests\mama.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Замена подстроки "1231234" в строке "12312312345"
+rem Р—Р°РјРµРЅР° РїРѕРґСЃС‚СЂРѕРєРё "1231234" РІ СЃС‚СЂРѕРєРµ "12312312345"
 %PROGRAM_PATH% tests\12312312345.txt %TEMP%\12312312345.txt 1231234 "works fine"
 if ERRORLEVEL 1 goto err
 fc %TEMP%\12312312345.txt tests\12312312345.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Замена "dog" на "cat" в панграмме.
+rem Р—Р°РјРµРЅР° "dog" РЅР° "cat" РІ РїР°РЅРіСЂР°РјРјРµ.
 %PROGRAM_PATH% tests\brown-fox.txt %TEMP%\brown-fox.txt dog cat
 if ERRORLEVEL 1 goto err
 fc %TEMP%\brown-fox.txt tests\brown-fox.expect.txt
