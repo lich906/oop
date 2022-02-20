@@ -41,10 +41,10 @@ int ValidateStreams(std::ifstream& inStream, std::ofstream& outStream)
 
 int CopyFile(std::ifstream& inStream, std::ofstream& outStream)
 {
-	char ch;
-	while (inStream.get(ch))
+	char buf;
+	while (inStream.read(&buf, sizeof buf))
 	{
-		if (!outStream.put(ch))
+		if (!outStream.put(buf))
 		{
 			break;
 		}
@@ -76,9 +76,9 @@ int main(int argc, char* argv[])
 	}
 
 	std::ifstream inputFile;
-	inputFile.open(args->inputFilePath);
+	inputFile.open(args->inputFilePath, std::ios::binary);
 	std::ofstream outputFile;
-	outputFile.open(args->outputFilePath);
+	outputFile.open(args->outputFilePath, std::ios::binary);
 
 	if (ValidateStreams(inputFile, outputFile))
 	{
