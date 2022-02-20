@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="1-invert.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="tests\matrix.txt" />
+    <Text Include="tests\degenerate2.txt" />
+    <Text Include="tests\degenerate.expect.txt" />
+    <Text Include="tests\degenerate1.txt" />
+    <Text Include="tests\matrix1.expect.txt" />
+    <Text Include="tests\matrix1.txt" />
+    <Text Include="tests\matrix2.expect.txt" />
+    <Text Include="tests\matrix2.txt" />
+    <Text Include="tests\wrong-args.expect.txt" />
+    <Text Include="tests\wrong-data.expect.txt" />
+    <Text Include="tests\wrong-data1.txt" />
+    <Text Include="tests\wrong-file.expect.txt" />
+    <Text Include="tests\wrong-format.expect.txt" />
+    <Text Include="tests\wrong-format1.txt" />
+    <Text Include="tests\wrong-format2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="tests\run.bat">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

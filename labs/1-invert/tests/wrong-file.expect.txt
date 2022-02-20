@@ -1,0 +1,1 @@
+Error: Failed to open "tests\non-existing-file.txt" input file.

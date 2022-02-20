@@ -1,0 +1,1 @@
+Error: Wrong matrix file format. It's three numbers in each of three lines delimited by spaces or tabs.

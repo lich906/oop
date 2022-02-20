@@ -1,0 +1,1 @@
+Invalid arguments count. Usage: 1-invert.exe <input file path>
