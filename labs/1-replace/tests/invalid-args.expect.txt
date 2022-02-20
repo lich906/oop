@@ -1,0 +1,1 @@
+Invalid arguments count. Usage: 1-replace.exe <input file> <output file> <search string> <replace string>

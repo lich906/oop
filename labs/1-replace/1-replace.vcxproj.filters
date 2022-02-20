@@ -19,4 +19,23 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="input.txt" />
+    <Text Include="output.txt" />
+    <Text Include="tests\12312312345.txt" />
+    <Text Include="tests\brown-fox.txt" />
+    <Text Include="tests\12312312345.expect.txt" />
+    <Text Include="tests\bad-input-file.expect.txt" />
+    <Text Include="tests\bad-output-file.expect.txt" />
+    <Text Include="tests\brown-fox.expect.txt" />
+    <Text Include="tests\empty-search-string.expect.txt" />
+    <Text Include="tests\invalid-args.expect.txt" />
+    <Text Include="mama.txt" />
+    <Text Include="mama.expect.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="tests\run.bat">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

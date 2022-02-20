@@ -1,6 +1,7 @@
 #include <iostream>
 #include <optional>
 #include <fstream>
+#include <string>
 
 constexpr auto ARGUMENTS_COUNT = 5;
 
@@ -41,6 +42,70 @@ int ValidateStreams(std::ifstream& inStream, std::ofstream& outStream)
 	return 0;
 }
 
+int CopyFile(std::ifstream& inStream, std::ofstream& outStream)
+{
+	char ch;
+	while (inStream.get(ch))
+	{
+		if (!outStream.put(ch))
+		{
+			break;
+		}
+	}
+
+	if (inStream.bad())
+	{
+		std::cout << "Failed to read data from file\n";
+		return 1;
+	}
+
+	if (!outStream.flush())
+	{
+		std::cout << "Failed to write data into file\n";
+		return 1;
+	}
+
+	return 0;
+}
+
+int Replace(std::ifstream& inStream, std::ofstream& outStream, std::string& searchStr, std::string& replaceStr)
+{
+	std::string buf;
+	size_t pos, foundPos;
+	while (std::getline(inStream, buf))
+	{
+		pos = 0;
+		while ((foundPos = buf.find(searchStr, pos)) != std::string::npos)
+		{
+			if (!(outStream << buf.substr(pos, foundPos - pos) << replaceStr))
+			{
+				std::cout << "Failed to write data into output file.\n";
+				return 1;
+			}
+			pos = foundPos + searchStr.length();
+		}
+		if (!(outStream << buf.substr(pos) << '\n'))
+		{
+			std::cout << "Failed to write data into output file.\n";
+			return 1;
+		}
+	}
+
+	if (inStream.bad())
+	{
+		std::cout << "Failed to read data from file\n";
+		return 1;
+	}
+
+	if (!outStream.flush())
+	{
+		std::cout << "Failed to write data into file\n";
+		return 1;
+	}
+
+	return 0;
+}
+
 int main(int argc, char* argv[])
 {
 	std::optional<Args> args = ParseArgs(argc, argv);
@@ -51,8 +116,8 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	std::ifstream in(args->inputFilePath, std::ios::in);
-	std::ofstream out(args->outputFilePath, std::ios::out);
+	std::ifstream in(args->inputFilePath);
+	std::ofstream out(args->outputFilePath);
 
 	if (int err = ValidateStreams(in, out))
 	{
@@ -61,6 +126,9 @@ int main(int argc, char* argv[])
 
 	if (args->searchString.empty())
 	{
-
+		std::cout << "Search string is empty. File was copied without change.\n";
+		return CopyFile(in, out);
 	}
+
+	return Replace(in, out, args->searchString, args->replaceString);
 }
