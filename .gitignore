@@ -2,3 +2,4 @@
 labs/**/.vs/
 labs/**/Debug/
 labs/**/Release/
+labs/**/*.vcxproj.user
