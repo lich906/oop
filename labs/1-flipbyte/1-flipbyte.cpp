@@ -5,7 +5,7 @@
 
 constexpr auto ARGUMENTS_COUNT = 2;
 
-bool isNumber(std::string str)
+bool isNumber(const std::string& str)
 {
 	for (unsigned char ch : str)
 	{
@@ -23,7 +23,12 @@ int DigitToInt(unsigned char digit)
 	return digit - '0';
 }
 
-std::optional<unsigned char> StringToByte(std::string str)
+void LogError(const std::string& msg)
+{
+	std::cout << msg;
+}
+
+std::optional<unsigned char> StringToByte(const std::string& str)
 {
 	unsigned char byte = 0;
 
@@ -31,7 +36,7 @@ std::optional<unsigned char> StringToByte(std::string str)
 	{
 		if ((byte * 10 + DigitToInt(ch)) > 0xff)
 		{
-			std::cout << "Error: Argument value is out of range. (0 - 255)\n";
+			LogError("Error: Argument value is out of range. (0 - 255)\n");
 			return std::nullopt;
 		}
 		else
@@ -47,7 +52,7 @@ std::optional<unsigned char> ParseArg(int argc, char* argv[])
 {
 	if (argc != ARGUMENTS_COUNT)
 	{
-		std::cout << "Error: Invalid arguments count. Usage: 1-flipbyte.exe <byte integer representation>\n";
+		LogError("Error: Invalid arguments count. Usage: 1-flipbyte.exe <byte integer representation>\n");
 		return std::nullopt;
 	}
 
@@ -55,7 +60,7 @@ std::optional<unsigned char> ParseArg(int argc, char* argv[])
 
 	if (!isNumber(arg))
 	{
-		std::cout << "Error: Argument is not a valid number. (0 - 255)\n";
+		LogError("Error: Argument is not a valid number. (0 - 255)\n");
 		return std::nullopt;
 	}
 
@@ -68,7 +73,7 @@ std::optional<unsigned char> ParseArg(int argc, char* argv[])
 	return parsedByte.value();
 }
 
-unsigned char flipByte(unsigned char byte)
+unsigned char FlipByte(unsigned char byte)
 {
 	unsigned char flippedByte = 0;
 	for (int i = 0; i < 8; ++i)
@@ -81,6 +86,11 @@ unsigned char flipByte(unsigned char byte)
 	return flippedByte;
 }
 
+void PrintByte(unsigned char byte)
+{
+	std::cout << +byte << '\n';
+}
+
 int main(int argc, char* argv[])
 {
 	std::optional<unsigned char> arg = ParseArg(argc, argv);
@@ -91,7 +101,7 @@ int main(int argc, char* argv[])
 	}
 
 	unsigned char byte = arg.value();
-	std::cout << +flipByte(byte) << "\n";
+	PrintByte(FlipByte(byte));
 
 	return 0;
 }
