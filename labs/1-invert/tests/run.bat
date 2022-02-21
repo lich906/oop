@@ -3,7 +3,7 @@
 set PROGRAM_PATH="%~1"
 
 rem Ќеверные аргументы командной строки
-%PROGRAM_PATH% tests\  23fg > %TEMP%\wrong-args.txt
+%PROGRAM_PATH% tests\ 23fg > %TEMP%\wrong-args.txt
 if NOT ERRORLEVEL 1 goto err
 fc %TEMP%\wrong-args.txt tests\wrong-args.expect.txt
 if ERRORLEVEL 1 goto err
@@ -26,6 +26,7 @@ if NOT ERRORLEVEL 1 goto err
 fc %TEMP%\wrong-format1.txt tests\wrong-format.expect.txt
 if ERRORLEVEL 1 goto err
 
+rem Ќеверный формат с пустыми строками
 %PROGRAM_PATH% tests\wrong-format2.txt > %TEMP%\wrong-format2.txt
 if NOT ERRORLEVEL 1 goto err
 fc %TEMP%\wrong-format2.txt tests\wrong-format.expect.txt

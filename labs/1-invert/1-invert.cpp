@@ -10,50 +10,55 @@ constexpr double WEAK_DBL_EPSILON = DBL_EPSILON * 100.0;
 
 typedef std::array<std::array<double, MATRIX_DIMENSION>, MATRIX_DIMENSION> Matrix3x3;
 
+void LogError(const std::string& msg)
+{
+	std::cout << msg;
+}
+
 std::optional<std::string> ParseArg(int argc, char* argv[])
 {
 	if (argc != ARGUMENTS_COUNT)
 	{
-		std::cout << "Invalid arguments count. Usage: 1-invert.exe <input file path>\n";
+		LogError("Invalid arguments count. Usage: 1-invert.exe <input file path>\n");
 		return std::nullopt;
 	}
 
 	return argv[1];
 }
 
-int ReadMatrix(std::ifstream& file, Matrix3x3& mat)
+bool ReadMatrix(std::istream& input, Matrix3x3& mat)
 {
 	for (std::array<double, MATRIX_DIMENSION>& row : mat)
 	{
 		for (double& elt : row)
 		{
-			if (!(file >> elt))
+			if (!(input >> elt))
 			{
-				std::cout << "Error: Failed to read matrix from file. Invalid numeric data.\n";
-				return 1;
+				LogError("Error: Failed to read matrix from file. Invalid numeric data.\n");
+				return false;
 			}
 		}
 	}
 
 	char ch;
-	if (!(file >> ch).eof())
+	if (!(input >> ch).eof())
 	{
-		std::cout << "Error: Wrong matrix file format. It's three numbers in each of three lines delimited by spaces or tabs.\n";
-		return 1;
+		LogError("Error: Wrong matrix file format. It's three numbers in each of three lines delimited by spaces or tabs.\n");
+		return false;
 	}
 
-	return 0;
+	return true;
 }
 
-int ReadMatrixFromFile(std::string& fileName, Matrix3x3& matrix)
+bool ReadMatrixFromFile(const std::string& fileName, Matrix3x3& matrix)
 {
 	std::ifstream file;
 	file.open(fileName, std::ios::in);
 
 	if (!file.is_open())
 	{
-		std::cout << "Error: Failed to open \"" << fileName << "\" input file.\n";
-		return 1;
+		LogError("Error: Failed to open \"" + fileName + "\" input file.\n");
+		return false;
 	}
 
 	return ReadMatrix(file, matrix);
@@ -78,7 +83,7 @@ double GetDeterminant(const Matrix3x3& mat)
 		mat[2][2] * mat[1][0] * mat[0][1];
 }
 
-Matrix3x3 GetAdjugateMatrix(const Matrix3x3& mat)
+Matrix3x3 GetTransposedAdjugateMatrix(const Matrix3x3& mat)
 {
 	return {
 		{
@@ -116,20 +121,20 @@ Matrix3x3 DivideMatrix(const Matrix3x3& mat, double divisor)
 	return resMat;
 }
 
-int InvertMatrix(const Matrix3x3& mat, Matrix3x3& invMat)
+bool InvertMatrix(const Matrix3x3& mat, Matrix3x3& invMat)
 {
 	double det = GetDeterminant(mat);
 
 	if (abs(det - 0.0) <= WEAK_DBL_EPSILON)
 	{
-		std::cout << "Invert matrix does not exist. Matrix is degenerate and uninvertible.\n";
-		return 1;
+		LogError("Invert matrix does not exist. Matrix is degenerate and uninvertible.\n");
+		return false;
 	}
 
-	Matrix3x3 adjMat = GetAdjugateMatrix(mat);
+	Matrix3x3 adjMat = GetTransposedAdjugateMatrix(mat);
 	invMat = DivideMatrix(adjMat, det);
 
-	return 0;
+	return true;
 }
 
 int main(int argc, char* argv[])
@@ -143,16 +148,16 @@ int main(int argc, char* argv[])
 
 	Matrix3x3 matrix = {};
 
-	if (int err = ReadMatrixFromFile(filePath.value(), matrix))
+	if (!ReadMatrixFromFile(filePath.value(), matrix))
 	{
-		return err;
+		return 1;
 	}
 
 	Matrix3x3 invertedMatrix = {};
 
-	if(int err = InvertMatrix(matrix, invertedMatrix))
+	if(!InvertMatrix(matrix, invertedMatrix))
 	{
-		return err;
+		return 1;
 	}
 
 	PrintMatrix(invertedMatrix);
