@@ -2,6 +2,7 @@
 #include <optional>
 #include <fstream>
 #include <string>
+#include <sstream>
 
 constexpr auto ARGUMENTS_COUNT = 5;
 
@@ -25,85 +26,82 @@ std::optional<Args> ParseArgs(int argc, char* argv[])
 	return parsedArgs;
 }
 
-int ValidateStreams(std::ifstream& inStream, std::ofstream& outStream)
+//bool 
+bool ValidateStreams(std::ifstream& inStream, std::ofstream& outStream)
 {
 	if (!inStream.is_open())
 	{
 		std::cout << "Error was occured while opening input file.\n";
-		return 1;
+		return false;
 	}
 
 	if (!outStream.is_open())
 	{
 		std::cout << "Error was occured while opening output file.\n";
-		return 1;
+		return false;
 	}
 
-	return 0;
+	return true;
 }
 
-int CopyFile(std::ifstream& inStream, std::ofstream& outStream)
+void LogError(const std::string& msg)
 {
-	char ch;
-	while (inStream.get(ch))
-	{
-		if (!outStream.put(ch))
-		{
-			break;
-		}
-	}
-
-	if (inStream.bad())
-	{
-		std::cout << "Failed to read data from file\n";
-		return 1;
-	}
-
-	if (!outStream.flush())
-	{
-		std::cout << "Failed to write data into file\n";
-		return 1;
-	}
-
-	return 0;
+	std::cout << msg;
 }
 
-int Replace(std::ifstream& inStream, std::ofstream& outStream, std::string& searchStr, std::string& replaceStr)
+std::string ReplaceString(const std::string& src, const std::string& searchStr, const std::string& replaceStr)
 {
-	std::string buf;
+	std::string res("");
+	if (searchStr.empty())
+	{
+		return src;
+	}
+
 	size_t pos, foundPos;
-	while (std::getline(inStream, buf))
+	pos = 0;
+	while ((foundPos = src.find(searchStr, pos)) != std::string::npos)
 	{
-		pos = 0;
-		while ((foundPos = buf.find(searchStr, pos)) != std::string::npos)
-		{
-			if (!(outStream << buf.substr(pos, foundPos - pos) << replaceStr))
-			{
-				std::cout << "Failed to write data into output file.\n";
-				return 1;
-			}
-			pos = foundPos + searchStr.length();
-		}
-		if (!(outStream << buf.substr(pos) << '\n'))
-		{
-			std::cout << "Failed to write data into output file.\n";
-			return 1;
-		}
+		res += src.substr(pos, foundPos - pos) + replaceStr;
+		pos = foundPos + searchStr.length();
 	}
+	res += src.substr(pos) + '\n';
 
+	return res;
+}
+
+bool CheckStreams(std::istream& inStream, std::ostream& outStream)
+{
 	if (inStream.bad())
 	{
-		std::cout << "Failed to read data from file\n";
-		return 1;
+		LogError("Failed to read data from file.\n");
+		return false;
 	}
 
 	if (!outStream.flush())
 	{
-		std::cout << "Failed to write data into file\n";
-		return 1;
+		LogError("Failed to write data into file.\n");
+		return false;
 	}
 
-	return 0;
+	return true;
+}
+
+//return bool
+//istream, ostream&
+//добавить обработку пустого searchString
+bool Replace(std::istream& inStream, std::ostream& outStream, const std::string& searchStr, const std::string& replaceStr)
+{
+	std::string curStr;
+	while (std::getline(inStream, curStr))
+	{
+		if (!(outStream << ReplaceString(curStr, searchStr, replaceStr)))
+		{
+			LogError("Failed to write data into file.\n");
+			return false;
+		}
+	}
+
+	return CheckStreams(inStream, outStream);
 }
 
 int main(int argc, char* argv[])
@@ -119,16 +117,15 @@ int main(int argc, char* argv[])
 	std::ifstream in(args->inputFilePath);
 	std::ofstream out(args->outputFilePath);
 
-	if (int err = ValidateStreams(in, out))
+	if (!ValidateStreams(in, out))
 	{
-		return err;
+		return 1;
 	}
 
-	if (args->searchString.empty())
+	if(!Replace(in, out, args->searchString, args->replaceString))
 	{
-		std::cout << "Search string is empty. File was copied without change.\n";
-		return CopyFile(in, out);
+		return 1;
 	}
 
-	return Replace(in, out, args->searchString, args->replaceString);
+	return 0;
 }

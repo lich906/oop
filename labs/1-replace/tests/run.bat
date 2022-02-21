@@ -26,11 +26,9 @@ fc %TEMP%\out.txt tests\bad-output-file.expect.txt
 if ERRORLEVEL 1 goto err
 
 rem Пустая строка поиска
-%PROGRAM_PATH% tests\brown-fox.txt %TEMP%\empty-search-string.txt "" hello > %TEMP%\out.txt
+%PROGRAM_PATH% tests\brown-fox.txt %TEMP%\empty-search-string.txt "" hello
 if ERRORLEVEL 1 goto err
 fc %TEMP%\empty-search-string.txt tests\brown-fox.txt
-if ERRORLEVEL 1 goto err
-fc %TEMP%\out.txt tests\empty-search-string.expect.txt
 if ERRORLEVEL 1 goto err
 
 rem Замена "ma" на "mama"
@@ -49,6 +47,9 @@ rem Замена "dog" на "cat" в панграмме.
 %PROGRAM_PATH% tests\brown-fox.txt %TEMP%\brown-fox.txt dog cat
 if ERRORLEVEL 1 goto err
 fc %TEMP%\brown-fox.txt tests\brown-fox.expect.txt
+if ERRORLEVEL 1 goto err
+
+%PROGRAM_PATH% tests\input.txt %TEMP%\output.txt a bb
 if ERRORLEVEL 1 goto err
 
 echo All tests successfully passed
