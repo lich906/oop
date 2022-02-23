@@ -1,5 +1,4 @@
 #include <iostream>
-#include <map>
 #include <optional>
 #include <string>
 
@@ -39,10 +38,7 @@ std::optional<unsigned char> StringToByte(const std::string& str)
 			LogError("Error: Argument value is out of range. (0 - 255)\n");
 			return std::nullopt;
 		}
-		else
-		{
-			byte = byte * 10 + DigitToInt(ch);
-		}
+		byte = byte * 10 + DigitToInt(ch);
 	}
 
 	return byte;
