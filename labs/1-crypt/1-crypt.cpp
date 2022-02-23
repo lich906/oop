@@ -4,7 +4,6 @@
 #include <fstream>
 #include <array>
 
-
 typedef std::array<int, 8> BitmapArray;
 
 constexpr auto ARGUMENTS_COUNT = 5;
@@ -58,10 +57,7 @@ std::optional<unsigned char> StringToByte(const std::string& str)
 		{
 			return std::nullopt;
 		}
-		else
-		{
-			byte = byte * 10 + DigitToInt(ch);
-		}
+		byte = byte * 10 + DigitToInt(ch);
 	}
 
 	return byte;
