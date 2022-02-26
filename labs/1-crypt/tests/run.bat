@@ -1,45 +1,45 @@
-@echo off
+Ôªø@echo off
 
 set PROGRAM_PATH="%~1"
 
-rem ÕÂ‚ÂÌÓÂ ÍÓÎË˜ÂÒÚ‚Ó ‚ıÓ‰Ì˚ı Ô‡‡ÏÂÚÓ‚
+rem –ù–µ–≤–µ—Ä–Ω–æ–µ –∫–æ–ª–∏—á–µ—Å—Ç–≤–æ –≤—Ö–æ–¥–Ω—ã—Ö –ø–∞—Ä–∞–º–µ—Ç—Ä–æ–≤
 %PROGRAM_PATH% abcd xyz 04 > %TEMP%\output.txt
 if not ERRORLEVEL 1 goto err
 fc %TEMP%\output.txt tests\invalid-arg-count.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem ÕÂ‰ÓÔÛÒÚËÏ‡ˇ ÓÔÂ‡ˆËˇ
+rem –ù–µ–¥–æ–ø—É—Å—Ç–∏–º–∞—è –æ–ø–µ—Ä–∞—Ü–∏—è
 %PROGRAM_PATH% abcd tests\test-binary.jpeg %TEMP%\crypted.bin 35 > %TEMP%\output.txt
 if not ERRORLEVEL 1 goto err
 fc %TEMP%\output.txt tests\unknown-operation.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem ÕÂÒÛ˘ÂÒÚ‚Û˛˘ËÈ ‚ıÓ‰ÌÓÈ Ù‡ÈÎ
+rem –ù–µ—Å—É—â–µ—Å—Ç–≤—É—é—â–∏–π –≤—Ö–æ–¥–Ω–æ–π —Ñ–∞–π–ª
 %PROGRAM_PATH% crypt tests\test.jpeg %TEMP%\crypted.bin 35 > %TEMP%\output.txt
 if not ERRORLEVEL 1 goto err
 fc %TEMP%\output.txt tests\non-existing-input-file.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem ¬ıÓ‰ÌÓÈ Ë ‚˚ıÓ‰ÌÓÈ Ù‡ÈÎ˚ ÒÓ‚Ô‡‰‡˛Ú
+rem –í—Ö–æ–¥–Ω–æ–π –∏ –≤—ã—Ö–æ–¥–Ω–æ–π —Ñ–∞–π–ª—ã —Å–æ–≤–ø–∞–¥–∞—é—Ç
 %PROGRAM_PATH% crypt tests\test-binary.jpeg tests\test-binary.jpeg 35 > %TEMP%\output.txt
 if not ERRORLEVEL 1 goto err
 fc %TEMP%\output.txt tests\input-output-files-match.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem ÕÂÍÓÂÍÚÌ˚È ÍÎ˛˜ (Ò ÌÂˆËÙÓ‚˚ÏË ÒËÏ‚ÓÎ‡ÏË)
+rem –ù–µ–∫–æ—Ä—Ä–µ–∫—Ç–Ω—ã–π –∫–ª—é—á (—Å –Ω–µ—Ü–∏—Ñ—Ä–æ–≤—ã–º–∏ —Å–∏–º–≤–æ–ª–∞–º–∏)
 %PROGRAM_PATH% crypt tests\test-binary.jpeg %TEMP%\crypted.bin 35ghdfg > %TEMP%\output.txt
 if not ERRORLEVEL 1 goto err
 fc %TEMP%\output.txt tests\invalid-crypt-key.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem ÕÂÍÓÂÍÚÌ˚È ÍÎ˛˜ (˜ËÒÎÓ ÌÂ ÔÓÏÂ˘‡ÂÚÒˇ ‚ ·‡ÈÚ)
+rem –ù–µ–∫–æ—Ä—Ä–µ–∫—Ç–Ω—ã–π –∫–ª—é—á (—á–∏—Å–ª–æ –Ω–µ –ø–æ–º–µ—â–∞–µ—Ç—Å—è –≤ –±–∞–π—Ç)
 %PROGRAM_PATH% crypt tests\test-binary.jpeg %TEMP%\crypted.bin 35945 > %TEMP%\output.txt
 if not ERRORLEVEL 1 goto err
 fc %TEMP%\output.txt tests\invalid-crypt-key.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem   ÿËÙÛÂÏ ËÒıÓ‰Ì˚È Ù‡ÈÎ Ò ÍÎ˛˜ÂÏ 45 => ÔÓÎÛ˜ÂÌÌ˚È Ù‡ÈÎ ¯ËÙÛÂÏ ÍÎ˛˜ÂÏ 234 => 
-rem   => ‰Â¯ËÙÛÂÏ ÍÎ˛˜ÂÏ 234 => ‰Â¯ËÙÛÂÏ ÍÎ˛˜ÂÏ 45 => ÔÓÎÛ˜‡ÂÏ ËÒıÓ‰Ì˚È Ù‡ÈÎ
+rem   –®–∏—Ñ—Ä—É–µ–º –∏—Å—Ö–æ–¥–Ω—ã–π —Ñ–∞–π–ª —Å –∫–ª—é—á–µ–º 45 => –ø–æ–ª—É—á–µ–Ω–Ω—ã–π —Ñ–∞–π–ª —à–∏—Ñ—Ä—É–µ–º –∫–ª—é—á–µ–º 234 => 
+rem   => –¥–µ—à–∏—Ñ—Ä—É–µ–º –∫–ª—é—á–µ–º 234 => –¥–µ—à–∏—Ñ—Ä—É–µ–º –∫–ª—é—á–µ–º 45 => –ø–æ–ª—É—á–∞–µ–º –∏—Å—Ö–æ–¥–Ω—ã–π —Ñ–∞–π–ª
 %PROGRAM_PATH% crypt tests\test-binary.jpeg %TEMP%\crypted1.bin 45
 if ERRORLEVEL 1 goto err
 %PROGRAM_PATH% crypt %TEMP%\crypted1.bin %TEMP%\crypted2.bin 234
