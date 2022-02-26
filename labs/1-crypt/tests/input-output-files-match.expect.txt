@@ -1,0 +1,1 @@
+Error: Input and output files should not match.

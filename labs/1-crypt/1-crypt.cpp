@@ -24,19 +24,6 @@ struct Args
 	unsigned char cryptKey;
 };
 
-bool isNumber(const std::string& str)
-{
-	for (unsigned char ch : str)
-	{
-		if (!std::isdigit(ch))
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
 int DigitToInt(unsigned char digit)
 {
 	return digit - '0';
@@ -47,33 +34,29 @@ void LogError(const std::string& msg)
 	std::cout << msg;
 }
 
-std::optional<unsigned char> StringToByte(const std::string& str)
+std::optional<unsigned char> ParseCryptKey(const std::string& keyString)
 {
-	unsigned char byte = 0;
+	unsigned char key = 0;
 
-	for (unsigned char ch : str)
+	for (unsigned char ch : keyString)
 	{
-		if ((byte * 10 + DigitToInt(ch)) > 0xff)
+		if (!std::isdigit(ch))
 		{
 			return std::nullopt;
 		}
-		byte = byte * 10 + DigitToInt(ch);
+
+		if ((key * 10 + DigitToInt(ch)) > 0xff)
+		{
+			return std::nullopt;
+		}
+
+		key = key * 10 + DigitToInt(ch);
 	}
 
-	return byte;
+	return key;
 }
 
-std::optional<unsigned char> ParseCryptKey(const std::string& key)
-{
-	if (!isNumber(key))
-	{
-		return std::nullopt;
-	}
-
-	return StringToByte(key);
-}
-
-std::optional<Args> ParseArg(int argc, char* argv[])
+std::optional<Args> ParseArgs(int argc, char* argv[])
 {
 	if (argc != ARGUMENTS_COUNT)
 	{
@@ -84,7 +67,7 @@ std::optional<Args> ParseArg(int argc, char* argv[])
 	std::string opStr(argv[1]);
 	if (!(opStr == "crypt" || opStr == "decrypt"))
 	{
-		LogError("Error: Unknow operation. Available options: \"crypt\" or \"decrypt\".\n");
+		LogError("Error: Unknow operation \"" + opStr + "\". Available options: \"crypt\" or \"decrypt\".\n");
 		return std::nullopt;
 	}
 
@@ -95,7 +78,13 @@ std::optional<Args> ParseArg(int argc, char* argv[])
 		return std::nullopt;
 	}
 
-	Args parsedArgs = {};
+	if (std::string(argv[2]) == std::string(argv[3]))
+	{
+		LogError("Error: Input and output files should not match.\n");
+		return std::nullopt;
+	}
+
+	Args parsedArgs{};
 	parsedArgs.operation = (opStr == "crypt") ? Operation::crypt : Operation::decrypt;
 	parsedArgs.inputFilePath = argv[2];
 	parsedArgs.outputFilePath = argv[3];
@@ -153,7 +142,7 @@ bool ProcessEncryption(std::istream& in, std::ostream& out, unsigned char key, O
 	char byte;
 	while (in.get(byte))
 	{
-		if (!(out.put(ProcessByte(byte, key, operation))))
+		if (!out.put(ProcessByte(byte, key, operation)))
 		{
 			break;
 		}
@@ -181,7 +170,7 @@ bool ValidateStreams(std::ifstream& inStream, std::ofstream& outStream)
 
 int main(int argc, char* argv[])
 {
-	std::optional<Args> args = ParseArg(argc, argv);
+	std::optional<Args> args = ParseArgs(argc, argv);
 	if (!args.has_value())
 	{
 		return 1;

@@ -1,0 +1,1 @@
+Error: Unknow operation "abcd". Available options: "crypt" or "decrypt".

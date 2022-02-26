@@ -1,0 +1,1 @@
+Error: Invalid arguments count. Usage: 1-crypt.exe <operation ("crypt"/"decrypt")> <file to crypt/decrypt> <output file> <byte key>

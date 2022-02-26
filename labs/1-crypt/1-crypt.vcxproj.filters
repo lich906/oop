@@ -13,10 +13,30 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="tests">
+      <UniqueIdentifier>{3496255b-0433-48f4-9d25-17eb1443f2aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="1-crypt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="tests\test-binary.jpeg">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="tests\invalid-crypt-key.expect.txt" />
+    <Text Include="tests\input-output-files-match.expect.txt" />
+    <Text Include="tests\invalid-arg-count.expect.txt" />
+    <Text Include="tests\non-existing-input-file.expect.txt" />
+    <Text Include="tests\unknown-operation.expect.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="tests\run.bat">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
