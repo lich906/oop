@@ -46,7 +46,7 @@ std::optional<unsigned char> ParseArg(int argc, char* argv[])
 		return std::nullopt;
 	}
 
-	std::optional<unsigned char> parsedByte = ParseByte(std::string(argv[1]));
+	std::optional<unsigned char> parsedByte = ParseByte(argv[1]);
 	if (!parsedByte.has_value())
 	{
 		return std::nullopt;
