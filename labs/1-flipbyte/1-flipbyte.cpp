@@ -4,19 +4,6 @@
 
 constexpr auto ARGUMENTS_COUNT = 2;
 
-bool isNumber(const std::string& str)
-{
-	for (unsigned char ch : str)
-	{
-		if (!std::isdigit(ch))
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
 int DigitToInt(unsigned char digit)
 {
 	return digit - '0';
@@ -27,17 +14,24 @@ void LogError(const std::string& msg)
 	std::cout << msg;
 }
 
-std::optional<unsigned char> StringToByte(const std::string& str)
+std::optional<unsigned char> ParseByte(const std::string& str)
 {
 	unsigned char byte = 0;
 
 	for (unsigned char ch : str)
 	{
+		if (!std::isdigit(ch))
+		{
+			LogError("Error: Argument is not a valid number. (0 - 255)\n");
+			return std::nullopt;
+		}
+
 		if ((byte * 10 + DigitToInt(ch)) > 0xff)
 		{
 			LogError("Error: Argument value is out of range. (0 - 255)\n");
 			return std::nullopt;
 		}
+
 		byte = byte * 10 + DigitToInt(ch);
 	}
 
@@ -52,15 +46,7 @@ std::optional<unsigned char> ParseArg(int argc, char* argv[])
 		return std::nullopt;
 	}
 
-	std::string arg = argv[1];
-
-	if (!isNumber(arg))
-	{
-		LogError("Error: Argument is not a valid number. (0 - 255)\n");
-		return std::nullopt;
-	}
-
-	std::optional<unsigned char> parsedByte = StringToByte(arg);
+	std::optional<unsigned char> parsedByte = ParseByte(std::string(argv[1]));
 	if (!parsedByte.has_value())
 	{
 		return std::nullopt;
