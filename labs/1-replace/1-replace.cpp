@@ -26,45 +26,45 @@ std::optional<Args> ParseArgs(int argc, char* argv[])
 	return parsedArgs;
 }
 
-//bool 
+void LogError(const std::string& msg)
+{
+	std::cout << msg;
+}
+
 bool ValidateStreams(std::ifstream& inStream, std::ofstream& outStream)
 {
 	if (!inStream.is_open())
 	{
-		std::cout << "Error was occured while opening input file.\n";
+		LogError("Error was occured while opening input file.\n");
 		return false;
 	}
 
 	if (!outStream.is_open())
 	{
-		std::cout << "Error was occured while opening output file.\n";
+		LogError("Error was occured while opening output file.\n");
 		return false;
 	}
 
 	return true;
 }
 
-void LogError(const std::string& msg)
-{
-	std::cout << msg;
-}
-
 std::string ReplaceString(const std::string& src, const std::string& searchStr, const std::string& replaceStr)
 {
-	std::string res("");
 	if (searchStr.empty())
 	{
 		return src;
 	}
 
+	std::string res;
 	size_t pos, foundPos;
 	pos = 0;
 	while ((foundPos = src.find(searchStr, pos)) != std::string::npos)
 	{
-		res += src.substr(pos, foundPos - pos) + replaceStr;
+		//std::string::append
+		res.append(src, pos, foundPos - pos).append(replaceStr);
 		pos = foundPos + searchStr.length();
 	}
-	res += src.substr(pos) + '\n';
+	res.append(src, pos);
 
 	return res;
 }
@@ -86,15 +86,12 @@ bool CheckStreams(std::istream& inStream, std::ostream& outStream)
 	return true;
 }
 
-//return bool
-//istream, ostream&
-//добавить обработку пустого searchString
 bool Replace(std::istream& inStream, std::ostream& outStream, const std::string& searchStr, const std::string& replaceStr)
 {
 	std::string curStr;
 	while (std::getline(inStream, curStr))
 	{
-		if (!(outStream << ReplaceString(curStr, searchStr, replaceStr)))
+		if (!(outStream << ReplaceString(curStr, searchStr, replaceStr) << '\n'))
 		{
 			LogError("Failed to write data into file.\n");
 			return false;
@@ -102,6 +99,24 @@ bool Replace(std::istream& inStream, std::ostream& outStream, const std::string&
 	}
 
 	return CheckStreams(inStream, outStream);
+}
+
+bool ReplaceSubstringsInFile(const Args& args)
+{
+	std::ifstream in(args.inputFilePath);
+	std::ofstream out(args.outputFilePath);
+
+	if (!ValidateStreams(in, out))
+	{
+		return false;
+	}
+
+	if (!Replace(in, out, args.searchString, args.replaceString))
+	{
+		return false;
+	}
+
+	return true;
 }
 
 int main(int argc, char* argv[])
@@ -114,15 +129,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	std::ifstream in(args->inputFilePath);
-	std::ofstream out(args->outputFilePath);
-
-	if (!ValidateStreams(in, out))
-	{
-		return 1;
-	}
-
-	if(!Replace(in, out, args->searchString, args->replaceString))
+	if (!ReplaceSubstringsInFile(args.value()))
 	{
 		return 1;
 	}

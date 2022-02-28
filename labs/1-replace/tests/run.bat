@@ -52,7 +52,7 @@ if ERRORLEVEL 1 goto err
 %PROGRAM_PATH% tests\input.txt %TEMP%\output.txt a bb
 if ERRORLEVEL 1 goto err
 
-echo All tests successfully passed
+echo All tests successfully passed!
 exit 0
 
 :err
