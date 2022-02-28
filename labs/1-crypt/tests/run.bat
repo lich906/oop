@@ -38,6 +38,12 @@ if not ERRORLEVEL 1 goto err
 fc %TEMP%\output.txt tests\invalid-crypt-key.expect.txt
 if ERRORLEVEL 1 goto err
 
+rem Некорректный ключ (пустая строка)
+%PROGRAM_PATH% crypt tests\test-binary.jpeg %TEMP%\crypted.bin "" > %TEMP%\output.txt
+if not ERRORLEVEL 1 goto err
+fc %TEMP%\output.txt tests\invalid-crypt-key.expect.txt
+if ERRORLEVEL 1 goto err
+
 rem   Шифруем исходный файл с ключем 45 => полученный файл шифруем ключем 234 => 
 rem   => дешифруем ключем 234 => дешифруем ключем 45 => получаем исходный файл
 %PROGRAM_PATH% crypt tests\test-binary.jpeg %TEMP%\crypted1.bin 45

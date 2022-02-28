@@ -12,8 +12,8 @@ constexpr BitmapArray DECRYPT_MAP = { 5, 6, 0, 1, 2, 7, 3, 4 };
 
 enum class Operation
 {
-	crypt,
-	decrypt
+	Crypt,
+	Decrypt
 };
 
 struct Args
@@ -36,6 +36,11 @@ void LogError(const std::string& msg)
 
 std::optional<unsigned char> ParseCryptKey(const std::string& keyString)
 {
+	if (keyString.empty())
+	{
+		return std::nullopt;
+	}
+
 	unsigned char key = 0;
 
 	for (unsigned char ch : keyString)
@@ -85,7 +90,7 @@ std::optional<Args> ParseArgs(int argc, char* argv[])
 	}
 
 	Args parsedArgs{};
-	parsedArgs.operation = (opStr == "crypt") ? Operation::crypt : Operation::decrypt;
+	parsedArgs.operation = (opStr == "crypt") ? Operation::Crypt : Operation::Decrypt;
 	parsedArgs.inputFilePath = argv[2];
 	parsedArgs.outputFilePath = argv[3];
 	parsedArgs.cryptKey = cryptKey.value();
@@ -110,7 +115,7 @@ unsigned char ShuffleByte(unsigned char byte, const BitmapArray& shufflingMap)
 
 unsigned char ProcessByte(unsigned char byte, unsigned char key, Operation operation)
 {
-	if (operation == Operation::crypt)
+	if (operation == Operation::Crypt)
 	{
 		return ShuffleByte(byte ^ key, CRYPT_MAP);
 	}
@@ -168,6 +173,24 @@ bool ValidateStreams(std::ifstream& inStream, std::ofstream& outStream)
 	return true;
 }
 
+bool EncryptFile(const Args& args)
+{
+	std::ifstream inputFile(args.inputFilePath, std::ios::binary);
+	std::ofstream outputFile(args.outputFilePath, std::ios::binary);
+
+	if (!ValidateStreams(inputFile, outputFile))
+	{
+		return false;
+	}
+
+	if (!ProcessEncryption(inputFile, outputFile, args.cryptKey, args.operation))
+	{
+		return false;
+	}
+
+	return true;
+}
+
 int main(int argc, char* argv[])
 {
 	std::optional<Args> args = ParseArgs(argc, argv);
@@ -176,15 +199,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	std::ifstream inputFile(args->inputFilePath, std::ios::binary);
-	std::ofstream outputFile(args->outputFilePath, std::ios::binary);
-
-	if (!ValidateStreams(inputFile, outputFile))
-	{
-		return 1;
-	}
-
-	if (!ProcessEncryption(inputFile, outputFile, args->cryptKey, args->operation))
+	if (!EncryptFile(args.value()))
 	{
 		return 1;
 	}
