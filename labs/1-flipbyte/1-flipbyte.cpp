@@ -16,6 +16,12 @@ void LogError(const std::string& msg)
 
 std::optional<unsigned char> ParseByte(const std::string& str)
 {
+	if (str.empty())
+	{
+		LogError("Error: Argument is not a valid number. (0 - 255)\n");
+		return std::nullopt;
+	}
+
 	unsigned char byte = 0;
 
 	for (unsigned char ch : str)
