@@ -1,0 +1,1 @@
+Error: Invalid arguments count. Usage: 1-labyrinth.exe <input file> <output file>
