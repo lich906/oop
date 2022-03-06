@@ -1,74 +1,74 @@
-@echo off
+п»ї@echo off
 
 set PROGRAM_PATH="%~1"
 
-rem Неверное кол-во аргументов аргументы
+rem РќРµРІРµСЂРЅРѕРµ РєРѕР»-РІРѕ Р°СЂРіСѓРјРµРЅС‚РѕРІ Р°СЂРіСѓРјРµРЅС‚С‹
 %PROGRAM_PATH% tests\some-file.txt > %TEMP%\out.txt
 if not ERRORLEVEL 1 goto err
 fc %TEMP%\out.txt tests\invalid-args.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Несуществующий входной файл
+rem РќРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ РІС…РѕРґРЅРѕР№ С„Р°Р№Р»
 %PROGRAM_PATH% tests\some-file.txt %TEMP%\out.txt > %TEMP%\out.txt
 if not ERRORLEVEL 1 goto err
 fc %TEMP%\out.txt tests\invalid-input-file.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Некорректные символы для задающие лабиринт
+rem РќРµРєРѕСЂСЂРµРєС‚РЅС‹Рµ СЃРёРјРІРѕР»С‹ РґР»СЏ Р·Р°РґР°СЋС‰РёРµ Р»Р°Р±РёСЂРёРЅС‚
 %PROGRAM_PATH% tests\invalid-symbols.txt %TEMP%\labyrinth.txt > %TEMP%\out.txt
 if not ERRORLEVEL 1 goto err
 fc %TEMP%\out.txt tests\invalid-symbols.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Начальная позиция A не задана
+rem РќР°С‡Р°Р»СЊРЅР°СЏ РїРѕР·РёС†РёСЏ A РЅРµ Р·Р°РґР°РЅР°
 %PROGRAM_PATH% tests\no-start-position.txt %TEMP%\labyrinth.txt > %TEMP%\out.txt
 if not ERRORLEVEL 1 goto err
 fc %TEMP%\out.txt tests\a-or-b-not-defined.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Целевая позиция B не задана
+rem Р¦РµР»РµРІР°СЏ РїРѕР·РёС†РёСЏ B РЅРµ Р·Р°РґР°РЅР°
 %PROGRAM_PATH% tests\no-end-position.txt %TEMP%\labyrinth.txt > %TEMP%\out.txt
 if not ERRORLEVEL 1 goto err
 fc %TEMP%\out.txt tests\a-or-b-not-defined.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Заданы две целевые позиции
+rem Р—Р°РґР°РЅС‹ РґРІРµ С†РµР»РµРІС‹Рµ РїРѕР·РёС†РёРё
 %PROGRAM_PATH% tests\two-end-pos.txt %TEMP%\labyrinth.txt > %TEMP%\out.txt
 if not ERRORLEVEL 1 goto err
 fc %TEMP%\out.txt tests\two-end-pos.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Заданы две стартовые позиции
+rem Р—Р°РґР°РЅС‹ РґРІРµ СЃС‚Р°СЂС‚РѕРІС‹Рµ РїРѕР·РёС†РёРё
 %PROGRAM_PATH% tests\two-start-pos.txt %TEMP%\labyrinth.txt > %TEMP%\out.txt
 if not ERRORLEVEL 1 goto err
 fc %TEMP%\out.txt tests\two-start-pos.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Непроходимый лабиринт
+rem РќРµРїСЂРѕС…РѕРґРёРјС‹Р№ Р»Р°Р±РёСЂРёРЅС‚
 %PROGRAM_PATH% tests\no-path-labyrinth.txt %TEMP%\labyrinth.txt
 if ERRORLEVEL 1 goto err
 fc %TEMP%\labyrinth.txt tests\no-path-labyrinth.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Небольшой лабиринт 1
+rem РќРµР±РѕР»СЊС€РѕР№ Р»Р°Р±РёСЂРёРЅС‚ 1
 %PROGRAM_PATH% tests\labyrinth-1.txt %TEMP%\labyrinth.txt
 if ERRORLEVEL 1 goto err
 fc %TEMP%\labyrinth.txt tests\labyrinth-1.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Небольшой лабиринт 2
+rem РќРµР±РѕР»СЊС€РѕР№ Р»Р°Р±РёСЂРёРЅС‚ 2
 %PROGRAM_PATH% tests\labyrinth-2.txt %TEMP%\labyrinth.txt
 if ERRORLEVEL 1 goto err
 fc %TEMP%\labyrinth.txt tests\labyrinth-2.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Лабиринт максимального размера 1
+rem Р›Р°Р±РёСЂРёРЅС‚ РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ СЂР°Р·РјРµСЂР° 1
 %PROGRAM_PATH% tests\max-size-labyrinth-1.txt %TEMP%\labyrinth.txt
 if ERRORLEVEL 1 goto err
 fc %TEMP%\labyrinth.txt tests\max-size-labyrinth-1.expect.txt
 if ERRORLEVEL 1 goto err
 
-rem Лабиринт максимального размера 2
+rem Р›Р°Р±РёСЂРёРЅС‚ РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ СЂР°Р·РјРµСЂР° 2
 %PROGRAM_PATH% tests\max-size-labyrinth-2.txt %TEMP%\labyrinth.txt
 if ERRORLEVEL 1 goto err
 fc %TEMP%\labyrinth.txt tests\max-size-labyrinth-2.expect.txt
