@@ -1,13 +1,7 @@
-#include <iostream>
-#include <vector>
-#include <string>
-#include <optional>
 #include <algorithm>
 
-void LogError(const std::string& msg)
-{
-	std::cout << msg;
-}
+#include "misc.h"
+#include "vector_functions.h"
 
 void InsertSort(std::vector<float>& vect, const float& val)
 {
@@ -58,26 +52,20 @@ bool PrintVector(std::ostream& out, const std::vector<float>& vect)
 	return true;
 }
 
-int main()
+std::vector<float> ProcessVect(const std::vector<float>& vect)
 {
-	auto optVect = ReadVectorOfNumbers(std::cin);
-
-	if (!optVect.has_value())
-	{
-		return 1;
-	}
-
-	std::vector<float> vect = optVect.value();
 	const auto [min, max] = std::minmax_element(vect.begin(), vect.end());
 
 	float val = *max / *min;
 
-	std::for_each(vect.begin(), vect.end(), [=](float& elt) { elt *= val; });
+	std::vector<float> res;
 
-	if (!PrintVector(std::cout, vect))
-	{
-		return 1;
-	}
+	auto processElement = [&](float elt) {
+		elt *= val;
+		res.push_back(elt);
+	};
 
-	return 0;
+	std::for_each(vect.begin(), vect.end(), processElement);
+
+	return res;
 }
