@@ -19,42 +19,50 @@ fc %TEMP%\test3.txt tests\out-of-range.txt
 fc %TEMP%\test4.txt tests\out-of-range.txt
 %check_err%
 
-%PROGRAM_PATH% 95gje4 > %TEMP%\test5.txt
-fc %TEMP%\test5.txt tests\not-a-number.txt
+%PROGRAM_PATH% 256 > %TEMP%\test5.txt
+fc %TEMP%\test5.txt tests\out-of-range.txt
 %check_err%
 
-%PROGRAM_PATH% 000000000000000000000000000000094fj34f > %TEMP%\test6.txt
+%PROGRAM_PATH% 95gje4 > %TEMP%\test6.txt
 fc %TEMP%\test6.txt tests\not-a-number.txt
 %check_err%
 
-%PROGRAM_PATH% 230 > %TEMP%\test7.txt
-%check_err%
-fc %TEMP%\test7.txt tests\230.txt
-%check_err%
-
-%PROGRAM_PATH% 0000056 > %TEMP%\test8.txt
-%check_err%
-fc %TEMP%\test8.txt tests\0000056.txt
+%PROGRAM_PATH% -1 > %TEMP%\test7.txt
+fc %TEMP%\test7.txt tests\not-a-number.txt
 %check_err%
 
-%PROGRAM_PATH% 123 > %TEMP%\test9.txt
-%check_err%
-fc %TEMP%\test9.txt tests\123.txt
-%check_err%
-
-%PROGRAM_PATH% 0 > %TEMP%\test10.txt
-%check_err%
-fc %TEMP%\test10.txt tests\0.txt
+%PROGRAM_PATH% 000000000000000000000000000000094fj34f > %TEMP%\test8.txt
+fc %TEMP%\test8.txt tests\not-a-number.txt
 %check_err%
 
-%PROGRAM_PATH% 255 > %TEMP%\test11.txt
+%PROGRAM_PATH% 230 > %TEMP%\test9.txt
 %check_err%
-fc %TEMP%\test11.txt tests\255.txt
+fc %TEMP%\test9.txt tests\230.txt
 %check_err%
 
-%PROGRAM_PATH% 129 > %TEMP%\test12.txt
+%PROGRAM_PATH% 0000056 > %TEMP%\test10.txt
 %check_err%
-fc %TEMP%\test12.txt tests\129.txt
+fc %TEMP%\test10.txt tests\0000056.txt
+%check_err%
+
+%PROGRAM_PATH% 123 > %TEMP%\test11.txt
+%check_err%
+fc %TEMP%\test11.txt tests\123.txt
+%check_err%
+
+%PROGRAM_PATH% 0 > %TEMP%\test12.txt
+%check_err%
+fc %TEMP%\test12.txt tests\0.txt
+%check_err%
+
+%PROGRAM_PATH% 255 > %TEMP%\test13.txt
+%check_err%
+fc %TEMP%\test13.txt tests\255.txt
+%check_err%
+
+%PROGRAM_PATH% 129 > %TEMP%\test14.txt
+%check_err%
+fc %TEMP%\test14.txt tests\129.txt
 %check_err%
 
 echo All tests successfully passed!

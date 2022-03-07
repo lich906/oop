@@ -1,6 +1,7 @@
 #include <iostream>
 #include <optional>
 #include <string>
+#include <charconv>
 
 constexpr auto ARGUMENTS_COUNT = 2;
 
@@ -14,31 +15,28 @@ void LogError(const std::string& msg)
 	std::cout << msg;
 }
 
+/// <summary>
+/// ”простить либо std::stoi либо std::from_chars
+/// </summary>
+/// <param name="str"></param>
+/// <returns></returns>
 std::optional<unsigned char> ParseByte(const std::string& str)
 {
-	if (str.empty())
-	{
-		LogError("Error: Argument is not a valid number. (0 - 255)\n");
-		return std::nullopt;
-	}
+	using namespace std;
 
 	unsigned char byte = 0;
+	from_chars_result res = from_chars(str.data(), str.data() + str.size(), byte);
 
-	for (unsigned char ch : str)
+	if (res.ec == errc::invalid_argument || !string(res.ptr).empty())
 	{
-		if (!std::isdigit(ch))
-		{
-			LogError("Error: Argument is not a valid number. (0 - 255)\n");
-			return std::nullopt;
-		}
+		LogError("Error: Argument is not a valid number. (0 - 255)\n");
+		return nullopt;
+	}
 
-		if ((byte * 10 + DigitToInt(ch)) > 0xff)
-		{
-			LogError("Error: Argument value is out of range. (0 - 255)\n");
-			return std::nullopt;
-		}
-
-		byte = byte * 10 + DigitToInt(ch);
+	if (res.ec == errc::result_out_of_range)
+	{
+		LogError("Error: Argument value is out of range. (0 - 255)\n");
+		return nullopt;
 	}
 
 	return byte;
@@ -76,7 +74,7 @@ unsigned char FlipByte(unsigned char byte)
 
 void PrintByte(unsigned char byte)
 {
-	std::cout << +byte << '\n';
+	std::cout << static_cast<int>(byte) << '\n';
 }
 
 int main(int argc, char* argv[])
