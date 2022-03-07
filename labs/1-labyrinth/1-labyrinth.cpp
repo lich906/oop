@@ -10,11 +10,11 @@ constexpr auto ARGUMENTS_COUNT = 3;
 
 enum class CellType
 {
-	wall,
-	free,
-	start,
-	end,
-	path
+	Wall,
+	Free,
+	Start,
+	End,
+	Path
 };
 
 struct Pos
@@ -47,18 +47,18 @@ void LogError(const std::string& msg)
 	std::cout << msg;
 }
 
-std::optional<CellType> ReadCell(char ch)
+std::optional<CellType> GetCellTypeByCh(char ch)
 {
 	switch (ch)
 	{
 	case ' ':
-		return CellType::free;
+		return CellType::Free;
 	case '#':
-		return CellType::wall;
+		return CellType::Wall;
 	case 'A':
-		return CellType::start;
+		return CellType::Start;
 	case 'B':
-		return CellType::end;
+		return CellType::End;
 	default:
 		return std::nullopt;
 	}
@@ -72,18 +72,18 @@ std::optional<CellType> ValidateCell(const std::optional<CellType>& cellType, bo
 		return std::nullopt;
 	}
 	CellType type = cellType.value();
-	if (type == CellType::start && startFound)
+	if (type == CellType::Start && startFound)
 	{
 		LogError("Error: Start position is defined more than once.\n");
 		return std::nullopt;
 	}
-	if (type == CellType::end && endFound)
+	if (type == CellType::End && endFound)
 	{
 		LogError("Error: End position is defined more than once.\n");
 		return std::nullopt;
 	}
-	startFound = !startFound ? type == CellType::start : true;
-	endFound = !endFound ? type == CellType::end : true;
+	startFound = !startFound ? type == CellType::Start : true;
+	endFound = !endFound ? type == CellType::End : true;
 
 	return type;
 }
@@ -99,11 +99,11 @@ bool Eoln(std::istream& in)
 	return in.peek() == '\n';
 }
 
-void CompleteRow(std::vector<Cell>& row)
+void CompleteRowWithFreeCells(std::vector<Cell>& row)
 {
 	while (row.size() != FIELD_SIZE)
 	{
-		row.push_back(Cell(CellType::free));
+		row.push_back(Cell(CellType::Free));
 	}
 }
 
@@ -123,7 +123,7 @@ std::optional<Field> ReadField(std::istream& in)
 
 		for (unsigned j = 0; (j < FIELD_SIZE) && !Eoln(in) && in.get(ch); ++j)
 		{
-			cellType = ValidateCell(ReadCell(ch), startFound, endFound);
+			cellType = ValidateCell(GetCellTypeByCh(ch), startFound, endFound);
 			if (!cellType.has_value())
 			{
 				return nullopt;
@@ -132,7 +132,7 @@ std::optional<Field> ReadField(std::istream& in)
 			row.push_back(Cell(cellType.value()));
 		}
 
-		CompleteRow(row);
+		CompleteRowWithFreeCells(row);
 		field.push_back(row);
 		ReadLn(in);
 	}
@@ -150,15 +150,15 @@ char GetCellCh(const Cell& cell)
 {
 	switch (cell.type)
 	{
-	case CellType::free:
+	case CellType::Free:
 		return ' ';
-	case CellType::wall:
+	case CellType::Wall:
 		return '#';
-	case CellType::start:
+	case CellType::Start:
 		return 'A';
-	case CellType::end:
+	case CellType::End:
 		return 'B';
-	case CellType::path:
+	case CellType::Path:
 		return '.';
 	default:
 		return ' ';
@@ -217,7 +217,7 @@ Pos GetStartPos(Field& field)
 	{
 		for (short x = 0; x < FIELD_SIZE; ++x)
 		{
-			if (field[y][x].type == CellType::start)
+			if (field[y][x].type == CellType::Start)
 			{
 				return { x, y };
 			}
@@ -233,27 +233,27 @@ void TracePath(Field& field, short x, short y, short maxY)
 		return;
 	}
 
-	field[y][x].type = CellType::path;
+	field[y][x].type = CellType::Path;
 
-	if (y - 1 >= 0 && field[y - 1][x].type != CellType::wall && field[y - 1][x].val == (curVal - 1))
+	if (y - 1 >= 0 && field[y - 1][x].type != CellType::Wall && field[y - 1][x].val == (curVal - 1))
 	{
 		TracePath(field, x, y - 1, maxY);
 		return;
 	}
 
-	if (x + 1 < FIELD_SIZE && field[y][x + 1].type != CellType::wall && field[y][x + 1].val == (curVal - 1))
+	if (x + 1 < FIELD_SIZE && field[y][x + 1].type != CellType::Wall && field[y][x + 1].val == (curVal - 1))
 	{
 		TracePath(field, x + 1, y, maxY);
 		return;
 	}
 
-	if (y + 1 <= maxY && field[y + 1][x].type != CellType::wall && field[y + 1][x].val == (curVal - 1))
+	if (y + 1 <= maxY && field[y + 1][x].type != CellType::Wall && field[y + 1][x].val == (curVal - 1))
 	{
 		TracePath(field, x, y + 1, maxY);
 		return;
 	}
 
-	if (x - 1 >= 0 && field[y][x - 1].type != CellType::wall && field[y][x - 1].val == (curVal - 1))
+	if (x - 1 >= 0 && field[y][x - 1].type != CellType::Wall && field[y][x - 1].val == (curVal - 1))
 	{
 		TracePath(field, x - 1, y, maxY);
 	}
@@ -261,12 +261,12 @@ void TracePath(Field& field, short x, short y, short maxY)
 
 bool LabelCell(Field& field, short x, short y, short maxY, short val, std::queue<Pos>& q)
 {
-	if (y < 0 || x < 0 || y > maxY || x >= FIELD_SIZE || field[y][x].type == CellType::wall || field[y][x].val != 0)
+	if (y < 0 || x < 0 || y > maxY || x >= FIELD_SIZE || field[y][x].type == CellType::Wall || field[y][x].val != 0)
 	{
 		return false;
 	}
 
-	if (field[y][x].type == CellType::end)
+	if (field[y][x].type == CellType::End)
 	{
 		return true;
 	}
