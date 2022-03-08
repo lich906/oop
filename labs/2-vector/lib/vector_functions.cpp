@@ -1,9 +1,8 @@
 #include <algorithm>
 
-#include "misc.h"
 #include "vector_functions.h"
 
-void InsertSort(std::vector<float>& vect, const float& val)
+void InsertSort(std::vector<float>& vect, float val)
 {
 	for (size_t pos = 0; pos < vect.size(); ++pos)
 	{
@@ -29,7 +28,6 @@ std::optional<std::vector<float>> ReadVectorOfNumbers(std::istream& in)
 
 	if (in.bad() || vect.empty())
 	{
-		LogError("Failed to read data.\n");
 		return std::nullopt;
 	}
 
@@ -42,7 +40,6 @@ bool PrintVector(std::ostream& out, const std::vector<float>& vect)
 	{
 		if (!(out << elt << ' '))
 		{
-			LogError("Failed to print out data.\n");
 			return false;
 		}
 	}
@@ -52,9 +49,14 @@ bool PrintVector(std::ostream& out, const std::vector<float>& vect)
 	return true;
 }
 
-std::vector<float> ProcessVect(const std::vector<float>& vect)
+std::optional<std::vector<float>> ProcessVect(const std::vector<float>& vect)
 {
 	const auto [min, max] = std::minmax_element(vect.begin(), vect.end());
+
+	if (*min == 0)
+	{
+		return std::nullopt;
+	}
 
 	float val = *max / *min;
 
@@ -66,6 +68,11 @@ std::vector<float> ProcessVect(const std::vector<float>& vect)
 	};
 
 	std::for_each(vect.begin(), vect.end(), processElement);
+
+	if (val < 0)
+	{
+		std::reverse(res.begin(), res.end());
+	}
 
 	return res;
 }

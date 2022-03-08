@@ -15,21 +15,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="catch-main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lib\vector_functions.cpp">
+    <ClCompile Include="unit\vector_functions_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lib\misc.cpp">
+    <ClCompile Include="..\lib\vector_functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\misc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lib\misc.h">
+    <ClInclude Include="..\lib\vector_functions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lib\vector_functions.h">
+    <ClInclude Include="..\lib\misc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
