@@ -24,6 +24,7 @@
     <ProjectGuid>{fe93d78a-6efd-41c9-9ee2-faf8178460d3}</ProjectGuid>
     <RootNamespace>My2HTMLDecode</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>2-html-decode</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
