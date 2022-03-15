@@ -1,92 +1,110 @@
 #include "html_decode.h"
 
-#include <optional>
+#include <map>
+#include <vector>
 
-enum class HtmlEntityCode
-{
-	Lt,
-	Gt,
-	Apos,
-	Quot,
-	Amp
-};
+constexpr auto FRAME_SIZE = 7;
+constexpr auto NULL_CHAR = '\0';
+typedef std::vector<char> Frame;
 
-void AppendDecodedHtmlEntity(std::string& str, std::optional<HtmlEntityCode> htmlEntityCode)
+//×ÇÕÁ
+Frame ReplaceEntityInFrame(const Frame& frame)
 {
-	if (!htmlEntityCode.has_value())
+	if (frame[0] == '&' && frame[1] == 'a' && frame[2] == 'p' && frame[3] == 'o' && frame[4] == 's')
 	{
-		return;
+		if (frame[5] == ';')
+		{
+			return { '\'', frame[6] };
+		}
+
+		return { '\'', frame[5], frame[6] };
 	}
 
-	switch (htmlEntityCode.value())
+	if (frame[0] == '&' && frame[1] == 'q' && frame[2] == 'u' && frame[3] == 'o' && frame[4] == 't')
 	{
-	case HtmlEntityCode::Lt:
-		str.push_back('<');
-		break;
-	case HtmlEntityCode::Gt:
-		str.push_back('>');
-		break;
-	case HtmlEntityCode::Apos:
-		str.push_back('\'');
-		break;
-	case HtmlEntityCode::Quot:
-		str.push_back('"');
-		break;
-	case HtmlEntityCode::Amp:
-		str.push_back('&');
-		break;
-	default:
-		break;
+		if (frame[5] == ';')
+		{
+			return { '"', frame[6] };
+		}
+
+		return { '"', frame[5], frame[6] };
 	}
+
+	if (frame[0] == '&' && frame[1] == 'a' && frame[2] == 'm' && frame[3] == 'p')
+	{
+		if (frame[4] == ';')
+		{
+			return { '&', frame[5], frame[6] };
+		}
+
+		return { '&', frame[4], frame[5], frame[6] };
+	}
+
+	if (frame[0] == '&' && frame[1] == 'l' && frame[2] == 't')
+	{
+		if (frame[3] == ';')
+		{
+			return { '<', frame[4], frame[5], frame[6] };
+		}
+
+		return { '<', frame[3], frame[4], frame[5], frame[6] };
+	}
+
+	if (frame[0] == '&' && frame[1] == 'g' && frame[2] == 't')
+	{
+		if (frame[3] == ';')
+		{
+			return { '>', frame[4], frame[5], frame[6] };
+		}
+
+		return { '>', frame[3], frame[4], frame[5], frame[6] };
+	}
+
+	return frame;
 }
 
-std::optional<HtmlEntityCode> ParseHtmlEntityCode(const std::string& html, size_t& pos, size_t codeStartPos)
+char GetResultChar(Frame& frame)
 {
-	size_t codeEndPos = html.find(';', codeStartPos);
-	pos = codeEndPos + 1;
-
-	std::string codeStr = html.substr(codeStartPos + 1, codeEndPos - codeStartPos - 1);
-
-	if (codeStr == "lt")
+	if (frame.size() < FRAME_SIZE)
 	{
-		return HtmlEntityCode::Lt;
-	}
-	if (codeStr == "gt")
-	{
-		return HtmlEntityCode::Gt;
-	}
-	if (codeStr == "apos")
-	{
-		return HtmlEntityCode::Apos;
-	}
-	if (codeStr == "quot")
-	{
-		return HtmlEntityCode::Quot;
-	}
-	if (codeStr == "amp")
-	{
-		return HtmlEntityCode::Amp;
+		return NULL_CHAR;
 	}
 
-	return std::nullopt;
+	frame = ReplaceEntityInFrame(frame);
+
+	return frame.front();
 }
 
 std::string HtmlDecode(const std::string& html)
 {
+	const std::map<std::string, char> decodeMap = {
+		{ "&lt;", '<' },
+		{ "&gt;", '>' },
+		{ "&amp;", '&' },
+		{ "&apos;", '\'' },
+		{ "&quot;", '"' }
+	};
+
 	std::string decodedStr;
-	std::optional<HtmlEntityCode> htmlEntityCode;
-	size_t pos = 0, foundPos;
+	char chToAppend;
+	Frame frame;
+	std::string::const_iterator htmlIt = html.begin();
 
 	do
 	{
-		foundPos = html.find('&', pos);
-		decodedStr.append(html, pos, foundPos - pos);
-		if (foundPos != std::string::npos)
+		frame.push_back((htmlIt != html.end()) ? *htmlIt : NULL_CHAR);
+
+		chToAppend = GetResultChar(frame);
+
+		if (chToAppend != NULL_CHAR)
 		{
-			htmlEntityCode = ParseHtmlEntityCode(html, pos, foundPos);
-			AppendDecodedHtmlEntity(decodedStr, htmlEntityCode);
+			decodedStr.push_back(chToAppend);
+			frame.erase(frame.begin());
 		}
-	} while (foundPos != std::string::npos);
+
+		if (htmlIt != html.end())
+			++htmlIt;
+	} while (frame[0] != NULL_CHAR);
 
 	return decodedStr;
 }
