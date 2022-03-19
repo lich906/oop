@@ -6,78 +6,55 @@
 constexpr auto FRAME_SIZE = 7;
 constexpr auto NULL_CHAR = '\0';
 typedef std::vector<char> Frame;
+typedef std::map<std::string, char> EntityDecodeMap;
 
-//×ÇÕÁ
-Frame ReplaceEntityInFrame(const Frame& frame)
+Frame ReplaceEntityWithSymbol(const Frame& frame, const EntityDecodeMap& decodeMap)
 {
-	if (frame[0] == '&' && frame[1] == 'a' && frame[2] == 'p' && frame[3] == 'o' && frame[4] == 's')
+	size_t i;
+	bool match;
+	for (auto const& [htmlCode, encodedCh] : decodeMap)
 	{
-		if (frame[5] == ';')
+		i = 0;
+		match = true;
+		for (const char ch : htmlCode)
 		{
-			return { '\'', frame[6] };
+			if (ch != frame[i])
+			{
+				match = false;
+				break;
+			}
+			++i;
 		}
 
-		return { '\'', frame[5], frame[6] };
-	}
-
-	if (frame[0] == '&' && frame[1] == 'q' && frame[2] == 'u' && frame[3] == 'o' && frame[4] == 't')
-	{
-		if (frame[5] == ';')
+		if (match)
 		{
-			return { '"', frame[6] };
+			Frame res = { encodedCh };
+			for (; i < frame.size(); ++i)
+			{
+				res.push_back(frame[i]);
+			}
+			return res;
 		}
-
-		return { '"', frame[5], frame[6] };
-	}
-
-	if (frame[0] == '&' && frame[1] == 'a' && frame[2] == 'm' && frame[3] == 'p')
-	{
-		if (frame[4] == ';')
-		{
-			return { '&', frame[5], frame[6] };
-		}
-
-		return { '&', frame[4], frame[5], frame[6] };
-	}
-
-	if (frame[0] == '&' && frame[1] == 'l' && frame[2] == 't')
-	{
-		if (frame[3] == ';')
-		{
-			return { '<', frame[4], frame[5], frame[6] };
-		}
-
-		return { '<', frame[3], frame[4], frame[5], frame[6] };
-	}
-
-	if (frame[0] == '&' && frame[1] == 'g' && frame[2] == 't')
-	{
-		if (frame[3] == ';')
-		{
-			return { '>', frame[4], frame[5], frame[6] };
-		}
-
-		return { '>', frame[3], frame[4], frame[5], frame[6] };
 	}
 
 	return frame;
 }
 
-char GetResultChar(Frame& frame)
+char GetCharToAppend(Frame& frame, const EntityDecodeMap& decodeMap)
 {
 	if (frame.size() < FRAME_SIZE)
 	{
 		return NULL_CHAR;
 	}
 
-	frame = ReplaceEntityInFrame(frame);
+	frame = ReplaceEntityWithSymbol(frame, decodeMap);
 
 	return frame.front();
 }
 
 std::string HtmlDecode(const std::string& html)
 {
-	const std::map<std::string, char> decodeMap = {
+	const EntityDecodeMap decodeMap = {
 		{ "&lt;", '<' },
 		{ "&gt;", '>' },
 		{ "&amp;", '&' },
@@ -94,7 +71,7 @@ std::string HtmlDecode(const std::string& html)
 	{
 		frame.push_back((htmlIt != html.end()) ? *htmlIt : NULL_CHAR);
 
-		chToAppend = GetResultChar(frame);
+		chToAppend = GetCharToAppend(frame, decodeMap);
 
 		if (chToAppend != NULL_CHAR)
 		{

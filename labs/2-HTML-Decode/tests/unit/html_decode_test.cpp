@@ -9,20 +9,25 @@ TEST_CASE("HtmlDecode replaces HTML entity symbols with their normal representat
 
 	REQUIRE(HtmlDecode("&quot;&apos;&amp;&apos;&lt;&amp;&gt;") == "\"'&'<&>");
 
-	//доработать
-	SECTION("Invalid html entities must be not parsed")
-	{
-		REQUIRE(HtmlDecode("&qu;&quot;&quot;&quot;") == "&qu;\"\"\"");
-		REQUIRE(HtmlDecode("&qu;&invalid;") == "&qu;&invalid;");
-		REQUIRE(HtmlDecode("&;") == "&;");
-		REQUIRE(HtmlDecode("&qu;hello &smth;world&again;&lt;") == "&qu;hello &smth;world&again;<");
-	}
+	REQUIRE(HtmlDecode("&amp;lt;") == "&lt;");
+}
 
+TEST_CASE("Invalid HTML entities must be not parsed")
+{
+	REQUIRE(HtmlDecode("&do;&you;&rly;&wanna;&parse;&that;&quot;") == "&do;&you;&rly;&wanna;&parse;&that;\"");
+
+	REQUIRE(HtmlDecode("&qu; &quot &invalid;") == "&qu; &quot &invalid;");
+
+	REQUIRE(HtmlDecode("&;") == "&;");
+
+	REQUIRE(HtmlDecode("&qu;terrifying &smth;test&again;&lt;") == "&qu;terrifying &smth;test&again;<");
+}
+
+TEST_CASE("Text without HTML entities must be not changed")
+{
 	REQUIRE(HtmlDecode("") == "");
 
-	REQUIRE(HtmlDecode("no html entities") == "no html entities");
+	REQUIRE(HtmlDecode("absolutely no <html>   entities") == "absolutely no <html>   entities");
 
-	REQUIRE(HtmlDecode("dead&tnndf") == "dead&tnndf");
-
-	REQUIRE(HtmlDecode("&amp;lt;") == "&lt;");
+	REQUIRE(HtmlDecode("live&again") == "live&again");
 }
