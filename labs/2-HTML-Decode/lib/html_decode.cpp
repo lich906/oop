@@ -1,87 +1,57 @@
 #include "html_decode.h"
 
 #include <map>
-#include <vector>
 
-constexpr auto FRAME_SIZE = 7;
-constexpr auto NULL_CHAR = '\0';
-typedef std::vector<char> Frame;
 typedef std::map<std::string, char> EntityDecodeMap;
 
-Frame ReplaceEntityWithSymbol(const Frame& frame, const EntityDecodeMap& decodeMap)
-{
-	size_t i;
-	bool match;
-	for (auto const& [htmlCode, encodedCh] : decodeMap)
-	{
-		i = 0;
-		match = true;
-		for (const char ch : htmlCode)
-		{
-			if (ch != frame[i])
-			{
-				match = false;
-				break;
-			}
-			++i;
-		}
+const EntityDecodeMap decodeMap = {
+	{ "&lt", '<' },
+	{ "&gt", '>' },
+	{ "&amp", '&' },
+	{ "&apos", '\'' },
+	{ "&quot", '"' }
+};
 
-		if (match)
+bool CompareWithEntity(const std::string::const_iterator& first, const std::string::const_iterator& end, std::string entityCode)
+{
+	char i = 0;
+	for (const char ch : entityCode)
+	{
+		if ((first + i) == end || ch != *(first + i))
 		{
-			Frame res = { encodedCh };
-			for (; i < frame.size(); ++i)
-			{
-				res.push_back(frame[i]);
-			}
-			return res;
+			return false;
 		}
+		++i;
 	}
 
-	return frame;
+	return true;
 }
 
-char GetCharToAppend(Frame& frame, const EntityDecodeMap& decodeMap)
+char GetCharToAppend(std::string::const_iterator& first, const std::string::const_iterator& end)
 {
-	if (frame.size() < FRAME_SIZE)
+	for (auto const& [entityCode, ch] : decodeMap)
 	{
-		return NULL_CHAR;
+		if (CompareWithEntity(first, end, entityCode))
+		{
+			char codeLen = entityCode.length();
+			std::advance(first, codeLen - (((first + codeLen) != end && *(first + codeLen) == ';') ? 0 : 1));
+			return ch;
+		}
 	}
 
-	frame = ReplaceEntityWithSymbol(frame, decodeMap);
-
-	return frame.front();
+	return *first;
 }
 
 std::string HtmlDecode(const std::string& html)
 {
-	const EntityDecodeMap decodeMap = {
-		{ "&lt;", '<' },
-		{ "&gt;", '>' },
-		{ "&amp;", '&' },
-		{ "&apos;", '\'' },
-		{ "&quot;", '"' }
-	};
-
 	std::string decodedStr;
-	char chToAppend;
-	Frame frame;
-	std::string::const_iterator htmlIt = html.begin();
+	std::string::const_iterator iterator = html.begin();
 
-	do
+	while (iterator != html.end())
 	{
-		frame.push_back((htmlIt != html.end()) ? *htmlIt : NULL_CHAR);
-
-		chToAppend = GetCharToAppend(frame, decodeMap);
-
-		if (chToAppend != NULL_CHAR)
-		{
-			decodedStr.push_back(chToAppend);
-			frame.erase(frame.begin());
-		}
-
-		if (htmlIt != html.end())
-			++htmlIt;
-	} while (frame[0] != NULL_CHAR);
+		decodedStr.push_back(GetCharToAppend(iterator, html.end()));
+		++iterator;
+	}
 
 	return decodedStr;
 }
