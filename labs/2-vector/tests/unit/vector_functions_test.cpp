@@ -57,6 +57,12 @@ TEST_CASE("ProcessVect() must multiply by max element and divide by min element 
 		REQUIRE(!ProcessVect(v).has_value());
 	}
 
+	SECTION("expect nullopt when input vector is empty")
+	{
+		std::vector<float> v;
+		REQUIRE(!ProcessVect(v).has_value());
+	}
+
 	SECTION("expect unchanged vector when all elements are equal")
 	{
 		std::vector<float> v{ 3, 3, 3, 3, 3, 3 };

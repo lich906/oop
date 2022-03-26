@@ -49,30 +49,34 @@ bool PrintVector(std::ostream& out, const std::vector<float>& vect)
 	return true;
 }
 
-std::optional<std::vector<float>> ProcessVect(const std::vector<float>& vect)
+std::optional<std::vector<float>> ProcessVect(std::vector<float> vect)
 {
+	if (vect.empty())
+	{
+		return std::nullopt;
+	}
+
 	const auto [min, max] = std::minmax_element(vect.begin(), vect.end());
 
+	//неопределенное поведение при пустом векторе
 	if (*min == 0)
 	{
 		return std::nullopt;
 	}
 
-	float val = *max / *min;
+	//подобрать имя
+	float maxminQuotient = *max / *min;
 
-	std::vector<float> res;
-
-	auto processElement = [&](float elt) {
-		elt *= val;
-		res.push_back(elt);
+	auto processElement = [&](const float& elt) -> float {
+		return elt * maxminQuotient;
 	};
 
-	std::for_each(vect.begin(), vect.end(), processElement);
+	std::transform(vect.begin(), vect.end(), vect.begin(), processElement);
 
-	if (val < 0)
+	if (maxminQuotient < 0)
 	{
-		std::reverse(res.begin(), res.end());
+		std::reverse(vect.begin(), vect.end());
 	}
 
-	return res;
+	return vect;
 }
