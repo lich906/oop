@@ -23,6 +23,7 @@ int main(int argc, char* argv[])
 	if (!OpenFileStream(dictFile, dictFileName, std::ios::in))
 	{
 		std::cout << "Не удалось открыть файл словаря. Убедитесь, что файл существует и доступен для чтения." << std::endl;
+		return 1;
 	}
 
 	Dictionary dictionary = ReadDictionary(dictFile);
