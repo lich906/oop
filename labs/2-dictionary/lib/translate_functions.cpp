@@ -50,8 +50,8 @@ bool PerformTranslation(Dictionary& dict, const std::string& word)
 bool AskForUpdatingDictionaryFile()
 {
 	std::cout << "В словарь были внесены изменения. Введите Y или y для сохранения перед выходом." << std::endl;
-	char usrAnswer = std::cin.get();
-	if (usrAnswer == 'Y' || usrAnswer == 'y')
+	char userAnswer = std::cin.get();
+	if (userAnswer == 'Y' || userAnswer == 'y')
 	{
 		return true;
 	}
