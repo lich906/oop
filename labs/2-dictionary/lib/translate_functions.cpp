@@ -3,42 +3,53 @@
 #include <iostream>
 #include <algorithm>
 
-const std::string EXIT_PHRASE = "...";
+constexpr auto EXIT_PHRASE = "...";
+constexpr auto USER_INPUT_PREFIX = '>';
 
-bool AskForUpdatingDictionaryFile();
-bool IsEnLanguage(const std::string& word);
-bool IsRuLanguage(const std::string& word);
-
-Operation PerformOperationByUserInput(const std::string& userInput, bool dictWasModified)
+Operation GetOperationByUserInput(const std::string& userInput)
 {
 	if (userInput == EXIT_PHRASE)
 	{
-		if (dictWasModified && AskForUpdatingDictionaryFile())
+		//возвращать Exit и выше проверять
+		return Operation::Exit;
+	}
+
+	return Operation::Translate;
+}
+
+bool PerformTranslation(Dictionary& dict, const std::string& word)
+{
+	std::optional<std::vector<std::string>> translations;
+	std::string userTranslation;
+
+	//ускорить перевод с русского языка
+	translations = GetTranslations(word, dict);
+	if (!translations.has_value())
+	{
+		std::cout << "Неизвестное слово \"" << word << "\" введите перевод или пустую строку для отказа." << std::endl;
+		userTranslation = GetUserInput();
+		if (!userTranslation.empty())
 		{
-			return Operation::ExitAndSaveChanges;
+			AddNewWord(dict, word, userTranslation);
+			std::cout << "Слово \"" << word << "\" сохранено в словаре как \"" << userTranslation << "\"." << std::endl;
+			return true;
 		}
 		else
 		{
-			return Operation::ExitAndDiscardChanges;
+			std::cout << "Слово \"" << word << "\" проигнорировано." << std::endl;
 		}
 	}
-
-	if (IsEnLanguage(userInput))
+	else
 	{
-		return Operation::TranslateFromEn;
+		PrintTranslations(std::cout, translations.value());
 	}
 
-	if (IsRuLanguage(userInput))
-	{
-		return Operation::TranslateFromRu;
-	}
-
-	return Operation::BadInput;
+	return false;
 }
 
 bool AskForUpdatingDictionaryFile()
 {
-	std::cout << "‚ б«®ў ам Ўл«Ё ў­ҐбҐ­л Ё§¬Ґ­Ґ­Ёп. ‚ўҐ¤ЁвҐ Y Ё«Ё y ¤«п б®еа ­Ґ­Ёп ЇҐаҐ¤ ўле®¤®¬." << std::endl;
+	std::cout << "В словарь были внесены изменения. Введите Y или y для сохранения перед выходом." << std::endl;
 	char usrAnswer = std::cin.get();
 	if (usrAnswer == 'Y' || usrAnswer == 'y')
 	{
@@ -48,27 +59,7 @@ bool AskForUpdatingDictionaryFile()
 	return false;
 }
 
-bool IsEnLanguage(const std::string& word)
-{
-	if ((word[0] >= 'A' && word[0] <= 'Z') || (word[0] >= 'a' && word[0] <= 'z'))
-	{
-		return true;
-	}
-
-	return false;
-}
-
-bool IsRuLanguage(const std::string& word)
-{
-	if ((word[0] >= 'Ђ' && word[0] <= 'п'))
-	{
-		return true;
-	}
-
-	return false;
-}
-
-std::optional<std::vector<std::string>> GetEnWordTranslations(const std::string& word, const Dictionary& dict)
+std::optional<std::vector<std::string>> GetTranslations(const std::string& word, const Dictionary& dict)
 {
 	if (!dict.contains(word))
 	{
@@ -78,41 +69,25 @@ std::optional<std::vector<std::string>> GetEnWordTranslations(const std::string&
 	return dict.at(word);
 }
 
-void AddNewEnWord(Dictionary& dict, const std::string& word, const std::string& translation)
+void AddNewWord(Dictionary& dict, const std::string& word, const std::string& translation)
 {
-	dict[word] = std::vector<std::string>{ translation };
-}
-
-void AddNewRuWord(Dictionary& dict, const std::string& word, const std::string& translation)
-{
-	if (dict.contains(translation))
+	if (!dict.contains(word))
 	{
-		dict[translation].push_back(word);
+		dict[word] = std::vector<std::string>{ translation };
 	}
 	else
 	{
+		dict[word].push_back(translation);
+	}
+
+	if (!dict.contains(translation))
+	{
 		dict[translation] = std::vector<std::string>{ word };
 	}
-}
-
-std::optional<std::vector<std::string>> GetRuWordTranslations(const std::string& word, const Dictionary& dict)
-{
-	std::vector<std::string> translations;
-
-	for (const auto& [enWord, ruTranslations] : dict)
+	else
 	{
-		if (std::find(ruTranslations.begin(), ruTranslations.end(), word) != ruTranslations.end())
-		{
-			translations.push_back(enWord);
-		}
+		dict[translation].push_back(word);
 	}
-
-	if (translations.empty())
-	{
-		return std::nullopt;
-	}
-
-	return translations;
 }
 
 void PrintTranslations(std::ostream& out, const std::vector<std::string>& translations)
@@ -133,4 +108,13 @@ void PrintTranslations(std::ostream& out, const std::vector<std::string>& transl
 	}
 
 	out << std::endl;
+}
+
+std::string GetUserInput()
+{
+	std::string userInput;
+	std::cout << USER_INPUT_PREFIX;
+	std::getline(std::cin, userInput);
+
+	return userInput;
 }
