@@ -1,20 +1,26 @@
 #include <iostream>
 
-#include "command_parsing.h"
+#include "Car.h"
+#include "CommandInterpreter.h"
 
 int main()
 {
-	std::string userInput;
+	Car car;
+	CommandInterpreter interpreter(car, std::cin, std::cout);
+	CommandInterpreter::Status status;
 
-	while (std::getline(std::cin, userInput))
+	while ((status = interpreter.Interpret()) != CommandInterpreter::Status::Exit)
 	{
-		if(!ParseCommand(userInput).has_value())
+		if (status == CommandInterpreter::Status::ParsingError)
 		{
-			std::cout << "Parsing error" << std::endl;
+			std::cout << "Command parsing error" << std::endl;
 		}
-		else
+
+		if (status == CommandInterpreter::Status::ExecutionError)
 		{
-			std::cout << "OK" << std::endl;
+			std::cout << "Failed to perform action" << std::endl;
 		}
 	}
+
+	return 0;
 }

@@ -15,21 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="3-car-tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Car.cpp">
+    <ClCompile Include="..\Car.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CommandInterpreter.cpp">
+    <ClCompile Include="..\CommandInterpreter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Car.h">
+    <ClInclude Include="..\Car.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CommandInterpreter.h">
+    <ClInclude Include="..\CommandInterpreter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
