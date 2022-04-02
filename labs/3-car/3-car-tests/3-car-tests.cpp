@@ -24,14 +24,6 @@ TEST_CASE("CommandInterpreter parses commands from istream and executes it by ca
 		REQUIRE(interpreter.Interpret() == CommandInterpreter::Status::ParsingError);
 	}
 
-	SECTION("Try parse SetGear command with bad argument")
-	{
-		std::istringstream iss("SetGear gi390g");
-		CommandInterpreter interpreter(car, iss, oss);
-
-		REQUIRE(interpreter.Interpret() == CommandInterpreter::Status::ParsingError);
-	}
-
 	SECTION("Parse sequence of valid commands")
 	{
 		std::istringstream iss("EngineOn\nSetGear -1\nSetSpeed 20\nSetGear 0\nSetSpeed 10\nSetSpeed 15\nSetGear 1\nEngineOff\nSetSpeed 0\nEngineOff\n");
