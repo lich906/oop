@@ -1,7 +1,7 @@
 #pragma once
 #include "Car.h"
 #include <optional>
-#include <string>
+#include <fstream>
 #include <map>
 
 class CommandInterpreter
@@ -22,7 +22,13 @@ public:
 		Exit
 	};
 
-	Status Interpret();
+	struct Result
+	{
+		Status status;
+		std::optional<std::string> reportMessage;
+	};
+
+	Result Interpret();
 
 private:
 	enum class CommandType
@@ -45,15 +51,26 @@ private:
 		{ "Exit", CommandType::Exit }
 	};
 
-	Status Parse(const std::string& rawExpression);
+	struct Command
+	{
+		CommandType type;
+		std::optional<int> arg;
+	};
 
-	Status Execute();
+	struct ParseResult
+	{
+		Status status;
+		std::optional<Command> command;
+		std::optional<std::string> reportMessage;
+	};
+
+	ParseResult Parse(const std::string& rawExpression);
+
+	Result Execute(std::optional<Command> command);
 
 	void PrintCarInfo();
 
 	std::istream& m_input;
 	std::ostream& m_output;
 	Car& m_car;
-	CommandType m_commandType = CommandType::NoCommand;
-	std::optional<int> m_arg;
 };

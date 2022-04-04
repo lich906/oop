@@ -13,7 +13,7 @@ const std::map<int, std::pair<int, int>> gearSpeedRange = {
 
 bool Car::TurnOnEngine()
 {
-	m_isEngineRunning = true;
+	m_isEngineOn = true;
 
 	return true;
 }
@@ -22,34 +22,47 @@ bool Car::TurnOffEngine()
 {
 	if (m_gear != 0 || m_speed != 0)
 	{
+		m_lastErrorMessage = "Unable to turn off engine: car must be immoble and gear is neutral.";
 		return false;
 	}
 
-	m_isEngineRunning = false;
+	m_isEngineOn = false;
 
 	return true;
 }
 
 bool Car::SetGear(int gear)
 {
-	if (!gearSpeedRange.contains(gear) || !IsTurnedOn())
+	if(!IsTurnedOn())
 	{
+		m_lastErrorMessage = "Unable to set gear: Engine is turned off.";
+		return false;
+	}
+	
+	if (!gearSpeedRange.contains(gear))
+	{
+		m_lastErrorMessage = "Unable to set gear: invalid gear argument";
 		return false;
 	}
 
+	// TODO: вынести повтор€ющийс€ return из switch
 	switch (gear)
 	{
 	case -1:
 		if (m_speed != 0)
 		{
-			return m_gear == gear;
+			if (m_gear != gear)
+			{
+				m_lastErrorMessage = "Unable to set reverse gear while moving.";
+				return false;
+			}
+
+			return true;
 		}
-		m_gear = gear;
-		return true;
+		break;
 
 	case 0:
-		m_gear = gear;
-		return true;
+		break;
 
 	case 1:
 	case 2:
@@ -58,20 +71,31 @@ bool Car::SetGear(int gear)
 	case 5:
 		if (m_speed < gearSpeedRange.at(gear).first || gearSpeedRange.at(gear).second < m_speed)
 		{
+			m_lastErrorMessage = "Unable to set gear: unsuitable current speed";
 			return false;
 		}
-		m_gear = gear;
-		return true;
+		break;
 
 	default:
+		m_lastErrorMessage = "Internal error: invalid gear argument";
 		return false;
 	}
+
+	m_gear = gear;
+	return true;
 }
 
 bool Car::SetSpeed(int speed)
 {
-	if (speed < 0 || !IsTurnedOn())
+	if (speed < 0)
 	{
+		m_lastErrorMessage = "Unable to set speed: speed cannot be negative value.";
+		return false;
+	}
+
+	if(!IsTurnedOn())
+	{
+		m_lastErrorMessage = "Unable to set speed: engine is turned off.";
 		return false;
 	}
 
@@ -80,6 +104,7 @@ bool Car::SetSpeed(int speed)
 	case -1:
 		if (-speed < gearSpeedRange.at(-1).first)
 		{
+			m_lastErrorMessage = "Unable to set speed: exceed reverse speed limit";
 			return false;
 		}
 		m_speed = -speed;
@@ -88,6 +113,7 @@ bool Car::SetSpeed(int speed)
 	case 0:
 		if (speed > abs(m_speed))
 		{
+			m_lastErrorMessage = "Unable to set speed: impossible to accelerate at neutral gear";
 			return false;
 		}
 		m_speed = (m_speed < 0) ? -speed : speed;
@@ -100,19 +126,21 @@ bool Car::SetSpeed(int speed)
 	case 5:
 		if (speed < gearSpeedRange.at(m_gear).first || gearSpeedRange.at(m_gear).second < speed)
 		{
+			m_lastErrorMessage = "Unable to set speed: speed does not suite currently selected gear.";
 			return false;
 		}
 		m_speed = speed;
 		return true;
 
 	default:
+		m_lastErrorMessage = "Internal error: invalid gear value.";
 		return false;
 	}
 }
 
 bool Car::IsTurnedOn() const
 {
-	return m_isEngineRunning;
+	return m_isEngineOn;
 }
 
 int Car::GetDirection() const
@@ -138,4 +166,9 @@ int Car::GetSpeed() const
 int Car::GetGear() const
 {
 	return m_gear;
+}
+
+std::string Car::GetLastErrorMessage() const
+{
+	return m_lastErrorMessage;
 }

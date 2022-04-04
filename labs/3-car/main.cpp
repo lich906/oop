@@ -7,20 +7,34 @@ int main()
 {
 	Car car;
 	CommandInterpreter interpreter(car, std::cin, std::cout);
-	CommandInterpreter::Status status;
+	CommandInterpreter::Result result;
 
-	while ((status = interpreter.Interpret()) != CommandInterpreter::Status::Exit)
+	while ((result = interpreter.Interpret()).status != CommandInterpreter::Status::Exit)
 	{
-		if (status == CommandInterpreter::Status::ParsingError)
+		if (result.status != CommandInterpreter::Status::OK)
 		{
-			std::cout << "Command parsing error" << std::endl;
-		}
-
-		if (status == CommandInterpreter::Status::ExecutionError)
-		{
-			std::cout << "Failed to perform action" << std::endl;
+			if (result.reportMessage.has_value())
+			{
+				std::cout << *(result.reportMessage) << std::endl;
+			}
+			else
+			{
+				switch (result.status)
+				{
+				case CommandInterpreter::Status::ParsingError:
+					std::cout << "Parsing error was occured." << std::endl;
+					break;
+				case CommandInterpreter::Status::ExecutionError:
+					std::cout << "Execution error was occured." << std::endl;
+					break;
+				default:
+					break;
+				}
+			}
 		}
 	}
+
+	std::cout << "Exiting..." << std::endl;
 
 	return 0;
 }
