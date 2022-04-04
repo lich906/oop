@@ -5,14 +5,14 @@
 typedef std::map<std::string, char> EntityDecodeMap;
 
 const EntityDecodeMap decodeMap = {
-	{ "&lt", '<' },
-	{ "&gt", '>' },
-	{ "&amp", '&' },
-	{ "&apos", '\'' },
-	{ "&quot", '"' }
+	{ "&lt;", '<' },
+	{ "&gt;", '>' },
+	{ "&amp;", '&' },
+	{ "&apos;", '\'' },
+	{ "&quot;", '"' }
 };
 
-bool CompareWithEntity(const std::string::const_iterator& first, const std::string::const_iterator& end, std::string entityCode)
+bool CompareWithEntity(const std::string::const_iterator& first, const std::string::const_iterator& end, const std::string& entityCode)
 {
 	char i = 0;
 	for (const char ch : entityCode)
@@ -27,14 +27,14 @@ bool CompareWithEntity(const std::string::const_iterator& first, const std::stri
 	return true;
 }
 
-char GetCharToAppend(std::string::const_iterator& first, const std::string::const_iterator& end)
+char DecodeNextChar(std::string::const_iterator& first, const std::string::const_iterator& end)
 {
 	for (auto const& [entityCode, ch] : decodeMap)
 	{
 		if (CompareWithEntity(first, end, entityCode))
 		{
 			char codeLen = entityCode.length();
-			std::advance(first, codeLen - (((first + codeLen) != end && *(first + codeLen) == ';') ? 0 : 1));
+			std::advance(first, codeLen - 1);
 			return ch;
 		}
 	}
@@ -49,7 +49,7 @@ std::string HtmlDecode(const std::string& html)
 
 	while (iterator != html.end())
 	{
-		decodedStr.push_back(GetCharToAppend(iterator, html.end()));
+		decodedStr.push_back(DecodeNextChar(iterator, html.end()));
 		++iterator;
 	}
 
