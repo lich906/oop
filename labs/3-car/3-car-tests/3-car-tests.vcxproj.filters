@@ -27,7 +27,7 @@
     <ClCompile Include="unit\CommandInterpreter_tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="unit\Car2_tests.cpp">
+    <ClCompile Include="unit\Car_tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -151,7 +151,7 @@
     <ClCompile Include="..\CommandInterpreter.cpp" />
     <ClCompile Include="catch_main.cpp" />
     <ClCompile Include="unit\CommandInterpreter_tests.cpp" />
-    <ClCompile Include="unit\Car2_tests.cpp" />
+    <ClCompile Include="unit\Car_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Car.h" />
