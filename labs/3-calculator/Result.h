@@ -3,7 +3,7 @@
 
 enum class ResultStatus
 {
-	Success,
+	OK,
 	Error
 };
 
