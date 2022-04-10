@@ -1,39 +1,17 @@
 #pragma once
+#include "ExpressionParser.h"
+#include "Store.h"
 #include <fstream>
-#include "Result.h"
-#include "FunctionsContainer.h"
-#include "VariablesContainer.h"
 
 class Calculator
 {
 public:
-
-	Result ProcessExpression();
+	void Interpret(std::istream& input, std::ostream& output);
 
 private:
+	Result Execute(const ExpressionParser::Expression& expr);
 
-	enum class ExprType
-	{
-		Var,
-		Let,
-		Fn,
-		Print,
-		Printvars,
-		Printfns
-	};
+	ExpressionParser m_parser;
 
-	struct Expression
-	{
-		ExprType type;
-		std::vector<std::string> identifiers;
-		std::optional<double> value;
-		std::optional<FunctionsContainer::Operation> operation;
-	};
-
-	Expression ParseExpression(const std::string& exprString);
-
-	VariablesContainer m_varsContainer;
-	FunctionsContainer m_fnsContainer;
-	std::istream m_input;
-	std::ostream m_output;
+	Store m_store;
 };

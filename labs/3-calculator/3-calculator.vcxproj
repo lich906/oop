@@ -143,16 +143,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ExpressionParser.cpp" />
+    <ClCompile Include="Function.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Calculator.cpp" />
-    <ClCompile Include="FunctionsContainer.cpp" />
-    <ClCompile Include="VariablesContainer.cpp" />
+    <ClCompile Include="Store.cpp" />
+    <ClCompile Include="Variable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Calculator.h" />
-    <ClInclude Include="FunctionsContainer.h" />
+    <ClInclude Include="ExpressionParser.h" />
+    <ClInclude Include="Function.h" />
     <ClInclude Include="Result.h" />
-    <ClInclude Include="VariablesContainer.h" />
+    <ClInclude Include="Store.h" />
+    <ClInclude Include="Variable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

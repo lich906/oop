@@ -147,12 +147,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\VariablesContainer.cpp" />
+    <ClCompile Include="..\Function.cpp" />
+    <ClCompile Include="..\Store.cpp" />
+    <ClCompile Include="..\Variable.cpp" />
     <ClCompile Include="catch_main.cpp" />
-    <ClCompile Include="unit\VariablesContainer_tests.cpp" />
+    <ClCompile Include="unit\Store_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\VariablesContainer.h" />
+    <ClInclude Include="..\Function.h" />
+    <ClInclude Include="..\Store.h" />
+    <ClInclude Include="..\Variable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
