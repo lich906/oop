@@ -1,5 +1,5 @@
 #include <catch2/catch.hpp>
-#include "Store.h"
+#include <Store.h>
 
 TEST_CASE("Declaring variable")
 {
@@ -201,10 +201,8 @@ TEST_CASE("Declaring function")
 		REQUIRE(store.DeclareVariable("bar").status == ResultStatus::OK);
 		REQUIRE(store.ContainsIdentifier("bar"));
 
-		store.DeclareFunction("foo", "bar");
+		REQUIRE(store.DeclareFunction("foo", "bar").status == ResultStatus::OK);
 
-		//REQUIRE(store.DeclareFunction("foo", "bar").status == ResultStatus::OK);
-
-		//REQUIRE(store.DeclareFunction("foo", "bar", Function::Operation::Add, "bar").status == ResultStatus::Error);
+		REQUIRE(store.DeclareFunction("foo", "bar", Function::Operation::Add, "bar").status == ResultStatus::Error);
 	}
 }

@@ -147,14 +147,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ExpressionParser.cpp" />
     <ClCompile Include="..\Function.cpp" />
+    <ClCompile Include="..\Operand.cpp" />
     <ClCompile Include="..\Store.cpp" />
     <ClCompile Include="..\Variable.cpp" />
     <ClCompile Include="catch_main.cpp" />
+    <ClCompile Include="unit\ExpressionParser_tests.cpp" />
     <ClCompile Include="unit\Store_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ExpressionParser.h" />
     <ClInclude Include="..\Function.h" />
+    <ClInclude Include="..\Operand.h" />
     <ClInclude Include="..\Store.h" />
     <ClInclude Include="..\Variable.h" />
   </ItemGroup>

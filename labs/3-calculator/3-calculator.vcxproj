@@ -147,6 +147,7 @@
     <ClCompile Include="Function.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Calculator.cpp" />
+    <ClCompile Include="Operand.cpp" />
     <ClCompile Include="Store.cpp" />
     <ClCompile Include="Variable.cpp" />
   </ItemGroup>
@@ -154,6 +155,7 @@
     <ClInclude Include="Calculator.h" />
     <ClInclude Include="ExpressionParser.h" />
     <ClInclude Include="Function.h" />
+    <ClInclude Include="Operand.h" />
     <ClInclude Include="Result.h" />
     <ClInclude Include="Store.h" />
     <ClInclude Include="Variable.h" />

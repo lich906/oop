@@ -26,7 +26,7 @@ public:
 		std::optional<char> operation;
 	};
 
-	Result Parse(const std::string& exprString, Expression& resExpr);
+	Result Parse(const std::string& exprString, Expression& resExpr) const;
 
 private:
 	const std::map<std::string, ExprType> m_exprTypeString = {
@@ -38,11 +38,11 @@ private:
 		{ "printfns", ExprType::Printfns }
 	};
 
-	Result ParseLet(const std::string& exprString, Expression& resExpr);
+	Result ParseLet(const std::string& exprString, Expression& resExpr) const;
 
-	Result ParseFn(const std::string& exprString, Expression& resExpr);
+	Result ParseFn(const std::string& exprString, Expression& resExpr) const;
 
-	bool IsValidIdentifier(const std::string& identifier);
+	bool IsValidIdentifier(const std::string& identifier) const;
 
-	bool IsValidFloat(const std::string& str);
+	bool IsValidFloat(const std::string& str) const;
 };

@@ -1,15 +1,16 @@
 #pragma once
 #include "Result.h"
-#include "Variable.h"
 #include "Function.h"
 #include <map>
 
 class Store
 {
 public:
-	bool ContainsIdentifier(const std::string& identifier);
+	using IdValueVector = std::vector<std::pair<std::string, std::optional<double>>>;
 
-	Result DeclareFunction(const std::string& identifier, const std::string& varIdentifier);
+	bool ContainsIdentifier(const std::string& identifier) const;
+
+	Result DeclareFunction(const std::string& identifier, const std::string& assigningIdentifier);
 
 	Result DeclareFunction(const std::string& identifier, const std::string& firstOperand, Function::Operation operation, const std::string& secondOperand);
 
@@ -21,14 +22,14 @@ public:
 
 	Result GetValue(const std::string& identifier, std::optional<double>& value);
 
-	std::vector<std::pair<std::string, std::optional<double>>> GetAllFunctionsValues();
+	IdValueVector GetAllFunctionsValues();
 
-	std::vector<std::pair<std::string, std::optional<double>>> GetAllVariablesValues();
+	IdValueVector GetAllVariablesValues();
 
 private:
-	bool IsVariable(const std::string& identifier);
+	bool IsVariable(const std::string& identifier) const;
 
-	bool IsFunction(const std::string& identifier);
+	bool IsFunction(const std::string& identifier) const;
 
 	std::map<std::string, std::shared_ptr<Variable>> m_variablesContainer;
 

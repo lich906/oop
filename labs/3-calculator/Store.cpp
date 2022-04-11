@@ -3,17 +3,17 @@
 
 using namespace std;
 
-bool Store::ContainsIdentifier(const string& identifier)
+bool Store::ContainsIdentifier(const string& identifier) const
 {
 	return IsVariable(identifier) || IsFunction(identifier);
 }
 
-bool Store::IsVariable(const string& identifier)
+bool Store::IsVariable(const string& identifier) const
 {
 	return m_variablesContainer.contains(identifier);
 }
 
-bool Store::IsFunction(const string& identifier)
+bool Store::IsFunction(const string& identifier) const
 {
 	return m_functionsContainer.contains(identifier);
 }
@@ -22,20 +22,20 @@ Result Store::DeclareFunction(const string& identifier, const string& assigningI
 {
 	if (ContainsIdentifier(identifier))
 	{
-		return { ResultStatus::Error, "Identifier \'" + identifier + "\' has been already declared." };
+		return { ResultStatus::Error, "Identifier '" + identifier + "' has been already declared." };
 	}
 
 	if (IsVariable(assigningIdentifier))
 	{
-		m_functionsContainer[identifier] = make_shared<Function>(shared_ptr<Variable>(m_variablesContainer[assigningIdentifier]));
+		m_functionsContainer[identifier] = make_shared<Function>(m_variablesContainer[assigningIdentifier].get());
 	}
 	else if (IsFunction(assigningIdentifier))
 	{
-		m_functionsContainer[identifier] = make_shared<Function>(shared_ptr<Function>(m_functionsContainer[assigningIdentifier]));
+		m_functionsContainer[identifier] = make_shared<Function>(m_functionsContainer[assigningIdentifier].get());
 	}
 	else
 	{
-		return { ResultStatus::Error, "Unknown identifier \'" + assigningIdentifier + "\'." };
+		return { ResultStatus::Error, "Unknown identifier '" + assigningIdentifier + "'." };
 	}
 
 	return { ResultStatus::OK };
@@ -45,35 +45,35 @@ Result Store::DeclareFunction(const string& identifier, const string& firstIdent
 {
 	if (ContainsIdentifier(identifier))
 	{
-		return { ResultStatus::Error, "Identifier \'" + identifier + "\' has been already declared." };
+		return { ResultStatus::Error, "Identifier '" + identifier + "' has been already declared." };
 	}
 
-	variant<shared_ptr<Variable>, shared_ptr<Function>> firstOperandPtr;
+	Operand* firstOperandPtr;
 	if (IsVariable(firstIdentifier))
 	{
-		firstOperandPtr = m_variablesContainer[firstIdentifier];
+		firstOperandPtr = m_variablesContainer[firstIdentifier].get();
 	}
 	else if (IsFunction(firstIdentifier))
 	{
-		firstOperandPtr = m_functionsContainer[firstIdentifier];
+		firstOperandPtr = m_functionsContainer[firstIdentifier].get();
 	}
 	else
 	{
-		return { ResultStatus::Error, "Unknown identifier \'" + firstIdentifier + "\'." };
+		return { ResultStatus::Error, "Unknown identifier '" + firstIdentifier + "'." };
 	}
 
-	variant<shared_ptr<Variable>, shared_ptr<Function>> secondOperandPtr;
+	Operand* secondOperandPtr;
 	if (IsVariable(secondIdentifier))
 	{
-		secondOperandPtr = m_variablesContainer[secondIdentifier];
+		secondOperandPtr = m_variablesContainer[secondIdentifier].get();
 	}
 	else if (IsFunction(secondIdentifier))
 	{
-		secondOperandPtr = m_functionsContainer[secondIdentifier];
+		secondOperandPtr = m_functionsContainer[secondIdentifier].get();
 	}
 	else
 	{
-		return { ResultStatus::Error, "Unknown identifier \'" + secondIdentifier + "\'." };
+		return { ResultStatus::Error, "Unknown identifier '" + secondIdentifier + "'." };
 	}
 
 	m_functionsContainer[identifier] = make_shared<Function>(firstOperandPtr, operation, secondOperandPtr);
@@ -97,7 +97,7 @@ Result Store::AssignValueToVariable(const string& identifier, const string& assi
 {
 	if (IsFunction(identifier))
 	{
-		return { ResultStatus::Error, "\'" + assigningIdentifier + "\' is a function." };
+		return { ResultStatus::Error, "'" + assigningIdentifier + "' is a function." };
 	}
 
 	optional<double> assigningValue;
@@ -111,7 +111,7 @@ Result Store::AssignValueToVariable(const string& identifier, const string& assi
 	}
 	else
 	{
-		return { ResultStatus::Error, "Unknown identifier \'" + assigningIdentifier + "\'." };
+		return { ResultStatus::Error, "Unknown identifier '" + assigningIdentifier + "'." };
 	}
 
 	if (!IsVariable(identifier))
@@ -130,7 +130,7 @@ Result Store::AssignValueToVariable(const string& identifier, double value)
 {
 	if (IsFunction(identifier))
 	{
-		return { ResultStatus::Error, "\'" + identifier + "\' is a function." };
+		return { ResultStatus::Error, "'" + identifier + "' is a function." };
 	}
 
 	if (IsVariable(identifier))
@@ -147,24 +147,23 @@ Result Store::AssignValueToVariable(const string& identifier, double value)
 
 Result Store::GetValue(const string& identifier, optional<double>& value)
 {
-	if (!ContainsIdentifier(identifier))
-	{
-		return { ResultStatus::Error, "Unknown identifier \'" + identifier + "\'." };
-	}
-
 	if (IsFunction(identifier))
 	{
 		value = m_functionsContainer[identifier]->GetValue();
 	}
-	else
+	else if (IsVariable(identifier))
 	{
 		value = m_variablesContainer[identifier]->GetValue();
+	}
+	else
+	{
+		return { ResultStatus::Error, "Unknown identifier '" + identifier + "'." };
 	}
 
 	return { ResultStatus::OK };
 }
 
-vector<pair<string, optional<double>>> Store::GetAllFunctionsValues()
+Store::IdValueVector Store::GetAllFunctionsValues()
 {
 	vector<pair<string, optional<double>>> allFunctionsValues;
 
@@ -176,7 +175,7 @@ vector<pair<string, optional<double>>> Store::GetAllFunctionsValues()
 	return allFunctionsValues;
 }
 
-vector<pair<string, optional<double>>> Store::GetAllVariablesValues()
+Store::IdValueVector Store::GetAllVariablesValues()
 {
 	vector<pair<string, optional<double>>> allVariablesValues;
 

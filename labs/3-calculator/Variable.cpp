@@ -21,16 +21,3 @@ std::optional<double> Variable::GetValue() const
 {
 	return m_value;
 }
-
-void Variable::AddDependentFunction(const std::shared_ptr<Function>& functionPtr)
-{
-	m_dependentFunctions.push_back(std::shared_ptr<Function>(functionPtr));
-}
-
-void Variable::FlushDependentFunctionValues() const
-{
-	for (std::shared_ptr<Function> dependentFn : m_dependentFunctions)
-	{
-		dependentFn->FlushCachedValue();
-	}
-}

@@ -1,12 +1,11 @@
 #pragma once
+#include "Operand.h"
 #include <string>
 #include <variant>
 #include <memory>
-#include <optional>
-#include <vector>
 class Variable;
 
-class Function
+class Function : public Operand
 {
 public:
 	enum class Operation
@@ -17,33 +16,22 @@ public:
 		Div
 	};
 
-	Function(const std::shared_ptr<Variable>& operandPtr);
+	Function(Operand* const operandPtr);
 
-	Function(const std::shared_ptr<Function>& operandPtr);
+	Function(Operand* const firstVarPtr, Operation operation, Operand* const secondVarPtr);
 
-	Function(
-		const std::variant<std::shared_ptr<Variable>, std::shared_ptr<Function>>& firstOperand,
-		Operation operation,
-		const std::variant<std::shared_ptr<Variable>, std::shared_ptr<Function>>& secondOperand);
+	std::optional<double> GetValue() const override;
 
-	std::optional<double> GetValue() const;
-
-	void FlushCachedValue();
-
-	void AddDependentFunction(const std::shared_ptr<Function>& functionPtr);
+	void FlushCachedValue() const;
 
 private:
 	mutable std::optional<double> m_cachedValue;
 
 	std::optional<double> CalculateValue() const;
 
-	void FlushDependentFunctionValues() const;
-
-	std::variant<std::shared_ptr<Variable>, std::shared_ptr<Function>> m_firstOperand;
+	Operand* m_firstOperandPtr;
 	std::optional<Operation> m_operation;
-	std::variant<std::shared_ptr<Variable>, std::shared_ptr<Function>> m_secondOperand;
-
-	std::vector<std::shared_ptr<Function>> m_dependentFunctions;
+	std::optional<Operand*> m_secondOperandPtr;
 };
 
 #include "Variable.h"

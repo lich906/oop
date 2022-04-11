@@ -2,50 +2,19 @@
 
 using namespace std;
 
-Function::Function(const shared_ptr<Variable>& operandPtr)
+Function::Function(Operand* const operandPtr)
 {
-	m_firstOperand = operandPtr;
-	operandPtr->AddDependentFunction(shared_ptr<Function>(this));
+	m_firstOperandPtr = operandPtr;
+	operandPtr->AddDependentFunction(this);
 }
 
-Function::Function(const shared_ptr<Function>& operandPtr)
+Function::Function(Operand* const firstOperandPtr, Operation operation, Operand* const secondOperandPtr)
 {
-	m_firstOperand = operandPtr;
-	operandPtr->AddDependentFunction(shared_ptr<Function>(this));
-}
-
-Function::Function(
-	const variant<shared_ptr<Variable>, shared_ptr<Function>>& firstOperand,
-	Operation operation,
-	const variant<shared_ptr<Variable>, shared_ptr<Function>>& secondOperand)
-{
-	if (holds_alternative<shared_ptr<Variable>>(firstOperand))
-	{
-		shared_ptr<Variable> operandPtr = get<shared_ptr<Variable>>(firstOperand);
-		operandPtr->AddDependentFunction(shared_ptr<Function>(this));
-		m_firstOperand = operandPtr;
-	}
-	else
-	{
-		shared_ptr<Function> operandPtr = get<shared_ptr<Function>>(firstOperand);
-		operandPtr->AddDependentFunction(shared_ptr<Function>(this));
-		m_firstOperand = operandPtr;
-	}
-
+	firstOperandPtr->AddDependentFunction(this);
+	secondOperandPtr->AddDependentFunction(this);
+	m_firstOperandPtr = firstOperandPtr;
+	m_secondOperandPtr = secondOperandPtr;
 	m_operation = operation;
-
-	if (holds_alternative<shared_ptr<Variable>>(secondOperand))
-	{
-		shared_ptr<Variable> operandPtr = get<shared_ptr<Variable>>(secondOperand);
-		operandPtr->AddDependentFunction(shared_ptr<Function>(this));
-		m_secondOperand = operandPtr;
-	}
-	else
-	{
-		shared_ptr<Function> operandPtr = get<shared_ptr<Function>>(secondOperand);
-		operandPtr->AddDependentFunction(shared_ptr<Function>(this));
-		m_secondOperand = operandPtr;
-	}
 }
 
 optional<double> Function::GetValue() const
@@ -66,32 +35,25 @@ optional<double> Function::GetValue() const
 	return nullopt;
 }
 
-void Function::FlushCachedValue()
+void Function::FlushCachedValue() const
 {
-	m_cachedValue.reset();
-}
-
-void Function::AddDependentFunction(const shared_ptr<Function>& functionPtr)
-{
-	m_dependentFunctions.push_back(shared_ptr<Function>(functionPtr));
+	if (m_cachedValue.has_value())
+	{
+		m_cachedValue.reset();
+		FlushDependentFunctionValues();
+	}
 }
 
 optional<double> Function::CalculateValue() const
 {
-	optional<double> value =
-		holds_alternative<shared_ptr<Variable>>(m_firstOperand) ?
-		get<shared_ptr<Variable>>(m_firstOperand)->GetValue() :
-		get<shared_ptr<Function>>(m_firstOperand)->GetValue();
+	optional<double> value = m_firstOperandPtr->GetValue();
 
-	if (!m_operation.has_value())
+	if (!m_operation.has_value() || !value.has_value())
 	{
 		return value;
 	}
 
-	optional<double> secondOperandValue =
-		holds_alternative<shared_ptr<Variable>>(m_firstOperand) ?
-		get<shared_ptr<Variable>>(m_firstOperand)->GetValue() :
-		get<shared_ptr<Function>>(m_firstOperand)->GetValue();
+	optional<double> secondOperandValue = (*m_secondOperandPtr)->GetValue();
 
 	if (!secondOperandValue.has_value())
 	{
@@ -101,24 +63,14 @@ optional<double> Function::CalculateValue() const
 	switch (*m_operation)
 	{
 	case Operation::Add:
-		value = *value + *secondOperandValue;
+		return *value + *secondOperandValue;
 	case Operation::Sub:
-		value = *value - *secondOperandValue;
+		return *value - *secondOperandValue;
 	case Operation::Mul:
-		value = *value * *secondOperandValue;
+		return *value * *secondOperandValue;
 	case Operation::Div:
-		value = *value / *secondOperandValue;
+		return *value / *secondOperandValue;
 	default:
-		break;
-	}
-
-	return value;
-}
-
-void Function::FlushDependentFunctionValues() const
-{
-	for (shared_ptr<Function> dependentFn : m_dependentFunctions)
-	{
-		dependentFn->FlushCachedValue();
+		return nullopt;
 	}
 }

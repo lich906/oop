@@ -2,7 +2,7 @@
 #include <sstream>
 #include <regex>
 
-Result ExpressionParser::Parse(const std::string& exprString, Expression& resExpr)
+Result ExpressionParser::Parse(const std::string& exprString, Expression& resExpr) const
 {
 	std::optional<ExprType> expressionType;
 	
@@ -20,7 +20,7 @@ Result ExpressionParser::Parse(const std::string& exprString, Expression& resExp
 
 	if (!expressionType.has_value())
 	{
-		return { ResultStatus::Error, "Unknown command type." };
+		return { ResultStatus::Error, "Unknown command type '" + exprTypeStr + "'." };
 	}
 
 	std::string restExprString = exprString.substr(commandSpaceDelimPos + 1);
@@ -30,6 +30,10 @@ Result ExpressionParser::Parse(const std::string& exprString, Expression& resExp
 	{
 	case ExprType::Var:
 	case ExprType::Print:
+		if (!IsValidIdentifier(restExprString))
+		{
+			return { ResultStatus::Error, "Parsing error: Invalid identifier '" + restExprString + "'." };
+		}
 		resExpr = { *expressionType, { restExprString } };
 		break;
 	case ExprType::Let:
@@ -46,7 +50,7 @@ Result ExpressionParser::Parse(const std::string& exprString, Expression& resExp
 	return { ResultStatus::OK };
 }
 
-Result ExpressionParser::ParseLet(const std::string& exprString, Expression& resExpr)
+Result ExpressionParser::ParseLet(const std::string& exprString, Expression& resExpr) const
 {
 	size_t equalityCharPos = exprString.find('=');
 
@@ -57,6 +61,11 @@ Result ExpressionParser::ParseLet(const std::string& exprString, Expression& res
 
 	std::string destIdentifier = exprString.substr(0, equalityCharPos);
 
+	if (!IsValidIdentifier(destIdentifier))
+	{
+		return { ResultStatus::Error, "Parsing error: Invalid identifier '" + destIdentifier + "'." };
+	}
+
 	std::string rightPart = exprString.substr(equalityCharPos + 1);
 
 	if (IsValidIdentifier(rightPart))
@@ -65,7 +74,15 @@ Result ExpressionParser::ParseLet(const std::string& exprString, Expression& res
 	}
 	else if (IsValidFloat(rightPart))
 	{
-		double value = std::stod(rightPart);
+		double value;
+		try
+		{
+			value = std::stod(rightPart);
+		}
+		catch (std::out_of_range&)
+		{
+			return { ResultStatus::Error, "Error: Assigning value is too big" };
+		}
 		resExpr = { ExprType::Let, { destIdentifier }, { value } };
 	}
 	else
@@ -76,7 +93,7 @@ Result ExpressionParser::ParseLet(const std::string& exprString, Expression& res
 	return { ResultStatus::OK };
 }
 
-Result ExpressionParser::ParseFn(const std::string& exprString, Expression& resExpr)
+Result ExpressionParser::ParseFn(const std::string& exprString, Expression& resExpr) const
 {
 	size_t equalityCharPos = exprString.find('=');
 	if (equalityCharPos == std::string::npos)
@@ -85,16 +102,22 @@ Result ExpressionParser::ParseFn(const std::string& exprString, Expression& resE
 	}
 
 	std::string fnIdentifier = exprString.substr(0, equalityCharPos);
+
+	if (!IsValidIdentifier(fnIdentifier))
+	{
+		return { ResultStatus::Error, "Parsing error: Invalid identifier '" + fnIdentifier + "'." };
+	}
+
 	std::string rightPart = exprString.substr(equalityCharPos + 1);
 
 	size_t opChPos;
 	std::string firstOperandId, secondOperandId;
 	for (char opCh : { '+', '-', '*', '/' })
 	{
-		if ((opChPos = exprString.find(opCh)) != std::string::npos)
+		if ((opChPos = rightPart.find(opCh)) != std::string::npos)
 		{
-			firstOperandId = exprString.substr(0, opChPos);
-			secondOperandId = exprString.substr(opChPos + 1);
+			firstOperandId = rightPart.substr(0, opChPos);
+			secondOperandId = rightPart.substr(opChPos + 1);
 			if (!IsValidIdentifier(firstOperandId))
 			{
 				return { ResultStatus::Error, "Parsing error: Invalid identifier '" + firstOperandId + "'." };
@@ -116,21 +139,21 @@ Result ExpressionParser::ParseFn(const std::string& exprString, Expression& resE
 		return { ResultStatus::Error, "Parsing error: Invalid identifier '" + rightPart + "'." };
 	}
 
-	resExpr = { ExprType::Fn, { fnIdentifier } };
+	resExpr = { ExprType::Fn, { fnIdentifier, rightPart } };
 
 	return { ResultStatus::OK };
 }
 
 
 
-bool ExpressionParser::IsValidIdentifier(const std::string& identifier)
+bool ExpressionParser::IsValidIdentifier(const std::string& identifier) const
 {
 	std::regex identifierRegex("[a-zA-Z_][a-zA-Z0-9_]*");
 
 	return std::regex_match(identifier, identifierRegex);
 }
 
-bool ExpressionParser::IsValidFloat(const std::string& str)
+bool ExpressionParser::IsValidFloat(const std::string& str) const
 {
 	std::regex floatRegex("[+-]?([0-9]*[.])?[0-9]+");
 
