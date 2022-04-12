@@ -6,7 +6,7 @@
 class Store
 {
 public:
-	using IdValueVector = std::vector<std::pair<std::string, std::optional<double>>>;
+	using IdentifierValueVector = std::vector<std::pair<std::string, std::optional<double>>>;
 
 	bool ContainsIdentifier(const std::string& identifier) const;
 
@@ -22,9 +22,9 @@ public:
 
 	Result GetValue(const std::string& identifier, std::optional<double>& value);
 
-	IdValueVector GetAllFunctionsValues();
+	IdentifierValueVector GetAllFunctionsValues();
 
-	IdValueVector GetAllVariablesValues();
+	IdentifierValueVector GetAllVariablesValues();
 
 private:
 	bool IsVariable(const std::string& identifier) const;

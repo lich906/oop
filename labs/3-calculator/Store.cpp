@@ -163,7 +163,7 @@ Result Store::GetValue(const string& identifier, optional<double>& value)
 	return { ResultStatus::OK };
 }
 
-Store::IdValueVector Store::GetAllFunctionsValues()
+Store::IdentifierValueVector Store::GetAllFunctionsValues()
 {
 	vector<pair<string, optional<double>>> allFunctionsValues;
 
@@ -175,7 +175,7 @@ Store::IdValueVector Store::GetAllFunctionsValues()
 	return allFunctionsValues;
 }
 
-Store::IdValueVector Store::GetAllVariablesValues()
+Store::IdentifierValueVector Store::GetAllVariablesValues()
 {
 	vector<pair<string, optional<double>>> allVariablesValues;
 

@@ -8,39 +8,39 @@
 class ExpressionParser
 {
 public:
-	enum class ExprType
+	enum class CommandType
 	{
-		Var,
-		Let,
-		Fn,
-		Print,
-		Printvars,
-		Printfns
+		DeclareVariable,
+		AssignVariable,
+		DeclareFunction,
+		PrintValue,
+		PrintAllVariables,
+		PrintAllFunctions
 	};
 
-	struct Expression
+	struct CommandData
 	{
-		ExprType type;
+		CommandType type;
 		std::vector<std::string> identifiers;
 		std::optional<double> value;
 		std::optional<char> operation;
 	};
 
-	Result Parse(const std::string& exprString, Expression& resExpr) const;
+	Result Parse(const std::string& rawString, CommandData& parsedData) const;
 
 private:
-	const std::map<std::string, ExprType> m_exprTypeString = {
-		{ "var", ExprType::Var },
-		{ "let", ExprType::Let },
-		{ "fn", ExprType::Fn },
-		{ "print", ExprType::Print },
-		{ "printvars", ExprType::Printvars },
-		{ "printfns", ExprType::Printfns }
+	const std::map<std::string, CommandType> m_commandTypeString = {
+		{ "var", CommandType::DeclareVariable },
+		{ "let", CommandType::AssignVariable },
+		{ "fn", CommandType::DeclareFunction },
+		{ "print", CommandType::PrintValue },
+		{ "printvars", CommandType::PrintAllVariables },
+		{ "printfns", CommandType::PrintAllFunctions }
 	};
 
-	Result ParseLet(const std::string& exprString, Expression& resExpr) const;
+	Result ParseVariableAssignment(const std::string& rawString, CommandData& parsedData) const;
 
-	Result ParseFn(const std::string& exprString, Expression& resExpr) const;
+	Result ParseFunctionDeclaration(const std::string& rawString, CommandData& parsedData) const;
 
 	bool IsValidIdentifier(const std::string& identifier) const;
 

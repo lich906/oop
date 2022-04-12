@@ -2,49 +2,53 @@
 #include <sstream>
 #include <regex>
 
-Result ExpressionParser::Parse(const std::string& exprString, Expression& resExpr) const
+Result ExpressionParser::Parse(const std::string& rawString, CommandData& parsedData) const
 {
-	std::optional<ExprType> expressionType;
+	std::optional<CommandType> commandType;
 	
-	size_t commandSpaceDelimPos = exprString.find(' ');
+	size_t commandSpaceDelimPos = rawString.find(' ');
 
-	std::string exprTypeStr = exprString.substr(0, commandSpaceDelimPos);
-	for (const auto& [str, exprType] : m_exprTypeString)
+	std::string commandTypeStr = rawString.substr(0, commandSpaceDelimPos);
+	for (const auto& [cmdStr, cmdType] : m_commandTypeString)
 	{
-		if (exprTypeStr == str)
+		if (commandTypeStr == cmdStr)
 		{
-			expressionType = exprType;
+			commandType = cmdType;
 			break;
 		}
 	}
 
-	if (!expressionType.has_value())
+	if (!commandType.has_value())
 	{
-		return { ResultStatus::Error, "Unknown command type '" + exprTypeStr + "'." };
+		return { ResultStatus::Error, "Unknown command type '" + commandTypeStr + "'." };
 	}
 
 	std::string restExprString =
 		(commandSpaceDelimPos != std::string::npos) ?
-		exprString.substr(commandSpaceDelimPos + 1) :
+		rawString.substr(commandSpaceDelimPos + 1) :
 		"";
 
-	switch (*expressionType)
+	switch (*commandType)
 	{
-	case ExprType::Var:
-	case ExprType::Print:
+	case CommandType::DeclareVariable:
+	case CommandType::PrintValue:
 		if (!IsValidIdentifier(restExprString))
 		{
 			return { ResultStatus::Error, "Parsing error: Invalid identifier '" + restExprString + "'." };
 		}
-		resExpr = { *expressionType, { restExprString } };
+		parsedData = { *commandType, { restExprString } };
 		break;
-	case ExprType::Let:
-		return ParseLet(restExprString, resExpr);
-	case ExprType::Fn:
-		return ParseFn(restExprString, resExpr);
-	case ExprType::Printvars:
-	case ExprType::Printfns:
-		resExpr = { *expressionType };
+
+	case CommandType::AssignVariable:
+		return ParseVariableAssignment(restExprString, parsedData);
+
+	case CommandType::DeclareFunction:
+		return ParseFunctionDeclaration(restExprString, parsedData);
+
+	case CommandType::PrintAllVariables:
+	case CommandType::PrintAllFunctions:
+		parsedData = { *commandType };
+
 	default:
 		break;
 	}
@@ -52,7 +56,7 @@ Result ExpressionParser::Parse(const std::string& exprString, Expression& resExp
 	return { ResultStatus::OK };
 }
 
-Result ExpressionParser::ParseLet(const std::string& exprString, Expression& resExpr) const
+Result ExpressionParser::ParseVariableAssignment(const std::string& exprString, CommandData& parsedData) const
 {
 	size_t equalityCharPos = exprString.find('=');
 
@@ -72,7 +76,7 @@ Result ExpressionParser::ParseLet(const std::string& exprString, Expression& res
 
 	if (IsValidIdentifier(rightPart))
 	{
-		resExpr = { ExprType::Let, { destIdentifier, rightPart } };
+		parsedData = { CommandType::AssignVariable, { destIdentifier, rightPart } };
 	}
 	else if (IsValidFloat(rightPart))
 	{
@@ -85,7 +89,7 @@ Result ExpressionParser::ParseLet(const std::string& exprString, Expression& res
 		{
 			return { ResultStatus::Error, "Error: Assigning value is too big" };
 		}
-		resExpr = { ExprType::Let, { destIdentifier }, { value } };
+		parsedData = { CommandType::AssignVariable, { destIdentifier }, { value } };
 	}
 	else
 	{
@@ -95,7 +99,7 @@ Result ExpressionParser::ParseLet(const std::string& exprString, Expression& res
 	return { ResultStatus::OK };
 }
 
-Result ExpressionParser::ParseFn(const std::string& exprString, Expression& resExpr) const
+Result ExpressionParser::ParseFunctionDeclaration(const std::string& exprString, CommandData& parsedData) const
 {
 	size_t equalityCharPos = exprString.find('=');
 	if (equalityCharPos == std::string::npos)
@@ -113,13 +117,12 @@ Result ExpressionParser::ParseFn(const std::string& exprString, Expression& resE
 	std::string rightPart = exprString.substr(equalityCharPos + 1);
 
 	size_t opChPos;
-	std::string firstOperandId, secondOperandId;
 	for (char opCh : { '+', '-', '*', '/' })
 	{
 		if ((opChPos = rightPart.find(opCh)) != std::string::npos)
 		{
-			firstOperandId = rightPart.substr(0, opChPos);
-			secondOperandId = rightPart.substr(opChPos + 1);
+			std::string firstOperandId = rightPart.substr(0, opChPos);
+			std::string secondOperandId = rightPart.substr(opChPos + 1);
 			if (!IsValidIdentifier(firstOperandId))
 			{
 				return { ResultStatus::Error, "Parsing error: Invalid identifier '" + firstOperandId + "'." };
@@ -130,7 +133,7 @@ Result ExpressionParser::ParseFn(const std::string& exprString, Expression& resE
 				return { ResultStatus::Error, "Parsing error: Invalid identifier '" + secondOperandId + "'." };
 			}
 
-			resExpr = { ExprType::Fn, { fnIdentifier, firstOperandId, secondOperandId }, {}, opCh };
+			parsedData = { CommandType::DeclareFunction, { fnIdentifier, firstOperandId, secondOperandId }, {}, opCh };
 
 			return { ResultStatus::OK };
 		}
@@ -141,7 +144,7 @@ Result ExpressionParser::ParseFn(const std::string& exprString, Expression& resE
 		return { ResultStatus::Error, "Parsing error: Invalid identifier '" + rightPart + "'." };
 	}
 
-	resExpr = { ExprType::Fn, { fnIdentifier, rightPart } };
+	parsedData = { CommandType::DeclareFunction, { fnIdentifier, rightPart } };
 
 	return { ResultStatus::OK };
 }

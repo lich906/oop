@@ -4,18 +4,25 @@
 
 void Calculator::Interpret(std::istream& input, std::ostream& output)
 {
+	output << promptChar;
+
 	std::string exprString;
 	std::getline(input, exprString);
 
+	if (exprString.empty())
+	{
+		return;
+	}
+
 	Result result;
-	ExpressionParser::Expression expression;
+	ExpressionParser::CommandData expression;
 	if ((result = m_parser.Parse(exprString, expression)).status != ResultStatus::OK)
 	{
 		output << result.reportMessage << std::endl;
 		return;
 	}
 
-	result = Execute(expression);
+	result = DelegateCommandExecution(expression);
 
 	if (!result.reportMessage.empty())
 	{
@@ -23,119 +30,122 @@ void Calculator::Interpret(std::istream& input, std::ostream& output)
 	}
 }
 
-Result Calculator::Execute(const ExpressionParser::Expression& expression)
+Result Calculator::DelegateCommandExecution(const ExpressionParser::CommandData& commandData)
 {
 	Result execResult;
 	std::optional<double> value;
 	std::ostringstream reportString;
-	std::vector<std::pair<std::string, std::optional<double>>> allValues;
-	switch (expression.type)
+	Store::IdentifierValueVector allValues;
+	switch (commandData.type)
 	{
-	case ExpressionParser::ExprType::Print:
-		if ((execResult = m_store.GetValue(expression.identifiers[0], value)).status != ResultStatus::OK)
-		{
-			return execResult;
-		}
-		if (value.has_value())
-		{
-			reportString << *value;
-		}
-		else
-		{
-			reportString << "NaN";
-		}
-		return { ResultStatus::OK, reportString.str() };
+	case ExpressionParser::CommandType::PrintValue:
+		return ExecutePrintCommand(commandData);
 
-	case ExpressionParser::ExprType::Printvars:
+	case ExpressionParser::CommandType::PrintAllVariables:
 		allValues = m_store.GetAllVariablesValues();
-		if (allValues.empty())
-		{
-			reportString << "There is no variables.";
-		}
-		else
-		{
-			for (const auto& [identifier, value] : allValues)
-			{
-				reportString << identifier << " : ";
-				if (value.has_value())
-				{
-					reportString << *value;
-				}
-				else
-				{
-					reportString << "NaN";
-				}
-				reportString << std::endl;
-			}
-		}
-		return { ResultStatus::OK, reportString.str() };
+		return ExecutePrintAllCommand(allValues);
 
-	case ExpressionParser::ExprType::Printfns:
+	case ExpressionParser::CommandType::PrintAllFunctions:
 		allValues = m_store.GetAllFunctionsValues();
-		if (allValues.empty())
+		return ExecutePrintAllCommand(allValues);
+
+	case ExpressionParser::CommandType::DeclareVariable:
+		return m_store.DeclareVariable(commandData.identifiers[0]);
+
+	case ExpressionParser::CommandType::AssignVariable:
+		if (commandData.value.has_value())
 		{
-			reportString << "There is no functions.";
+			return m_store.AssignValueToVariable(commandData.identifiers[0], *commandData.value);
 		}
 		else
 		{
-			for (const auto& [identifier, value] : allValues)
-			{
-				reportString << identifier << " : ";
-				if (value.has_value())
-				{
-					reportString << *value;
-				}
-				else
-				{
-					reportString << "NaN";
-				}
-				reportString << std::endl;
-			}
-		}
-		return { ResultStatus::OK, reportString.str() };
-
-	case ExpressionParser::ExprType::Var:
-		return m_store.DeclareVariable(expression.identifiers[0]);
-
-	case ExpressionParser::ExprType::Let:
-		if (expression.value.has_value())
-		{
-			return m_store.AssignValueToVariable(expression.identifiers[0], *expression.value);
-		}
-		else
-		{
-			return m_store.AssignValueToVariable(expression.identifiers[0], expression.identifiers[1]);
+			return m_store.AssignValueToVariable(commandData.identifiers[0], commandData.identifiers[1]);
 		}
 
-	case ExpressionParser::ExprType::Fn:
-		if (expression.operation.has_value())
-		{
-			Function::Operation operation;
-			switch (*expression.operation)
-			{
-				case '+':
-					operation = Function::Operation::Add;
-					break;
-				case '-':
-					operation = Function::Operation::Sub;
-					break;
-				case '*':
-					operation = Function::Operation::Mul;
-					break;
-				case '/':
-					operation = Function::Operation::Div;
-					break;
-				default:
-					return { ResultStatus::Error, "Internal error: unknown function operation recieved." };
-			}
-			return m_store.DeclareFunction(expression.identifiers[0], expression.identifiers[1], operation, expression.identifiers[2]);
-		}
-		else
-		{
-			return m_store.DeclareFunction(expression.identifiers[0], expression.identifiers[1]);
-		}
+	case ExpressionParser::CommandType::DeclareFunction:
+		return ExecuteFunctionDeclaration(commandData);
 
 	default:
 		return { ResultStatus::Error, "Internal error: unknown command type recieved." };
+	}
+}
+
+Result Calculator::ExecutePrintCommand(const ExpressionParser::CommandData& commandData)
+{
+	Result result;
+	std::ostringstream outputStream;
+	std::optional<double> value;
+
+	if ((result = m_store.GetValue(commandData.identifiers[0], value)).status != ResultStatus::OK)
+	{
+		return result;
+	}
+
+	if (value.has_value())
+	{
+		outputStream << *value;
+	}
+	else
+	{
+		outputStream << nanPrintValue;
+	}
+
+	return { ResultStatus::OK, outputStream.str() };
+}
+
+Result Calculator::ExecutePrintAllCommand(const Store::IdentifierValueVector& identifierValues)
+{
+	std::ostringstream outputStream;
+	if (identifierValues.empty())
+	{
+		outputStream << "There is nothing to print.";
+	}
+	else
+	{
+		for (const auto& [identifier, value] : identifierValues)
+		{
+			outputStream << identifier << " : ";
+			if (value.has_value())
+			{
+				outputStream << *value;
+			}
+			else
+			{
+				outputStream << nanPrintValue;
+			}
+			outputStream << std::endl;
+		}
+	}
+
+	return { ResultStatus::OK, outputStream.str() };
+}
+
+Result Calculator::ExecuteFunctionDeclaration(const ExpressionParser::CommandData& commandData)
+{
+	if (commandData.operation.has_value())
+	{
+		Function::Operation operation;
+		switch (*commandData.operation)
+		{
+		case '+':
+			operation = Function::Operation::Add;
+			break;
+		case '-':
+			operation = Function::Operation::Sub;
+			break;
+		case '*':
+			operation = Function::Operation::Mul;
+			break;
+		case '/':
+			operation = Function::Operation::Div;
+			break;
+		default:
+			return { ResultStatus::Error, "Internal error: unknown function operation recieved." };
+		}
+		return m_store.DeclareFunction(commandData.identifiers[0], commandData.identifiers[1], operation, commandData.identifiers[2]);
+	}
+	else
+	{
+		return m_store.DeclareFunction(commandData.identifiers[0], commandData.identifiers[1]);
 	}
 }
