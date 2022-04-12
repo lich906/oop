@@ -25,6 +25,10 @@ TEST_CASE("Parsing print commands")
 		REQUIRE(parser.Parse("print ab", expr).status == ResultStatus::OK);
 		REQUIRE(expr.type == ExpressionParser::ExprType::Print);
 		REQUIRE(expr.identifiers[0] == "ab");
+
+		REQUIRE(parser.Parse("print", expr).status == ResultStatus::Error);
+
+		REQUIRE(parser.Parse("print 983", expr).status == ResultStatus::Error);
 	}
 
 	SECTION("Parse 'printvars'")
@@ -40,6 +44,12 @@ TEST_CASE("Parsing print commands")
 		REQUIRE(expr.type == ExpressionParser::ExprType::Printfns);
 		REQUIRE(expr.identifiers.empty());
 	}
+}
+
+TEST_CASE("Parsing variable commands")
+{
+	ExpressionParser parser;
+	ExpressionParser::Expression expr;
 
 	SECTION("Parse 'var'")
 	{
@@ -49,7 +59,6 @@ TEST_CASE("Parsing print commands")
 		REQUIRE(expr.identifiers.size() == 1);
 		REQUIRE(expr.identifiers[0] == "abc");
 
-		// Invalid identifier
 		REQUIRE(parser.Parse("var 9834gh", expr).status == ResultStatus::Error);
 	}
 
@@ -62,5 +71,47 @@ TEST_CASE("Parsing print commands")
 		REQUIRE(expr.identifiers[0] == "b");
 		REQUIRE(expr.value.has_value());
 		REQUIRE(*expr.value == 6);
+
+		REQUIRE(parser.Parse("let another_variable=b", expr).status == ResultStatus::OK);
+
+		REQUIRE(expr.type == ExpressionParser::ExprType::Let);
+		REQUIRE(expr.identifiers.size() == 2);
+		REQUIRE(expr.identifiers[0] == "another_variable");
+		REQUIRE(expr.identifiers[1] == "b");
+		REQUIRE(!expr.value.has_value());
+
+		REQUIRE(parser.Parse("let +#t=4", expr).status == ResultStatus::Error);
+	}
+}
+
+TEST_CASE("Parsing function commands")
+{
+	ExpressionParser parser;
+	ExpressionParser::Expression expr;
+
+	SECTION("Parse function with two parameters")
+	{
+		REQUIRE(parser.Parse("fn product_of_x_and_y=x*y", expr).status == ResultStatus::OK);
+
+		REQUIRE(expr.type == ExpressionParser::ExprType::Fn);
+		REQUIRE(expr.identifiers.size() == 3);
+		REQUIRE(expr.identifiers[0] == "product_of_x_and_y");
+		REQUIRE(expr.identifiers[1] == "x");
+		REQUIRE(expr.identifiers[2] == "y");
+		REQUIRE(!expr.value.has_value());
+		REQUIRE(expr.operation.has_value());
+		REQUIRE(*expr.operation == '*');
+	}
+
+	SECTION("Parse function with one parameter")
+	{
+		REQUIRE(parser.Parse("fn alias_for_x=x", expr).status == ResultStatus::OK);
+
+		REQUIRE(expr.type == ExpressionParser::ExprType::Fn);
+		REQUIRE(expr.identifiers.size() == 2);
+		REQUIRE(expr.identifiers[0] == "alias_for_x");
+		REQUIRE(expr.identifiers[1] == "x");
+		REQUIRE(!expr.value.has_value());
+		REQUIRE(!expr.operation.has_value());
 	}
 }

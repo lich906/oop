@@ -205,4 +205,82 @@ TEST_CASE("Declaring function")
 
 		REQUIRE(store.DeclareFunction("foo", "bar", Function::Operation::Add, "bar").status == ResultStatus::Error);
 	}
+
+	SECTION("Declare function with undeclared parameters")
+	{
+		REQUIRE(!store.ContainsIdentifier("bar"));
+		REQUIRE(store.DeclareFunction("fooFunc", "bar").status == ResultStatus::Error);
+		REQUIRE(!store.ContainsIdentifier("fooFunc"));
+
+		REQUIRE(store.DeclareVariable("bar").status == ResultStatus::OK);
+		REQUIRE(store.ContainsIdentifier("bar"));
+
+		REQUIRE(store.DeclareFunction("fooFunc", "bar", Function::Operation::Mul, "x").status == ResultStatus::Error);
+		REQUIRE(!store.ContainsIdentifier("fooFunc"));
+	}
+
+	SECTION("Try declare recursive function")
+	{
+		REQUIRE(!store.ContainsIdentifier("f"));
+		REQUIRE(store.AssignValueToVariable("v", 6).status == ResultStatus::OK);
+		REQUIRE(store.DeclareFunction("f", "f", Function::Operation::Mul, "v").status == ResultStatus::Error);
+	}
+}
+
+TEST_CASE("Getting value of functions")
+{
+	Store store;
+	std::optional<double> value;
+
+	SECTION("Get value of function of one variable")
+	{
+		REQUIRE(!store.ContainsIdentifier("bar"));
+		REQUIRE(store.AssignValueToVariable("bar", 4).status == ResultStatus::OK);
+		REQUIRE(store.ContainsIdentifier("bar"));
+		REQUIRE(store.GetValue("bar", value).status == ResultStatus::OK);
+		REQUIRE(value.has_value());
+		REQUIRE(*value == 4);
+
+		REQUIRE(store.DeclareFunction("fooFunc", "bar").status == ResultStatus::OK);
+		REQUIRE(store.GetValue("fooFunc", value).status == ResultStatus::OK);
+		REQUIRE(value.has_value());
+		REQUIRE(*value == 4);
+
+		REQUIRE(store.AssignValueToVariable("bar", -8).status == ResultStatus::OK);
+
+		REQUIRE(store.GetValue("fooFunc", value).status == ResultStatus::OK);
+		REQUIRE(value.has_value());
+		REQUIRE(*value == -8);
+		REQUIRE(store.GetValue("bar", value).status == ResultStatus::OK);
+		REQUIRE(value.has_value());
+		REQUIRE(*value == -8);
+	}
+
+	SECTION("tripleA=doubleA+A, doubleA=A+A, A=5 then changed to A=10")
+	{
+		REQUIRE(!store.ContainsIdentifier("A"));
+		REQUIRE(store.AssignValueToVariable("A", 5).status == ResultStatus::OK);
+		REQUIRE(store.GetValue("A", value).status == ResultStatus::OK);
+		REQUIRE(value.has_value());
+		REQUIRE(*value == 5);
+
+		REQUIRE(store.DeclareFunction("doubleA", "A", Function::Operation::Add, "A").status == ResultStatus::OK);
+		REQUIRE(store.GetValue("doubleA", value).status == ResultStatus::OK);
+		REQUIRE(value.has_value());
+		REQUIRE(*value == 10);
+
+		REQUIRE(store.DeclareFunction("tripleA", "doubleA", Function::Operation::Add, "A").status == ResultStatus::OK);
+		REQUIRE(store.GetValue("tripleA", value).status == ResultStatus::OK);
+		REQUIRE(value.has_value());
+		REQUIRE(*value == 15);
+
+		REQUIRE(store.AssignValueToVariable("A", 10).status == ResultStatus::OK);
+		REQUIRE(store.GetValue("doubleA", value).status == ResultStatus::OK);
+		REQUIRE(value.has_value());
+		REQUIRE(*value == 20);
+
+		REQUIRE(store.GetValue("tripleA", value).status == ResultStatus::OK);
+		REQUIRE(value.has_value());
+		REQUIRE(*value == 30);
+	}
 }

@@ -23,9 +23,11 @@ Result ExpressionParser::Parse(const std::string& exprString, Expression& resExp
 		return { ResultStatus::Error, "Unknown command type '" + exprTypeStr + "'." };
 	}
 
-	std::string restExprString = exprString.substr(commandSpaceDelimPos + 1);
+	std::string restExprString =
+		(commandSpaceDelimPos != std::string::npos) ?
+		exprString.substr(commandSpaceDelimPos + 1) :
+		"";
 
-	std::string identifier;
 	switch (*expressionType)
 	{
 	case ExprType::Var:
