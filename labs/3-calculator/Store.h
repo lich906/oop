@@ -31,7 +31,7 @@ private:
 
 	bool IsFunction(const std::string& identifier) const;
 
-	std::map<std::string, std::shared_ptr<Variable>> m_variablesContainer;
+	std::map<std::string, std::unique_ptr<Variable>> m_variablesContainer;
 
-	std::map<std::string, std::shared_ptr<Function>> m_functionsContainer;
+	std::map<std::string, std::unique_ptr<Function>> m_functionsContainer;
 };

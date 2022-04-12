@@ -27,11 +27,11 @@ Result Store::DeclareFunction(const string& identifier, const string& assigningI
 
 	if (IsVariable(assigningIdentifier))
 	{
-		m_functionsContainer[identifier] = make_shared<Function>(m_variablesContainer[assigningIdentifier].get());
+		m_functionsContainer[identifier] = make_unique<Function>(m_variablesContainer[assigningIdentifier].get());
 	}
 	else if (IsFunction(assigningIdentifier))
 	{
-		m_functionsContainer[identifier] = make_shared<Function>(m_functionsContainer[assigningIdentifier].get());
+		m_functionsContainer[identifier] = make_unique<Function>(m_functionsContainer[assigningIdentifier].get());
 	}
 	else
 	{
@@ -76,7 +76,7 @@ Result Store::DeclareFunction(const string& identifier, const string& firstIdent
 		return { ResultStatus::Error, "Unknown identifier '" + secondIdentifier + "'." };
 	}
 
-	m_functionsContainer[identifier] = make_shared<Function>(firstOperandPtr, operation, secondOperandPtr);
+	m_functionsContainer[identifier] = make_unique<Function>(firstOperandPtr, operation, secondOperandPtr);
 
 	return { ResultStatus::OK };
 }
@@ -88,7 +88,7 @@ Result Store::DeclareVariable(const string& identifier)
 		return { ResultStatus::Error, "Identifier \'" + identifier + "\' has been already declared." };
 	}
 
-	m_variablesContainer[identifier] = make_shared<Variable>();
+	m_variablesContainer[identifier] = make_unique<Variable>();
 
 	return { ResultStatus::OK };
 }
@@ -116,7 +116,7 @@ Result Store::AssignValueToVariable(const string& identifier, const string& assi
 
 	if (!IsVariable(identifier))
 	{
-		m_variablesContainer[identifier] = make_shared<Variable>(assigningValue);
+		m_variablesContainer[identifier] = make_unique<Variable>(assigningValue);
 	}
 	else
 	{
@@ -139,7 +139,7 @@ Result Store::AssignValueToVariable(const string& identifier, double value)
 	}
 	else
 	{
-		m_variablesContainer[identifier] = make_shared<Variable>(optional<double>(value));
+		m_variablesContainer[identifier] = make_unique<Variable>(optional<double>(value));
 	}
 
 	return { ResultStatus::OK };
