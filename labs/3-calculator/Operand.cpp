@@ -7,7 +7,7 @@ void Operand::AddDependentFunction(Function* functionPtr)
 
 void Operand::FlushDependentFunctionValues() const
 {
-	for (const Function* const dependentFn : m_dependentFunctions)
+	for (Function* const dependentFn : m_dependentFunctions)
 	{
 		dependentFn->FlushCachedValue();
 	}

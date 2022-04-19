@@ -20,14 +20,14 @@ public:
 
 	Function(Operand* const firstVarPtr, Operation operation, Operand* const secondVarPtr);
 
-	std::optional<double> GetValue() const override;
+	double GetValue() const override;
 
-	void FlushCachedValue() const;
+	void FlushCachedValue();
 
 private:
 	mutable std::optional<double> m_cachedValue;
 
-	std::optional<double> CalculateValue() const;
+	double CalculateValue() const;
 
 	Operand* m_firstOperandPtr;
 	std::optional<Operation> m_operation;

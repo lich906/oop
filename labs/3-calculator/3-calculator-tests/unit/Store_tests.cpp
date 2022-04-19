@@ -27,7 +27,7 @@ TEST_CASE("Declaring variable")
 TEST_CASE("Getting variable's value")
 {
 	Store store;
-	std::optional<double> value;
+	double value;
 
 	SECTION("Get value of undeclared variable, expect error result status")
 	{
@@ -43,14 +43,14 @@ TEST_CASE("Getting variable's value")
 
 		REQUIRE(store.GetValue("mass", value).status == ResultStatus::OK);
 
-		REQUIRE(!value.has_value());
+		REQUIRE(isnan(value));
 	}
 }
 
 TEST_CASE("Assigning value to variable")
 {
 	Store store;
-	std::optional<double> value;
+	double value;
 
 	SECTION("Assign constant number to uninitialized variable")
 	{
@@ -60,13 +60,12 @@ TEST_CASE("Assigning value to variable")
 		REQUIRE(store.ContainsIdentifier("length"));
 
 		REQUIRE(store.GetValue("length", value).status == ResultStatus::OK);
-		REQUIRE(!value.has_value());
+		REQUIRE(isnan(value));
 
 		REQUIRE(store.AssignValueToVariable("length", 3.45).status == ResultStatus::OK);
 
 		REQUIRE(store.GetValue("length", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == 3.45);
+		REQUIRE(value == 3.45);
 	}
 
 	SECTION("Assign constant number to undeclared variable, expect variable will be declared and initialized")
@@ -77,8 +76,7 @@ TEST_CASE("Assigning value to variable")
 		REQUIRE(store.ContainsIdentifier("height"));
 
 		REQUIRE(store.GetValue("height", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == 45.2);
+		REQUIRE(value == 45.2);
 	}
 
 	SECTION("Assign UNINITIALIZED variable's value to another UNDECLARED variable")
@@ -89,7 +87,7 @@ TEST_CASE("Assigning value to variable")
 		REQUIRE(store.DeclareVariable("foo").status == ResultStatus::OK);
 
 		REQUIRE(store.GetValue("foo", value).status == ResultStatus::OK);
-		REQUIRE(!value.has_value());
+		REQUIRE(isnan(value));
 
 		REQUIRE(store.ContainsIdentifier("foo"));
 		REQUIRE(!store.ContainsIdentifier("bar"));
@@ -99,7 +97,7 @@ TEST_CASE("Assigning value to variable")
 		REQUIRE(store.ContainsIdentifier("bar"));
 
 		REQUIRE(store.GetValue("bar", value).status == ResultStatus::OK);
-		REQUIRE(!value.has_value());
+		REQUIRE(isnan(value));
 	}
 
 	SECTION("Assign UNINITIALIZED 'foo' variable's value to another INITIALIZED variable 'bar'")
@@ -114,13 +112,12 @@ TEST_CASE("Assigning value to variable")
 		REQUIRE(store.ContainsIdentifier("bar"));
 
 		REQUIRE(store.GetValue("bar", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == 66.7);
+		REQUIRE(value == 66.7);
 
 		REQUIRE(store.AssignValueToVariable("bar", "foo").status == ResultStatus::OK);
 
 		REQUIRE(store.GetValue("bar", value).status == ResultStatus::OK);
-		REQUIRE(!value.has_value());
+		REQUIRE(isnan(value));
 	}
 
 	SECTION("Assign INITIALIZED 'bar' variable's value to another UNDECLARED variable 'foo'")
@@ -132,15 +129,13 @@ TEST_CASE("Assigning value to variable")
 		REQUIRE(store.ContainsIdentifier("bar"));
 
 		REQUIRE(store.GetValue("bar", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == -32.7);
+		REQUIRE(value == -32.7);
 
 		REQUIRE(store.AssignValueToVariable("foo", "bar").status == ResultStatus::OK);
 		REQUIRE(store.ContainsIdentifier("foo"));
 
 		REQUIRE(store.GetValue("foo", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == -32.7);
+		REQUIRE(value == -32.7);
 	}
 
 	SECTION("Assign UNDECLARED variable's value, expect error result status")
@@ -163,12 +158,10 @@ TEST_CASE("Assigning value to variable")
 		REQUIRE(store.AssignValueToVariable("foo", 56.6).status == ResultStatus::OK);
 
 		REQUIRE(store.GetValue("bar", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == 4.2);
+		REQUIRE(value == 4.2);
 
 		REQUIRE(store.GetValue("foo", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == 56.6);
+		REQUIRE(value == 56.6);
 	}
 }
 
@@ -230,7 +223,7 @@ TEST_CASE("Declaring function")
 TEST_CASE("Getting value of functions")
 {
 	Store store;
-	std::optional<double> value;
+	double value;
 
 	SECTION("Get value of function of one variable")
 	{
@@ -238,22 +231,18 @@ TEST_CASE("Getting value of functions")
 		REQUIRE(store.AssignValueToVariable("bar", 4).status == ResultStatus::OK);
 		REQUIRE(store.ContainsIdentifier("bar"));
 		REQUIRE(store.GetValue("bar", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == 4);
+		REQUIRE(value == 4);
 
 		REQUIRE(store.DeclareFunction("fooFunc", "bar").status == ResultStatus::OK);
 		REQUIRE(store.GetValue("fooFunc", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == 4);
+		REQUIRE(value == 4);
 
 		REQUIRE(store.AssignValueToVariable("bar", -8).status == ResultStatus::OK);
 
 		REQUIRE(store.GetValue("fooFunc", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == -8);
+		REQUIRE(value == -8);
 		REQUIRE(store.GetValue("bar", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == -8);
+		REQUIRE(value == -8);
 	}
 
 	SECTION("tripleA=doubleA+A, doubleA=A+A, A=5 then changed to A=10")
@@ -261,26 +250,21 @@ TEST_CASE("Getting value of functions")
 		REQUIRE(!store.ContainsIdentifier("A"));
 		REQUIRE(store.AssignValueToVariable("A", 5).status == ResultStatus::OK);
 		REQUIRE(store.GetValue("A", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == 5);
+		REQUIRE(value == 5);
 
 		REQUIRE(store.DeclareFunction("doubleA", "A", Function::Operation::Add, "A").status == ResultStatus::OK);
 		REQUIRE(store.GetValue("doubleA", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == 10);
+		REQUIRE(value == 10);
 
 		REQUIRE(store.DeclareFunction("tripleA", "doubleA", Function::Operation::Add, "A").status == ResultStatus::OK);
 		REQUIRE(store.GetValue("tripleA", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == 15);
+		REQUIRE(value == 15);
 
 		REQUIRE(store.AssignValueToVariable("A", 10).status == ResultStatus::OK);
 		REQUIRE(store.GetValue("doubleA", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == 20);
+		REQUIRE(value == 20);
 
 		REQUIRE(store.GetValue("tripleA", value).status == ResultStatus::OK);
-		REQUIRE(value.has_value());
-		REQUIRE(*value == 30);
+		REQUIRE(value == 30);
 	}
 }

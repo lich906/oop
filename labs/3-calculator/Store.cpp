@@ -51,11 +51,11 @@ Result Store::DeclareFunction(const string& identifier, const string& firstIdent
 	Operand* firstOperandPtr;
 	if (IsVariable(firstIdentifier))
 	{
-		firstOperandPtr = m_variablesContainer[firstIdentifier].get();
+		firstOperandPtr = m_variablesContainer.at(firstIdentifier).get();
 	}
 	else if (IsFunction(firstIdentifier))
 	{
-		firstOperandPtr = m_functionsContainer[firstIdentifier].get();
+		firstOperandPtr = m_functionsContainer.at(firstIdentifier).get();
 	}
 	else
 	{
@@ -65,11 +65,11 @@ Result Store::DeclareFunction(const string& identifier, const string& firstIdent
 	Operand* secondOperandPtr;
 	if (IsVariable(secondIdentifier))
 	{
-		secondOperandPtr = m_variablesContainer[secondIdentifier].get();
+		secondOperandPtr = m_variablesContainer.at(secondIdentifier).get();
 	}
 	else if (IsFunction(secondIdentifier))
 	{
-		secondOperandPtr = m_functionsContainer[secondIdentifier].get();
+		secondOperandPtr = m_functionsContainer.at(secondIdentifier).get();
 	}
 	else
 	{
@@ -85,10 +85,10 @@ Result Store::DeclareVariable(const string& identifier)
 {
 	if (ContainsIdentifier(identifier))
 	{
-		return { ResultStatus::Error, "Identifier \'" + identifier + "\' has been already declared." };
+		return { ResultStatus::Error, "Identifier '" + identifier + "' has been already declared." };
 	}
 
-	m_variablesContainer[identifier] = make_unique<Variable>();
+	m_variablesContainer[identifier] = make_unique<Variable>(nan(""));
 
 	return { ResultStatus::OK };
 }
@@ -97,17 +97,17 @@ Result Store::AssignValueToVariable(const string& identifier, const string& assi
 {
 	if (IsFunction(identifier))
 	{
-		return { ResultStatus::Error, "'" + assigningIdentifier + "' is a function." };
+		return { ResultStatus::Error, "'" + identifier + "' is a function." };
 	}
 
-	optional<double> assigningValue;
+	double assigningValue;
 	if (IsVariable(assigningIdentifier))
 	{
-		assigningValue = m_variablesContainer[assigningIdentifier]->GetValue();
+		assigningValue = m_variablesContainer.at(assigningIdentifier)->GetValue();
 	}
 	else if (IsFunction(assigningIdentifier))
 	{
-		assigningValue = m_functionsContainer[assigningIdentifier]->GetValue();
+		assigningValue = m_functionsContainer.at(assigningIdentifier)->GetValue();
 	}
 	else
 	{
@@ -120,7 +120,7 @@ Result Store::AssignValueToVariable(const string& identifier, const string& assi
 	}
 	else
 	{
-		m_variablesContainer[identifier]->SetValue(assigningValue);
+		m_variablesContainer.at(identifier)->SetValue(assigningValue);
 	}
 
 	return { ResultStatus::OK };
@@ -135,25 +135,25 @@ Result Store::AssignValueToVariable(const string& identifier, double value)
 
 	if (IsVariable(identifier))
 	{
-		m_variablesContainer[identifier]->SetValue(optional<double>(value));
+		m_variablesContainer.at(identifier)->SetValue(value);
 	}
 	else
 	{
-		m_variablesContainer[identifier] = make_unique<Variable>(optional<double>(value));
+		m_variablesContainer[identifier] = make_unique<Variable>(value);
 	}
 
 	return { ResultStatus::OK };
 }
 
-Result Store::GetValue(const string& identifier, optional<double>& value)
+Result Store::GetValue(const string& identifier, double& value) const
 {
 	if (IsFunction(identifier))
 	{
-		value = m_functionsContainer[identifier]->GetValue();
+		value = m_functionsContainer.at(identifier)->GetValue();
 	}
 	else if (IsVariable(identifier))
 	{
-		value = m_variablesContainer[identifier]->GetValue();
+		value = m_variablesContainer.at(identifier)->GetValue();
 	}
 	else
 	{
@@ -163,9 +163,9 @@ Result Store::GetValue(const string& identifier, optional<double>& value)
 	return { ResultStatus::OK };
 }
 
-Store::IdentifierValueVector Store::GetAllFunctionsValues()
+Store::IdentifierValueVector Store::GetAllFunctionsValues() const
 {
-	vector<pair<string, optional<double>>> allFunctionsValues;
+	vector<pair<string, double>> allFunctionsValues;
 
 	for (const auto& [identifier, functionPtr] : m_functionsContainer)
 	{
@@ -175,9 +175,9 @@ Store::IdentifierValueVector Store::GetAllFunctionsValues()
 	return allFunctionsValues;
 }
 
-Store::IdentifierValueVector Store::GetAllVariablesValues()
+Store::IdentifierValueVector Store::GetAllVariablesValues() const
 {
-	vector<pair<string, optional<double>>> allVariablesValues;
+	vector<pair<string, double>> allVariablesValues;
 
 	for (const auto& [identifier, variablePtr] : m_variablesContainer)
 	{

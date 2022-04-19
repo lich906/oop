@@ -74,16 +74,16 @@ Result Calculator::ExecutePrintCommand(const ExpressionParser::CommandData& comm
 {
 	Result result;
 	std::ostringstream outputStream;
-	std::optional<double> value;
+	double value;
 
 	if ((result = m_store.GetValue(commandData.identifiers[0], value)).status != ResultStatus::OK)
 	{
 		return result;
 	}
 
-	if (value.has_value())
+	if (!isnan(value))
 	{
-		outputStream << *value;
+		outputStream << value;
 	}
 	else
 	{
@@ -105,9 +105,9 @@ Result Calculator::ExecutePrintAllCommand(const Store::IdentifierValueVector& id
 		for (const auto& [identifier, value] : identifierValues)
 		{
 			outputStream << identifier << " : ";
-			if (value.has_value())
+			if (!isnan(value))
 			{
-				outputStream << *value;
+				outputStream << value;
 			}
 			else
 			{

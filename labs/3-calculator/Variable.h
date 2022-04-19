@@ -4,19 +4,15 @@
 class Variable : public Operand
 {
 public:
-	Variable()
-	{
-	}
-	
-	Variable(const std::optional<double>& value)
+	Variable(double value)
 		: m_value(value)
 	{
 	}
 
-	void SetValue(std::optional<double> value);
+	void SetValue(double value);
 
-	std::optional<double> GetValue() const override;
+	double GetValue() const override;
 
 private:
-	std::optional<double> m_value;
+	double m_value;
 };

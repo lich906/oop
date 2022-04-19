@@ -20,7 +20,7 @@ Result ExpressionParser::Parse(const std::string& rawString, CommandData& parsed
 
 	if (!commandType.has_value())
 	{
-		return { ResultStatus::Error, "Unknown command type '" + commandTypeStr + "'." };
+		return { ResultStatus::Error, "Unknown command '" + commandTypeStr + "'." };
 	}
 
 	std::string restExprString =
@@ -34,7 +34,7 @@ Result ExpressionParser::Parse(const std::string& rawString, CommandData& parsed
 	case CommandType::PrintValue:
 		if (!IsValidIdentifier(restExprString))
 		{
-			return { ResultStatus::Error, "Parsing error: Invalid identifier '" + restExprString + "'." };
+			return { ResultStatus::Error, "'" + restExprString + "' is not a valid identifier." };
 		}
 		parsedData = { *commandType, { restExprString } };
 		break;
@@ -62,14 +62,14 @@ Result ExpressionParser::ParseVariableAssignment(const std::string& exprString, 
 
 	if (equalityCharPos == std::string::npos)
 	{
-		return { ResultStatus::Error, "Failed to parse assignment '" + exprString + "'." };
+		return { ResultStatus::Error, "Failed to parse expression '" + exprString + "'." };
 	}
 
 	std::string destIdentifier = exprString.substr(0, equalityCharPos);
 
 	if (!IsValidIdentifier(destIdentifier))
 	{
-		return { ResultStatus::Error, "Parsing error: Invalid identifier '" + destIdentifier + "'." };
+		return { ResultStatus::Error, "'" + destIdentifier + "' is not a valid identifier." };
 	}
 
 	std::string rightPart = exprString.substr(equalityCharPos + 1);
@@ -93,7 +93,7 @@ Result ExpressionParser::ParseVariableAssignment(const std::string& exprString, 
 	}
 	else
 	{
-		return { ResultStatus::Error, "Failed to parse '" + rightPart + "' expression." };
+		return { ResultStatus::Error, "Failed to parse expression '" + rightPart + "'." };
 	}
 
 	return { ResultStatus::OK };
@@ -104,14 +104,14 @@ Result ExpressionParser::ParseFunctionDeclaration(const std::string& exprString,
 	size_t equalityCharPos = exprString.find('=');
 	if (equalityCharPos == std::string::npos)
 	{
-		return { ResultStatus::Error, "Failed to parse expression '" + exprString + "' no assignment found." };
+		return { ResultStatus::Error, "Failed to parse expression '" + exprString + "'." };
 	}
 
 	std::string fnIdentifier = exprString.substr(0, equalityCharPos);
 
 	if (!IsValidIdentifier(fnIdentifier))
 	{
-		return { ResultStatus::Error, "Parsing error: Invalid identifier '" + fnIdentifier + "'." };
+		return { ResultStatus::Error, "'" + fnIdentifier + "' is not a valid identifier." };
 	}
 
 	std::string rightPart = exprString.substr(equalityCharPos + 1);
@@ -125,12 +125,12 @@ Result ExpressionParser::ParseFunctionDeclaration(const std::string& exprString,
 			std::string secondOperandId = rightPart.substr(opChPos + 1);
 			if (!IsValidIdentifier(firstOperandId))
 			{
-				return { ResultStatus::Error, "Parsing error: Invalid identifier '" + firstOperandId + "'." };
+				return { ResultStatus::Error, "'" + firstOperandId + "' is not a valid identifier." };
 			}
 
 			if (!IsValidIdentifier(secondOperandId))
 			{
-				return { ResultStatus::Error, "Parsing error: Invalid identifier '" + secondOperandId + "'." };
+				return { ResultStatus::Error, "'" + secondOperandId + "' is not a valid identifier." };
 			}
 
 			parsedData = { CommandType::DeclareFunction, { fnIdentifier, firstOperandId, secondOperandId }, {}, opCh };
@@ -141,7 +141,7 @@ Result ExpressionParser::ParseFunctionDeclaration(const std::string& exprString,
 
 	if (!IsValidIdentifier(rightPart))
 	{
-		return { ResultStatus::Error, "Parsing error: Invalid identifier '" + rightPart + "'." };
+		return { ResultStatus::Error, "'" + rightPart + "' is not a valid identifier." };
 	}
 
 	parsedData = { CommandType::DeclareFunction, { fnIdentifier, rightPart } };

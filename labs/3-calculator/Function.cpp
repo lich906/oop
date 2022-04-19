@@ -4,8 +4,8 @@ using namespace std;
 
 Function::Function(Operand* const operandPtr)
 {
-	m_firstOperandPtr = operandPtr;
 	operandPtr->AddDependentFunction(this);
+	m_firstOperandPtr = operandPtr;
 }
 
 Function::Function(Operand* const firstOperandPtr, Operation operation, Operand* const secondOperandPtr)
@@ -17,25 +17,18 @@ Function::Function(Operand* const firstOperandPtr, Operation operation, Operand*
 	m_operation = operation;
 }
 
-optional<double> Function::GetValue() const
+double Function::GetValue() const
 {
 	if (m_cachedValue.has_value())
 	{
 		return *m_cachedValue;
 	}
 
-	optional<double> newValue = CalculateValue();
-
-	if (newValue.has_value())
-	{
-		FlushDependentFunctionValues();
-		return *(m_cachedValue = newValue);
-	}
-
-	return nullopt;
+	FlushDependentFunctionValues();
+	return *(m_cachedValue = CalculateValue());
 }
 
-void Function::FlushCachedValue() const
+void Function::FlushCachedValue()
 {
 	if (m_cachedValue.has_value())
 	{
@@ -44,33 +37,33 @@ void Function::FlushCachedValue() const
 	}
 }
 
-optional<double> Function::CalculateValue() const
+double Function::CalculateValue() const
 {
-	optional<double> value = m_firstOperandPtr->GetValue();
+	double value = m_firstOperandPtr->GetValue();
 
-	if (!m_operation.has_value() || !value.has_value())
+	if (!m_operation.has_value() || isnan(value))
 	{
 		return value;
 	}
 
-	optional<double> secondOperandValue = (*m_secondOperandPtr)->GetValue();
+	double secondOperandValue = (*m_secondOperandPtr)->GetValue();
 
-	if (!secondOperandValue.has_value())
+	if (isnan(secondOperandValue))
 	{
-		return nullopt;
+		return secondOperandValue;
 	}
 
 	switch (*m_operation)
 	{
 	case Operation::Add:
-		return *value + *secondOperandValue;
+		return value + secondOperandValue;
 	case Operation::Sub:
-		return *value - *secondOperandValue;
+		return value - secondOperandValue;
 	case Operation::Mul:
-		return *value * *secondOperandValue;
+		return value * secondOperandValue;
 	case Operation::Div:
-		return *value / *secondOperandValue;
+		return value / secondOperandValue;
 	default:
-		return nullopt;
+		return nan("");
 	}
 }
