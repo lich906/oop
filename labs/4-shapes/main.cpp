@@ -1,4 +1,5 @@
 #include "ShapeService.h"
+#include "Canvas.h"
 
 int main()
 {
@@ -15,6 +16,13 @@ int main()
 	std::cout << std::endl;
 	std::cout << "====  Min Perimeter Shape  ====" << std::endl;
 	shapeService.PrintShapeInfo(std::cout, shapeService.FindMinPerimeterShape());
+
+	Canvas canvas(800, 600, "Malov die balls");
+	shapeService.DrawAll(canvas);
+
+	canvas.RenderAll();
+
+	canvas.HoldWindow();
 
 	return 0;
 }

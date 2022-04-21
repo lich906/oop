@@ -139,6 +139,14 @@ std::weak_ptr<IShape> ShapeService::FindMinPerimeterShape()
 	return minPerimeterShape;
 }
 
+void ShapeService::DrawAll(ICanvas& canvas) const
+{
+	for (const std::shared_ptr<IShape> shape : m_shapes)
+	{
+		shape->Draw(canvas);
+	}
+}
+
 bool ShapeService::ReadLineSegmentData(std::istream& input)
 {
 	double startX, startY, endX, endY;

@@ -25,6 +25,8 @@ public:
 	std::weak_ptr<IShape> FindMaxAreaShape();
 	std::weak_ptr<IShape> FindMinPerimeterShape();
 
+	void DrawAll(ICanvas& canvas) const;
+
 private:
 	bool ReadLineSegmentData(std::istream& input);
 	bool ReadTriangleData(std::istream& input);

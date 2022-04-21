@@ -58,3 +58,10 @@ Point Triangle::GetVertex3() const
 	return m_vertex[2];
 }
 
+void Triangle::Draw(ICanvas& canvas) const
+{
+	canvas.FillPolygon({ m_vertex[0], m_vertex[1], m_vertex[2] }, m_fillColor);
+	canvas.DrawLine(m_vertex[0], m_vertex[1], m_outlineColor);
+	canvas.DrawLine(m_vertex[1], m_vertex[2], m_outlineColor);
+	canvas.DrawLine(m_vertex[2], m_vertex[0], m_outlineColor);
+}

@@ -19,6 +19,11 @@ public:
 	uint32_t GetOutlineColor() const override;
 	uint32_t GetFillColor() const override;
 
+	Point GetCenter() const;
+	double GetRadius() const;
+
+	void Draw(ICanvas& canvas) const override;
+
 private:
 	Point m_center;
 	double m_radius;

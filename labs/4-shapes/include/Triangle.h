@@ -21,6 +21,8 @@ public:
 	Point GetVertex2() const;
 	Point GetVertex3() const;
 
+	void Draw(ICanvas& canvas) const override;
+
 private:
 	Point m_vertex[3];
 	uint32_t m_outlineColor;

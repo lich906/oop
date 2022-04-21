@@ -42,3 +42,19 @@ uint32_t Circle::GetFillColor() const
 {
 	return m_fillColor;
 }
+
+Point Circle::GetCenter() const
+{
+	return m_center;
+}
+
+double Circle::GetRadius() const
+{
+	return m_radius;
+}
+
+void Circle::Draw(ICanvas& canvas) const
+{
+	canvas.FillCircle(m_center, m_radius, m_fillColor);
+	canvas.DrawCircle(m_center, m_radius, m_outlineColor);
+}

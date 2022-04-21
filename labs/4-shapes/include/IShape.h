@@ -1,10 +1,11 @@
 #pragma once
+#include "ICanvasDrawable.h"
 #include <string>
 #include <iomanip>
 
 constexpr int outputPrecision = 2;
 
-class IShape
+class IShape : public ICanvasDrawable
 {
 public:
 	virtual double GetArea() const = 0;
