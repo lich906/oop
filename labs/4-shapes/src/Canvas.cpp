@@ -21,7 +21,7 @@ void Canvas::FillPolygon(const std::vector<Point>& points, uint32_t fillColor)
 		polygon->setPoint(index, sf::Vector2f(points[index].x, points[index].y));
 	}
 	polygon->setFillColor(sf::Color(fillColor));
-	polygon->setOutlineThickness(outlineThickness);
+	polygon->setOutlineThickness(0);
 
 	m_drawBuffer.push(std::unique_ptr<sf::Drawable>(polygon));
 }
