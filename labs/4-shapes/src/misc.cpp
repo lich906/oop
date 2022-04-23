@@ -23,7 +23,7 @@ std::string GetColorHexString(uint32_t colorValue)
 {
 	std::string hexString;
 
-	for (char i = 0; i < 6; ++i)
+	for (char i = 0; i < 8; ++i)
 	{
 		hexString.insert(hexString.begin(), mapRemainderToHexDigit.at(colorValue % 16));
 		colorValue /= 16;
