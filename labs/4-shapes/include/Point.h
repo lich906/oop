@@ -13,5 +13,7 @@ public:
 	double x;
 	double y;
 
+	bool operator==(const Point& other) const;
+
 	std::string ToString() const;
 };

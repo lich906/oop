@@ -66,7 +66,7 @@ void Rectangle::Draw(ICanvas& canvas) const
 	Point rightTop(m_leftTop.x + m_width, m_leftTop.y);
 	Point leftBottom(m_leftTop.x, m_leftTop.y + m_height);
 
-	canvas.FillPolygon({m_leftTop, rightTop, GetRightBottom(), leftBottom}, m_fillColor);
+	canvas.FillPolygon({ m_leftTop, rightTop, GetRightBottom(), leftBottom }, m_fillColor);
 	canvas.DrawLine(m_leftTop, rightTop, m_outlineColor);
 	canvas.DrawLine(rightTop, GetRightBottom(), m_outlineColor);
 	canvas.DrawLine(GetRightBottom(), leftBottom, m_outlineColor);

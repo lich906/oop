@@ -154,11 +154,13 @@
     <ClCompile Include="..\src\Rectangle.cpp" />
     <ClCompile Include="..\src\ShapeService.cpp" />
     <ClCompile Include="..\src\Triangle.cpp" />
+    <ClCompile Include="ICanvas.tests.cpp" />
     <ClCompile Include="ShapeService.tests.cpp" />
     <ClCompile Include="tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Circle.h" />
+    <ClInclude Include="..\include\ICanvas.h" />
     <ClInclude Include="..\include\IShape.h" />
     <ClInclude Include="..\include\ISolidShape.h" />
     <ClInclude Include="..\include\LineSegment.h" />
