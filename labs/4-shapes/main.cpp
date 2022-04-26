@@ -12,10 +12,10 @@ int main()
 	}
 
 	std::cout << "====  Max Area Shape  ====" << std::endl;
-	shapeService.PrintShapeInfo(std::cout, shapeService.FindMaxAreaShape());
+	shapeService.PrintMaxAreaShapeInfo(std::cout);
 	std::cout << std::endl;
 	std::cout << "====  Min Perimeter Shape  ====" << std::endl;
-	shapeService.PrintShapeInfo(std::cout, shapeService.FindMinPerimeterShape());
+	shapeService.PrintMinPerimeterShapeInfo(std::cout);
 
 	Canvas canvas(800, 600, "Malov die balls");
 	shapeService.DrawAll(canvas);

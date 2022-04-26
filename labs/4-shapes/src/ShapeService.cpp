@@ -74,11 +74,11 @@ bool ShapeService::ReadShapeData(std::istream& input)
 	return true;
 }
 
-void ShapeService::PrintShapeInfo(std::ostream& output, const std::weak_ptr<IShape>& shape)
+void ShapeService::PrintMaxAreaShapeInfo(std::ostream& output) const
 {
-	if (auto lockedPtr = shape.lock())
+	if (auto maxAreaShapePtr = FindMaxAreaShape())
 	{
-		output << lockedPtr->ToString();
+		output << maxAreaShapePtr->ToString();
 	}
 	else
 	{
@@ -86,24 +86,26 @@ void ShapeService::PrintShapeInfo(std::ostream& output, const std::weak_ptr<ISha
 	}
 }
 
-std::weak_ptr<IShape> ShapeService::GetShapeAt(size_t pos)
+void ShapeService::PrintMinPerimeterShapeInfo(std::ostream& output) const
 {
-	if (m_shapes.empty() || pos >= m_shapes.size())
+	if (auto minPerimeterShapePtr = FindMinPerimeterShape())
 	{
-		return {};
+		output << minPerimeterShapePtr->ToString();
 	}
-
-	return m_shapes[pos];
+	else
+	{
+		output << "Failed to print shape data." << std::endl;
+	}
 }
 
-std::weak_ptr<IShape> ShapeService::FindMaxAreaShape()
+std::shared_ptr<IShape> ShapeService::FindMaxAreaShape() const
 {
 	if (m_shapes.empty())
 	{
 		return {};
 	}
 
-	std::weak_ptr<IShape> maxAreaShape = m_shapes[0];
+	std::shared_ptr<IShape> maxAreaShape = m_shapes[0];
 	double maxArea = m_shapes[0]->GetArea();
 	double area;
 	for (size_t i = 1; i < m_shapes.size(); ++i)
@@ -117,14 +119,14 @@ std::weak_ptr<IShape> ShapeService::FindMaxAreaShape()
 	return maxAreaShape;
 }
 
-std::weak_ptr<IShape> ShapeService::FindMinPerimeterShape()
+std::shared_ptr<IShape> ShapeService::FindMinPerimeterShape() const
 {
 	if (m_shapes.empty())
 	{
 		return {};
 	}
 
-	std::weak_ptr<IShape> minPerimeterShape = m_shapes[0];
+	std::shared_ptr<IShape> minPerimeterShape = m_shapes[0];
 	double minPerimeter = m_shapes[0]->GetPerimeter();
 	double perimeter;
 	for (size_t i = 1; i < m_shapes.size(); ++i)

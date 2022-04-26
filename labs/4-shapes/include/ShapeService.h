@@ -20,14 +20,15 @@ public:
 	};
 
 	bool ReadShapeData(std::istream& input);
-	void PrintShapeInfo(std::ostream& output, const std::weak_ptr<IShape>& shape);
-	std::weak_ptr<IShape> GetShapeAt(size_t pos);
-	std::weak_ptr<IShape> FindMaxAreaShape();
-	std::weak_ptr<IShape> FindMinPerimeterShape();
+	void PrintMaxAreaShapeInfo(std::ostream& output) const;
+	void PrintMinPerimeterShapeInfo(std::ostream& output) const;
 
 	void DrawAll(ICanvas& canvas) const;
 
 private:
+	std::shared_ptr<IShape> FindMaxAreaShape() const;
+	std::shared_ptr<IShape> FindMinPerimeterShape() const;
+
 	bool ReadLineSegmentData(std::istream& input);
 	bool ReadTriangleData(std::istream& input);
 	bool ReadRectangleData(std::istream& input);

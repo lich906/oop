@@ -74,5 +74,7 @@ void Canvas::HoldWindow()
 				m_window.close();
 			}
 		}
+
+		sf::sleep(sf::milliseconds(20));
 	}
 }

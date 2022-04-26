@@ -4,6 +4,7 @@
 
 double Triangle::GetArea() const
 {
+	// сделать понятным для чтения
 	return 0.5 * abs(m_vertex[0].x * (m_vertex[1].y - m_vertex[2].y) + m_vertex[1].x * (m_vertex[2].y - m_vertex[0].y) + m_vertex[2].x * (m_vertex[0].y - m_vertex[1].y));
 }
 

@@ -17,8 +17,6 @@ TEST_CASE("ReadShapeData reads data from istream and saves the object")
 	{
 		std::istringstream iss("line 0 0 3 4 00FF00FF");
 		REQUIRE(service.ReadShapeData(iss));
-		service.PrintShapeInfo(oss, service.GetShapeAt(0));
-		REQUIRE(oss.str() == "type: line segment\nstart point:\n\tx: 0\ty: 0\nend point:\n\tx: 3\ty: 4\nlength: 5.00\noutline color: 00FF00FF\n");
 	}
 
 	SECTION("Read invalid line segment data")
@@ -31,24 +29,18 @@ TEST_CASE("ReadShapeData reads data from istream and saves the object")
 	{
 		std::istringstream iss("triangle 0 0 3 4 6 0 00FF00FF EEFFAAFF");
 		REQUIRE(service.ReadShapeData(iss));
-		service.PrintShapeInfo(oss, service.GetShapeAt(0));
-		REQUIRE(oss.str() == "type: triangle\nvertex 1:\n\tx: 0\ty: 0\nvertex 2:\n\tx: 3\ty: 4\nvertex 3:\n\tx: 6\ty: 0\narea: 12.00\nperimeter: 16.00\noutline color: 00FF00FF\nfill color: EEFFAAFF\n");
 	}
 
 	SECTION("Read rectangle data")
 	{
 		std::istringstream iss("rectangle 0 10 20 10 00FF33FF EEFFBBFF");
 		REQUIRE(service.ReadShapeData(iss));
-		service.PrintShapeInfo(oss, service.GetShapeAt(0));
-		REQUIRE(oss.str() == "type: rectangle\nleft top:\n\tx: 0\ty: 10\nwidth: 20.00\nheight: 10.00\narea: 200.00\nperimeter: 60.00\noutline color: 00FF33FF\nfill color: EEFFBBFF\n");
 	}
 
 	SECTION("Read circle data")
 	{
 		std::istringstream iss("circle 10 10 20 22AA33FF CCFFBBFF");
 		REQUIRE(service.ReadShapeData(iss));
-		service.PrintShapeInfo(oss, service.GetShapeAt(0));
-		REQUIRE(oss.str() == "type: circle\ncenter:\n\tx: 10\ty: 10\nradius: 20.00\narea: 1256.64\nperimeter: 125.66\noutline color: 22AA33FF\nfill color: CCFFBBFF\n");
 	}
 }
 
@@ -59,7 +51,7 @@ TEST_CASE("FindMaxAreaShape finds the shape with max area")
 
 	SECTION("If there is no shapes")
 	{
-		service.PrintShapeInfo(oss, service.FindMaxAreaShape());
+		service.PrintMaxAreaShapeInfo(oss);
 		REQUIRE(oss.str() == "Failed to print shape data.\n");
 	}
 
@@ -67,7 +59,7 @@ TEST_CASE("FindMaxAreaShape finds the shape with max area")
 	{
 		std::istringstream iss("rectangle 0 10 20 10 00FF33FF EEFFBBFF");
 		REQUIRE(service.ReadShapeData(iss));
-		service.PrintShapeInfo(oss, service.FindMaxAreaShape());
+		service.PrintMaxAreaShapeInfo(oss);
 		REQUIRE(oss.str() == "type: rectangle\nleft top:\n\tx: 0\ty: 10\nwidth: 20.00\nheight: 10.00\narea: 200.00\nperimeter: 60.00\noutline color: 00FF33FF\nfill color: EEFFBBFF\n");
 	}
 
@@ -75,7 +67,7 @@ TEST_CASE("FindMaxAreaShape finds the shape with max area")
 	{
 		std::istringstream iss("rectangle 1 3 10 5 00FF33FF EEFFBBFF\nrectangle 5 -6 10 10 00FF33FF EEFFBBFF\nrectangle -7 4 1 15 00FF33FF EEFFBBFF");
 		REQUIRE(service.ReadShapeData(iss));
-		service.PrintShapeInfo(oss, service.FindMaxAreaShape());
+		service.PrintMaxAreaShapeInfo(oss);
 		REQUIRE(oss.str() == "type: rectangle\nleft top:\n\tx: 5\ty: -6\nwidth: 10.00\nheight: 10.00\narea: 100.00\nperimeter: 40.00\noutline color: 00FF33FF\nfill color: EEFFBBFF\n");
 	}
 
@@ -83,7 +75,7 @@ TEST_CASE("FindMaxAreaShape finds the shape with max area")
 	{
 		std::istringstream iss("rectangle 1 3 10 5 00FF33FF EEFFBBFF\ntriangle 0 0 3 4 6 0 00FF33FF EEFFBBFF\ncircle 0 0 15 00FF33FF EEFFBBFF");
 		REQUIRE(service.ReadShapeData(iss));
-		service.PrintShapeInfo(oss, service.FindMaxAreaShape());
+		service.PrintMaxAreaShapeInfo(oss);
 		REQUIRE(oss.str() == "type: circle\ncenter:\n\tx: 0\ty: 0\nradius: 15.00\narea: 706.86\nperimeter: 94.25\noutline color: 00FF33FF\nfill color: EEFFBBFF\n");
 	}
 }
@@ -95,7 +87,7 @@ TEST_CASE("FindMinPerimeterShape finds the shape with min perimeter")
 
 	SECTION("If there is no shapes")
 	{
-		service.PrintShapeInfo(oss, service.FindMinPerimeterShape());
+		service.PrintMinPerimeterShapeInfo(oss);
 		REQUIRE(oss.str() == "Failed to print shape data.\n");
 	}
 
@@ -103,7 +95,7 @@ TEST_CASE("FindMinPerimeterShape finds the shape with min perimeter")
 	{
 		std::istringstream iss("rectangle 0 10 20 10 00FF33FF EEFFBBFF");
 		REQUIRE(service.ReadShapeData(iss));
-		service.PrintShapeInfo(oss, service.FindMinPerimeterShape());
+		service.PrintMinPerimeterShapeInfo(oss);
 		REQUIRE(oss.str() == "type: rectangle\nleft top:\n\tx: 0\ty: 10\nwidth: 20.00\nheight: 10.00\narea: 200.00\nperimeter: 60.00\noutline color: 00FF33FF\nfill color: EEFFBBFF\n");
 	}
 
@@ -111,7 +103,7 @@ TEST_CASE("FindMinPerimeterShape finds the shape with min perimeter")
 	{
 		std::istringstream iss("rectangle 1 3 10 5 00FF33FF EEFFBBFF\nrectangle 5 -6 10 10 00FF33FF EEFFBBFF\nrectangle -7 4 1 15 00FF33FF EEFFBBFF");
 		REQUIRE(service.ReadShapeData(iss));
-		service.PrintShapeInfo(oss, service.FindMinPerimeterShape());
+		service.PrintMinPerimeterShapeInfo(oss);
 		REQUIRE(oss.str() == "type: rectangle\nleft top:\n\tx: 1\ty: 3\nwidth: 10.00\nheight: 5.00\narea: 50.00\nperimeter: 30.00\noutline color: 00FF33FF\nfill color: EEFFBBFF\n");
 	}
 
@@ -119,7 +111,7 @@ TEST_CASE("FindMinPerimeterShape finds the shape with min perimeter")
 	{
 		std::istringstream iss("rectangle 1 3 10 5 00FF33FF EEFFBBFF\ntriangle 0 0 3 4 6 0 00FF33FF EEFFBBFF\ncircle 0 0 15 00FF33FF EEFFBBFF");
 		REQUIRE(service.ReadShapeData(iss));
-		service.PrintShapeInfo(oss, service.FindMinPerimeterShape());
+		service.PrintMinPerimeterShapeInfo(oss);
 		REQUIRE(oss.str() == "type: triangle\nvertex 1:\n\tx: 0\ty: 0\nvertex 2:\n\tx: 3\ty: 4\nvertex 3:\n\tx: 6\ty: 0\narea: 12.00\nperimeter: 16.00\noutline color: 00FF33FF\nfill color: EEFFBBFF\n");
 	}
 }
