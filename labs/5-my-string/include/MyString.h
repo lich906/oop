@@ -27,7 +27,7 @@ public:
 	void Clear();
 
 private:
-	size_t m_currentSize;
+	size_t m_currentSize = 0;
 
 	char* m_stringData;
 };
