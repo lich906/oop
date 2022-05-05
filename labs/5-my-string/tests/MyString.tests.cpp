@@ -13,11 +13,11 @@ TEST_CASE("Initializing string")
 	SECTION("Initialize MyString with null-terminated string")
 	{
 		char str[] = "Wizard";
-		MyString myStr(str), myStr2("That's fine"), myStr3 = "Converting constructor should be invoked";
+		MyString myStr(str), myStr2("That's fine"), myStr3 = "Convert constructor should be invoked";
 
 		REQUIRE(strcmp(myStr.GetStringData(), str) == 0);
 		REQUIRE(strcmp(myStr2.GetStringData(), "That's fine") == 0);
-		REQUIRE(strcmp(myStr3.GetStringData(), "Converting constructor should be invoked") == 0);
+		REQUIRE(strcmp(myStr3.GetStringData(), "Convert constructor should be invoked") == 0);
 	}
 
 	SECTION("Ensure that MyString was copied rather than pointed to existing char array")
@@ -58,9 +58,43 @@ TEST_CASE("Initializing string")
 	SECTION("Initialize MyString with std::string instance")
 	{
 		MyString myStr(std::string("Stl string"));
-		MyString myStr2 = std::string("Converting constructor should be invoked");
+		MyString myStr2 = std::string("Convert constructor should be invoked");
 
 		REQUIRE(strcmp(myStr.GetStringData(), "Stl string") == 0);
-		REQUIRE(strcmp(myStr2.GetStringData(), "Converting constructor should be invoked") == 0);
+		REQUIRE(strcmp(myStr2.GetStringData(), "Convert constructor should be invoked") == 0);
+	}
+}
+
+TEST_CASE("Test MyString's copy constructor and copy assignment operator")
+{
+	SECTION("Explicit constructor call")
+	{
+		MyString src("I went to netherlands");
+		REQUIRE(strcmp(src.GetStringData(), "I went to netherlands") == 0);
+
+		MyString dest(src);
+		REQUIRE(strcmp(dest.GetStringData(), "I went to netherlands") == 0);
+	}
+
+	SECTION("Test copy assignment operator")
+	{
+		MyString src("Our legion grows"), dest;
+
+		dest = src;
+		REQUIRE(strcmp(dest.GetStringData(), "Our legion grows") == 0);
+	}
+
+	SECTION("Ensure that data was copied rather than pointed to data of other string")
+	{
+		MyString src("Some cool phrase"), dest;
+		REQUIRE(strcmp(src.GetStringData(), "Some cool phrase") == 0);
+
+		dest = src;
+		REQUIRE(strcmp(dest.GetStringData(), "Some cool phrase") == 0);
+
+		src = "That phrase is cooller";
+
+		REQUIRE(strcmp(src.GetStringData(), "That phrase is cooller") == 0);
+		REQUIRE(strcmp(dest.GetStringData(), "Some cool phrase") == 0);
 	}
 }

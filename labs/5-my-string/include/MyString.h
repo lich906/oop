@@ -12,6 +12,8 @@ public:
 
 	MyString(const MyString& other);
 
+	MyString& operator=(const MyString& other);
+
 	MyString(MyString&& other);
 
 	MyString(const std::string& stlString);
@@ -28,6 +30,7 @@ public:
 
 private:
 	size_t m_currentSize = 0;
+	size_t m_currentCapacity = m_currentSize;
 
 	char* m_stringData;
 };
