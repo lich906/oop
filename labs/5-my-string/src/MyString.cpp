@@ -29,7 +29,7 @@ MyString::MyString(const MyString& other)
 	}
 
 	m_stringData = std::shared_ptr<char[]>(new char[m_currentSize + 1]);
-	memcpy(m_stringData.get(), other.m_stringData.get(), m_currentSize);
+	memcpy(m_stringData.get(), other.GetStringData(), m_currentSize);
 	m_stringData[m_currentSize] = '\0';
 }
 
@@ -47,7 +47,7 @@ MyString::MyString(const std::string& stlString)
 
 MyString& MyString::operator=(const MyString& other)
 {
-	m_currentSize = other.m_currentSize;
+	m_currentSize = other.GetLength();
 
 	if (m_currentSize > m_currentCapacity)
 	{
@@ -55,7 +55,7 @@ MyString& MyString::operator=(const MyString& other)
 		m_currentCapacity = m_currentSize;
 	}
 
-	memcpy(m_stringData.get(), other.m_stringData.get(), m_currentSize);
+	memcpy(m_stringData.get(), other.GetStringData(), m_currentSize);
 	m_stringData[m_currentSize] = '\0';
 
 	return *this;
@@ -63,9 +63,33 @@ MyString& MyString::operator=(const MyString& other)
 
 MyString& MyString::operator=(MyString&& other) noexcept
 {
-	m_currentSize = other.m_currentSize;
+	m_currentSize = other.GetLength();
 	m_currentCapacity = other.m_currentCapacity;
 	m_stringData = other.m_stringData;
+
+	return *this;
+}
+
+MyString& MyString::operator+=(const MyString& other)
+{
+	if (!other.GetLength())
+	{
+		return *this;
+	}
+
+	if (other.GetLength() > m_currentCapacity - m_currentSize)
+	{
+		auto newArray = std::shared_ptr<char[]>(new char[m_currentSize + other.GetLength() + 1]);
+		memcpy(newArray.get(), GetStringData(), m_currentSize);
+		memcpy(newArray.get() + m_currentSize, other.GetStringData(), other.GetLength());
+		m_currentCapacity = m_currentSize += other.GetLength();
+		newArray[m_currentSize] = '\0';
+		m_stringData = newArray;
+	}
+	else
+	{
+		memcpy(m_stringData.get() + m_currentSize, other.GetStringData(), other.GetLength());
+	}
 
 	return *this;
 }
@@ -82,4 +106,38 @@ size_t MyString::GetLength() const
 const char* MyString::GetStringData() const
 {
 	return m_stringData.get();
+}
+
+MyString MyString::SubString(size_t start, size_t length) const
+{
+	if (start >= m_currentSize || !length)
+	{
+		return MyString();
+	}
+
+	if (!start && length >= m_currentSize)
+	{
+		return *this;
+	}
+
+	if (length + start > m_currentSize)
+	{
+		return MyString(m_stringData.get() + start, m_currentSize - start);
+	}
+	else
+	{
+		return MyString(m_stringData.get() + start, length);
+	}
+}
+
+void MyString::Clear()
+{
+	m_stringData = std::shared_ptr<char[]>(new char[1]{ '\0' });
+	m_currentSize = 0;
+	m_currentCapacity = 0;
+}
+
+MyString const operator+(MyString lhs, const MyString& rhs)
+{
+	return lhs += rhs;
 }

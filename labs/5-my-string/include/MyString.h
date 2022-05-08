@@ -21,6 +21,7 @@ public:
 
 	MyString& operator=(const MyString& other);
 	MyString& operator=(MyString&& other) noexcept;
+	MyString& operator+=(const MyString& other);
 
 private:
 	size_t m_currentSize = 0;
@@ -28,3 +29,5 @@ private:
 
 	std::shared_ptr<char[]> m_stringData;
 };
+
+MyString const operator+(MyString lhs, const MyString& rhs);

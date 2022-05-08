@@ -132,3 +132,95 @@ TEST_CASE("Test move constructor and move assignment operator")
 		REQUIRE(strcmp(str.GetStringData(), "Back to the future") == 0);
 	}
 }
+
+TEST_CASE("SubString() returns the sub string at specified start and length")
+{
+	MyString subject("Let battle be joined"), result;
+
+	SECTION("Start and length within the subject string size")
+	{
+		result = subject.SubString(4, 6);
+		REQUIRE(result.GetLength() == 6);
+		REQUIRE(strcmp(result.GetStringData(), "battle") == 0);
+		REQUIRE(strcmp(subject.GetStringData(), "Let battle be joined") == 0);
+	}
+
+	SECTION("Length exceeds the subject string size")
+	{
+		result = subject.SubString(4, 123);
+		REQUIRE(result.GetLength() == 16);
+		REQUIRE(strcmp(result.GetStringData(), "battle be joined") == 0);
+	}
+
+	SECTION("Start exceeds the subject string size")
+	{
+		result = subject.SubString(123, 5);
+		REQUIRE(result.GetLength() == 0);
+		REQUIRE(strcmp(result.GetStringData(), "") == 0);
+	}
+
+	SECTION("Length parameter is zero")
+	{
+		result = subject.SubString(4, 0);
+		REQUIRE(result.GetLength() == 0);
+		REQUIRE(strcmp(result.GetStringData(), "") == 0);
+	}
+}
+
+TEST_CASE("Clear() method deletes content of the string, string becomes empty")
+{
+	MyString src("What's done is done");
+
+	SECTION("Call Clear() method")
+	{
+		REQUIRE(strcmp(src.GetStringData(), "What's done is done") == 0);
+
+		src.Clear();
+
+		REQUIRE(src.GetLength() == 0);
+		REQUIRE(strcmp(src.GetStringData(), "") == 0);
+	}
+
+	SECTION("Assign previous value to another variable")
+	{
+		REQUIRE(strcmp(src.GetStringData(), "What's done is done") == 0);
+		MyString dest = src;
+
+		src.Clear();
+		
+		REQUIRE(strcmp(dest.GetStringData(), "What's done is done") == 0);
+		REQUIRE(src.GetLength() == 0);
+		REQUIRE(strcmp(src.GetStringData(), "") == 0);
+	}
+}
+
+TEST_CASE("Test += operator")
+{
+	MyString primary("All shall ");
+
+	SECTION("Append non-zero length string")
+	{
+		MyString appendix("revealed");
+		primary += "be ";
+		primary += appendix;
+		
+		REQUIRE(strcmp(primary.GetStringData(), "All shall be revealed") == 0);
+	}
+
+	SECTION("Append zero length string")
+	{
+		primary += "";
+
+		REQUIRE(strcmp(primary.GetStringData(), "All shall ") == 0);
+	}
+}
+
+TEST_CASE("Test concatenation of two string")
+{
+	SECTION("Concatenate three strings")
+	{
+		MyString result = MyString("Hello") + " " + MyString("World");
+
+		REQUIRE(strcmp(result.GetStringData(), "Hello World") == 0);
+	}
+}
