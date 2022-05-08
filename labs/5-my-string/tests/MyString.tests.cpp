@@ -65,7 +65,7 @@ TEST_CASE("Initializing string")
 	}
 }
 
-TEST_CASE("Test MyString's copy constructor and copy assignment operator")
+TEST_CASE("Test copy constructor and copy assignment operator")
 {
 	SECTION("Explicit constructor call")
 	{
@@ -96,5 +96,39 @@ TEST_CASE("Test MyString's copy constructor and copy assignment operator")
 
 		REQUIRE(strcmp(src.GetStringData(), "That phrase is cooller") == 0);
 		REQUIRE(strcmp(dest.GetStringData(), "Some cool phrase") == 0);
+	}
+
+	SECTION("Test self-assignment")
+	{
+		MyString src("What will you do");
+		REQUIRE(strcmp(src.GetStringData(), "What will you do") == 0);
+		const char* ptrBefore = src.GetStringData();
+
+		src = src;
+
+		const char* ptrAfter = src.GetStringData();
+		REQUIRE(ptrAfter == ptrBefore);
+		REQUIRE(strcmp(src.GetStringData(), "What will you do") == 0);
+	}
+}
+
+TEST_CASE("Test move constructor and move assignment operator")
+{
+	SECTION("Explicit constructor call")
+	{
+		MyString str(std::move(MyString("Data is moved")));
+		REQUIRE(strcmp(str.GetStringData(), "Data is moved") == 0);
+
+		MyString str2(MyString("That data is moved too"));
+		REQUIRE(strcmp(str2.GetStringData(), "That data is moved too") == 0);
+	}
+
+	SECTION("Test move assignment operator")
+	{
+		MyString str;
+
+		str = MyString("Back to the future");
+
+		REQUIRE(strcmp(str.GetStringData(), "Back to the future") == 0);
 	}
 }
