@@ -21,6 +21,9 @@ public:
 	MyString& operator=(MyString&& other) noexcept;
 	MyString& operator+=(const MyString& other);
 
+	char const operator[](size_t index) const;
+	char& operator[](size_t index);
+
 private:
 	void ExtendCapacity(size_t fitSize);
 	size_t m_currentSize = 0;
@@ -30,3 +33,9 @@ private:
 };
 
 MyString const operator+(MyString lhs, const MyString& rhs);
+bool const operator==(const MyString& lhs, const MyString& rhs);
+bool const operator!=(const MyString& lhs, const MyString& rhs);
+bool const operator<(const MyString& lhs, const MyString& rhs);
+bool const operator>(const MyString& lhs, const MyString& rhs);
+bool const operator>=(const MyString& lhs, const MyString& rhs);
+bool const operator<=(const MyString& lhs, const MyString& rhs);

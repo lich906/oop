@@ -232,4 +232,89 @@ TEST_CASE("Test concatenation of two string")
 
 		REQUIRE(strcmp(result.GetStringData(), "Hello World") == 0);
 	}
+
+	SECTION("Some complex sequence of concatenations")
+	{
+		MyString lval("bezumno");
+
+		MyString result = MyString("Yes,\0there is\0null\0chars ", 24) + (lval += " mojno byt' first") + " this is end :^)";
+		REQUIRE(strcmp(result.GetStringData(), "Yes,\0there is\0null\0chars bezumno mojno byt' first this is end :^)") == 0);
+		REQUIRE(strcmp(lval.GetStringData(), "bezumno mojno byt' first") == 0);
+	}
+}
+
+TEST_CASE("Test equality comparison of two strings")
+{
+	SECTION("Compare strings without null chars in the middle")
+	{
+		REQUIRE(MyString("1234") != MyString("1235"));
+		REQUIRE(MyString("1234") != "1235");
+
+		REQUIRE(MyString("1234") == std::string("1234"));
+		REQUIRE("1234" == MyString("1234"));
+	}
+
+	SECTION("Compare strings with null chars")
+	{
+		REQUIRE(MyString("12\0 34", 6) == MyString("12\0 34", 6));
+		REQUIRE(MyString("12\0 34", 6) != "12");
+	}
+}
+
+TEST_CASE("Test comparison operators")
+{
+	SECTION("Compare strings with same length")
+	{
+		REQUIRE(MyString("1234") < "1235");
+		REQUIRE("1235" > MyString("1234"));
+		REQUIRE(MyString("123\0", 4) >= MyString("123\0", 4));
+		REQUIRE(MyString("ab \0 c", 6) < MyString("ab \0 d", 6));
+		REQUIRE(MyString("ab\0 d", 5) > MyString("ab\0 c", 5));
+	}
+
+	SECTION("Left string is shorter than right one")
+	{
+		REQUIRE(MyString() < MyString("123"));
+		REQUIRE(MyString("1235") > MyString("1234567"));
+		REQUIRE(MyString("1234") <= MyString("1234567"));
+		REQUIRE(MyString("1\0 2", 4) < MyString("1\0 234", 6));
+		REQUIRE(MyString("1\0 3", 4) > MyString("1\0 234", 6));
+	}
+
+	SECTION("Left string is longer than right one")
+	{
+		REQUIRE(MyString("12345") >= MyString("123"));
+		REQUIRE(MyString("12\0 45", 6) > MyString("12\0 4", 6));
+		REQUIRE(MyString("12345") > MyString());
+		REQUIRE(MyString("321") >= MyString("32"));
+	}
+}
+
+TEST_CASE("Test operator []")
+{
+	SECTION("Constant version of operator")
+	{
+		const MyString immutable("I The Immutability");
+
+		REQUIRE(immutable[2] == 'T');
+		REQUIRE(immutable[6] == 'I');
+		REQUIRE(immutable[7] == immutable[8]);
+		REQUIRE_THROWS_AS(immutable[100], std::out_of_range);
+	}
+
+	SECTION("Non-constant version of operator")
+	{
+		MyString str("Some content you can change");
+		REQUIRE(str == "Some content you can change");
+
+		str[0] = 'C';
+		str[5] = 'm';
+		str[13] = 'w';
+		str[14] = 'e';
+		str[15] = ' ';
+
+		REQUIRE(str == "Come montent we  can change");
+
+		REQUIRE_THROWS_AS(str[-23], std::out_of_range);
+	}
 }

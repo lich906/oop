@@ -1,4 +1,5 @@
 #include "MyString.h"
+#include <stdexcept>
 
 MyString::MyString()
 	: m_stringData(std::shared_ptr<char[]>(new char[1]{ '\0' }))
@@ -98,6 +99,26 @@ MyString& MyString::operator+=(const MyString& other)
 	return *this;
 }
 
+char const MyString::operator[](size_t index) const
+{
+	if (index >= m_currentSize)
+	{
+		throw std::out_of_range("Out of range element access");
+	}
+
+	return m_stringData[index];
+}
+
+char& MyString::operator[](size_t index)
+{
+	if (index >= m_currentSize)
+	{
+		throw std::out_of_range("Out of range element access");
+	}
+
+	return m_stringData[index];
+}
+
 size_t MyString::GetLength() const
 {
 	return m_currentSize;
@@ -146,4 +167,53 @@ void MyString::ExtendCapacity(size_t fitSize)
 MyString const operator+(MyString lhs, const MyString& rhs)
 {
 	return lhs += rhs;
+}
+
+bool const operator==(const MyString& lhs, const MyString& rhs)
+{
+	if (lhs.GetLength() != rhs.GetLength())
+	{
+		return false;
+	}
+
+	return memcmp(lhs.GetStringData(), rhs.GetStringData(), lhs.GetLength()) == 0;
+}
+
+bool const operator!=(const MyString& lhs, const MyString& rhs)
+{
+	return !(lhs == rhs);
+}
+
+bool const operator<(const MyString& lhs, const MyString& rhs)
+{
+	if (lhs.GetLength() >= rhs.GetLength())
+	{
+		return memcmp(lhs.GetStringData(), rhs.GetStringData(), rhs.GetLength()) < 0;
+	}
+	else
+	{
+		return memcmp(lhs.GetStringData(), rhs.GetStringData(), lhs.GetLength()) <= 0;
+	}
+}
+
+bool const operator>(const MyString& lhs, const MyString& rhs)
+{
+	if (lhs.GetLength() <= rhs.GetLength())
+	{
+		return memcmp(lhs.GetStringData(), rhs.GetStringData(), lhs.GetLength()) > 0;
+	}
+	else
+	{
+		return memcmp(lhs.GetStringData(), rhs.GetStringData(), rhs.GetLength()) >= 0;
+	}
+}
+
+bool const operator>=(const MyString& lhs, const MyString& rhs)
+{
+	return !(lhs < rhs);
+}
+
+bool const operator<=(const MyString& lhs, const MyString& rhs)
+{
+	return !(lhs > rhs);
 }
