@@ -135,21 +135,21 @@ TEST_CASE("Test move constructor and move assignment operator")
 
 TEST_CASE("SubString() returns the sub string at specified start and length")
 {
-	MyString subject("Let battle be joined"), result;
+	MyString subject("Let\0battle be\0joined", 20), result;
 
 	SECTION("Start and length within the subject string size")
 	{
 		result = subject.SubString(4, 6);
 		REQUIRE(result.GetLength() == 6);
 		REQUIRE(strcmp(result.GetStringData(), "battle") == 0);
-		REQUIRE(strcmp(subject.GetStringData(), "Let battle be joined") == 0);
+		REQUIRE(strcmp(subject.GetStringData(), "Let\0battle be\0joined") == 0);
 	}
 
 	SECTION("Length exceeds the subject string size")
 	{
 		result = subject.SubString(4, 123);
 		REQUIRE(result.GetLength() == 16);
-		REQUIRE(strcmp(result.GetStringData(), "battle be joined") == 0);
+		REQUIRE(strcmp(result.GetStringData(), "battle be\0joined") == 0);
 	}
 
 	SECTION("Start exceeds the subject string size")
@@ -212,6 +212,15 @@ TEST_CASE("Test += operator")
 		primary += "";
 
 		REQUIRE(strcmp(primary.GetStringData(), "All shall ") == 0);
+	}
+
+	SECTION("Append string with available capacity left")
+	{
+		primary = "Hi, ";
+		primary += "dudes";
+
+		REQUIRE(primary.GetLength() == 9);
+		REQUIRE(strcmp(primary.GetStringData(), "Hi, dudes") == 0);
 	}
 }
 
