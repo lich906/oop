@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <string>
 #include <memory>
 
@@ -39,3 +40,6 @@ bool const operator<(const MyString& lhs, const MyString& rhs);
 bool const operator>(const MyString& lhs, const MyString& rhs);
 bool const operator>=(const MyString& lhs, const MyString& rhs);
 bool const operator<=(const MyString& lhs, const MyString& rhs);
+
+std::ostream& operator<<(std::ostream& stream, const MyString& string);
+std::istream& operator>>(std::istream& stream, MyString& string);

@@ -1,5 +1,6 @@
 #include <catch2/catch.hpp>
 #include "MyString.h"
+#include <sstream>
 
 TEST_CASE("Initializing string")
 {
@@ -317,4 +318,24 @@ TEST_CASE("Test operator []")
 
 		REQUIRE_THROWS_AS(str[-23], std::out_of_range);
 	}
+}
+
+TEST_CASE("Test istream >> operator overload for MyString")
+{
+	std::istringstream iss("For the king");
+	MyString str("That value should be overrided");
+
+	iss >> str;
+
+	REQUIRE(str == "For");
+}
+
+TEST_CASE("Test ostream << operator overload for MyString")
+{
+	std::ostringstream oss;
+	MyString str("The flows of magic are whimsical today.");
+
+	oss << str;
+
+	REQUIRE(oss.str() == "The flows of magic are whimsical today.");
 }

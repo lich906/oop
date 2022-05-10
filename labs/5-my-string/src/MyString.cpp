@@ -217,3 +217,20 @@ bool const operator<=(const MyString& lhs, const MyString& rhs)
 {
 	return !(lhs > rhs);
 }
+
+std::ostream& operator<<(std::ostream& stream, const MyString& string)
+{
+	for (size_t index = 0, length = string.GetLength(); index < length && stream; ++index)
+		stream << string[index];
+
+	return stream;
+}
+
+std::istream& operator>>(std::istream& stream, MyString& string)
+{
+	std::string buffer;
+	stream >> buffer;
+	string = buffer;
+
+	return stream;
+}
