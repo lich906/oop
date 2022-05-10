@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <stdexcept>
+#include <vector>
 
 class MyString
 {

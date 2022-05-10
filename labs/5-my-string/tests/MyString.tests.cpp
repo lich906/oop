@@ -322,20 +322,59 @@ TEST_CASE("Test operator []")
 
 TEST_CASE("Test istream >> operator overload for MyString")
 {
-	std::istringstream iss("For the king");
-	MyString str("That value should be overrided");
+	SECTION("No leading whitespaces in istream")
+	{
+		std::istringstream iss("For the king");
+		MyString str("That value should be overrided");
 
-	iss >> str;
+		iss >> str;
 
-	REQUIRE(str == "For");
+		REQUIRE(iss);
+		REQUIRE(str == "For");
+	}
+
+	SECTION("Leading whitespaces present and skipws flag is set")
+	{
+		std::istringstream iss("  \t\n  What a good idea.");
+		MyString str;
+
+		iss >> str;
+
+		REQUIRE(iss);
+		REQUIRE(str == "What");
+	}
+
+	SECTION("Leading whitespaces present and skipws flag is unset")
+	{
+		std::istringstream iss("  \t\n\  What a good idea.");
+		MyString str;
+
+		iss >> std::noskipws >> str;
+
+		REQUIRE(!iss);
+		REQUIRE(str == "");
+	}
 }
 
 TEST_CASE("Test ostream << operator overload for MyString")
 {
-	std::ostringstream oss;
-	MyString str("The flows of magic are whimsical today.");
+	SECTION("Output string without null chars in the middle")
+	{
+		std::ostringstream oss;
+		MyString str("The flows of magic are whimsical today.");
 
-	oss << str;
+		oss << str;
 
-	REQUIRE(oss.str() == "The flows of magic are whimsical today.");
+		REQUIRE(oss.str() == "The flows of magic are whimsical today.");
+	}
+
+	SECTION("Output string with null chars in the middle")
+	{
+		std::ostringstream oss;
+		MyString str("The flows\0of magic are\0whimsical today.");
+
+		oss << str;
+
+		REQUIRE(oss.str() == "The flows\0of magic are\0whimsical today.");
+	}
 }

@@ -1,5 +1,4 @@
 #include "MyString.h"
-#include <stdexcept>
 
 MyString::MyString()
 	: m_stringData(std::shared_ptr<char[]>(new char[1]{ '\0' }))
@@ -228,9 +227,25 @@ std::ostream& operator<<(std::ostream& stream, const MyString& string)
 
 std::istream& operator>>(std::istream& stream, MyString& string)
 {
-	std::string buffer;
-	stream >> buffer;
-	string = buffer;
+	char ch;
+	std::vector<char> buffer;
+
+	if (stream.flags() & std::ios_base::skipws)
+	{
+		while (std::isspace(stream.peek()))
+			stream.get();
+	}
+
+	while (!std::isspace(stream.peek()) && stream.get(ch))
+		buffer.push_back(ch);
+
+	if (buffer.empty())
+	{
+		stream.setstate(std::ios_base::failbit);
+		return stream;
+	}
+
+	string = MyString(buffer.data(), buffer.size());
 
 	return stream;
 }
