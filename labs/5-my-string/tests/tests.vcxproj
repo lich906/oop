@@ -147,7 +147,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\MyIterator.cpp" />
     <ClCompile Include="..\src\MyString.cpp" />
+    <ClCompile Include="MyIterator.tests.cpp" />
     <ClCompile Include="MyString.tests.cpp" />
     <ClCompile Include="tests.cpp" />
   </ItemGroup>

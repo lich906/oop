@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="5-my-string.cpp" />
     <ClCompile Include="src\MyString.cpp" />
+    <ClCompile Include="src\MyIterator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\MyString.h" />

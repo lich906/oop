@@ -98,7 +98,7 @@ MyString& MyString::operator+=(const MyString& other)
 	return *this;
 }
 
-char const MyString::operator[](size_t index) const
+const char MyString::operator[](size_t index) const
 {
 	if (index >= m_currentSize)
 	{
@@ -116,6 +116,16 @@ char& MyString::operator[](size_t index)
 	}
 
 	return m_stringData[index];
+}
+
+MyIterator MyString::begin() const
+{
+	return MyIterator(m_stringData.get());
+}
+
+MyIterator MyString::end() const
+{
+	return MyIterator(m_stringData.get() + m_currentSize);
 }
 
 size_t MyString::GetLength() const
@@ -163,12 +173,12 @@ void MyString::ExtendCapacity(size_t fitSize)
 		m_currentCapacity <<= 1;
 }
 
-MyString const operator+(MyString lhs, const MyString& rhs)
+const MyString operator+(MyString lhs, const MyString& rhs)
 {
 	return lhs += rhs;
 }
 
-bool const operator==(const MyString& lhs, const MyString& rhs)
+const bool operator==(const MyString& lhs, const MyString& rhs)
 {
 	if (lhs.GetLength() != rhs.GetLength())
 	{
@@ -178,12 +188,12 @@ bool const operator==(const MyString& lhs, const MyString& rhs)
 	return memcmp(lhs.GetStringData(), rhs.GetStringData(), lhs.GetLength()) == 0;
 }
 
-bool const operator!=(const MyString& lhs, const MyString& rhs)
+const bool operator!=(const MyString& lhs, const MyString& rhs)
 {
 	return !(lhs == rhs);
 }
 
-bool const operator<(const MyString& lhs, const MyString& rhs)
+const bool operator<(const MyString& lhs, const MyString& rhs)
 {
 	if (lhs.GetLength() >= rhs.GetLength())
 	{
@@ -195,7 +205,7 @@ bool const operator<(const MyString& lhs, const MyString& rhs)
 	}
 }
 
-bool const operator>(const MyString& lhs, const MyString& rhs)
+const bool operator>(const MyString& lhs, const MyString& rhs)
 {
 	if (lhs.GetLength() <= rhs.GetLength())
 	{
@@ -207,12 +217,12 @@ bool const operator>(const MyString& lhs, const MyString& rhs)
 	}
 }
 
-bool const operator>=(const MyString& lhs, const MyString& rhs)
+const bool operator>=(const MyString& lhs, const MyString& rhs)
 {
 	return !(lhs < rhs);
 }
 
-bool const operator<=(const MyString& lhs, const MyString& rhs)
+const bool operator<=(const MyString& lhs, const MyString& rhs)
 {
 	return !(lhs > rhs);
 }
