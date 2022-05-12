@@ -1,4 +1,4 @@
-#include "MyString.h"
+#include "MyIterator.h"
 
 MyIterator::MyIterator()
 	: m_data(nullptr)
@@ -10,7 +10,7 @@ MyIterator::MyIterator(pointer data)
 {
 }
 
-MyIterator::pointer MyIterator::data() const
+const MyIterator::pointer MyIterator::data() const
 {
 	return m_data;
 }

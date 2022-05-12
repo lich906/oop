@@ -255,6 +255,7 @@ std::istream& operator>>(std::istream& stream, MyString& string)
 		return stream;
 	}
 
+	stream.clear(std::ios_base::failbit);
 	string = MyString(buffer.data(), buffer.size());
 
 	return stream;

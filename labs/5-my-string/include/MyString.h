@@ -4,13 +4,11 @@
 #include <memory>
 #include <stdexcept>
 #include <vector>
-
-class MyIterator;
+#include "MyIterator.h"
 
 class MyString
 {
 public:
-
 	MyString();
 	MyString(const char* pString);
 	MyString(const char* pString, size_t length);
@@ -39,32 +37,6 @@ private:
 	size_t m_currentCapacity = m_currentSize + 1;
 
 	std::shared_ptr<char[]> m_stringData;
-};
-
-class MyIterator
-{
-public:
-	using iterator_category = std::forward_iterator_tag;
-	using value_type = char;
-	using difference_type = size_t;
-	using pointer = char*;
-	using reference = char&;
-
-	MyIterator();
-	MyIterator(pointer data);
-
-	pointer data() const;
-
-	reference operator*();
-
-	const bool operator!=(const MyIterator& other) const;
-
-	MyIterator& operator++();
-
-	MyIterator operator++(int);
-
-private:
-	char* m_data;
 };
 
 const MyString operator+(MyString lhs, const MyString& rhs);
