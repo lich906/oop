@@ -9,6 +9,9 @@
 class MyString
 {
 public:
+	using const_iterator = MyConstIterator;
+	using iterator = MyIterator;
+
 	MyString();
 	MyString(const char* pString);
 	MyString(const char* pString, size_t length);
@@ -28,8 +31,12 @@ public:
 	const char operator[](size_t index) const;
 	char& operator[](size_t index);
 
-	MyIterator begin() const;
-	MyIterator end() const;
+	iterator begin();
+	iterator end();
+	const_iterator begin() const;
+	const_iterator end() const;
+	const_iterator cbegin() const;
+	const_iterator cend() const;
 
 private:
 	void ExtendCapacity(size_t fitSize);
@@ -40,12 +47,12 @@ private:
 };
 
 const MyString operator+(MyString lhs, const MyString& rhs);
-const bool operator==(const MyString& lhs, const MyString& rhs);
-const bool operator!=(const MyString& lhs, const MyString& rhs);
-const bool operator<(const MyString& lhs, const MyString& rhs);
-const bool operator>(const MyString& lhs, const MyString& rhs);
-const bool operator>=(const MyString& lhs, const MyString& rhs);
-const bool operator<=(const MyString& lhs, const MyString& rhs);
+bool operator==(const MyString& lhs, const MyString& rhs);
+bool operator!=(const MyString& lhs, const MyString& rhs);
+bool operator<(const MyString& lhs, const MyString& rhs);
+bool operator>(const MyString& lhs, const MyString& rhs);
+bool operator>=(const MyString& lhs, const MyString& rhs);
+bool operator<=(const MyString& lhs, const MyString& rhs);
 
 std::ostream& operator<<(std::ostream& stream, const MyString& string);
 std::istream& operator>>(std::istream& stream, MyString& string);

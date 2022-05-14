@@ -1,5 +1,48 @@
 #include "MyIterator.h"
 
+MyConstIterator::MyConstIterator()
+	: m_data(nullptr)
+{
+}
+
+MyConstIterator::MyConstIterator(pointer data)
+	: m_data(data)
+{
+}
+
+MyConstIterator::pointer MyConstIterator::data() const
+{
+	return m_data;
+}
+
+MyConstIterator::pointer MyConstIterator::operator->() const
+{
+	return m_data;
+}
+
+const MyConstIterator::reference MyConstIterator::operator*() const
+{
+	return *m_data;
+}
+
+bool MyConstIterator::operator!=(const MyConstIterator& other) const
+{
+	return m_data != other.data();
+}
+
+MyConstIterator& MyConstIterator::operator++()
+{
+	++m_data;
+	return *this;
+}
+
+MyConstIterator MyConstIterator::operator++(int)
+{
+	MyConstIterator tmp = MyConstIterator(m_data);
+	++m_data;
+	return tmp;
+}
+
 MyIterator::MyIterator()
 	: m_data(nullptr)
 {
@@ -10,28 +53,30 @@ MyIterator::MyIterator(pointer data)
 {
 }
 
-const MyIterator::pointer MyIterator::data() const
+const char* MyIterator::data() const
 {
 	return m_data;
 }
 
-MyIterator::reference MyIterator::operator*()
+MyIterator::pointer MyIterator::operator->() const
+{
+	return m_data;
+}
+
+MyIterator::reference MyIterator::operator*() const
 {
 	return *m_data;
 }
 
-const bool MyIterator::operator!=(const MyIterator& other) const
-{
-	return m_data != other.data();
-}
-
 MyIterator& MyIterator::operator++()
 {
-	m_data += 1;
+	++m_data;
 	return *this;
 }
 
 MyIterator MyIterator::operator++(int)
 {
-	return MyIterator(m_data + 1);
+	MyIterator tmp = MyIterator(m_data);
+	++m_data;
+	return tmp;
 }

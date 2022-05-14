@@ -51,7 +51,7 @@ MyString& MyString::operator=(const MyString& other)
 {
 	m_currentSize = other.GetLength();
 
-	if (m_currentSize > m_currentCapacity)
+	if (m_currentSize >= m_currentCapacity)
 	{
 		ExtendCapacity(m_currentSize);
 		m_stringData = std::shared_ptr<char[]>(new char[m_currentCapacity]);
@@ -118,14 +118,34 @@ char& MyString::operator[](size_t index)
 	return m_stringData[index];
 }
 
-MyIterator MyString::begin() const
+MyString::iterator MyString::begin()
 {
-	return MyIterator(m_stringData.get());
+	return iterator(m_stringData.get());
 }
 
-MyIterator MyString::end() const
+MyString::iterator MyString::end()
 {
-	return MyIterator(m_stringData.get() + m_currentSize);
+	return iterator(m_stringData.get() + m_currentSize);
+}
+
+MyString::const_iterator MyString::begin() const
+{
+	return const_iterator(m_stringData.get());
+}
+
+MyString::const_iterator MyString::end() const
+{
+	return const_iterator(m_stringData.get() + m_currentSize);
+}
+
+MyString::const_iterator MyString::cbegin() const
+{
+	return const_iterator(m_stringData.get());
+}
+
+MyString::const_iterator MyString::cend() const
+{
+	return const_iterator(m_stringData.get() + m_currentSize);
 }
 
 size_t MyString::GetLength() const
@@ -178,7 +198,7 @@ const MyString operator+(MyString lhs, const MyString& rhs)
 	return lhs += rhs;
 }
 
-const bool operator==(const MyString& lhs, const MyString& rhs)
+bool operator==(const MyString& lhs, const MyString& rhs)
 {
 	if (lhs.GetLength() != rhs.GetLength())
 	{
@@ -188,12 +208,12 @@ const bool operator==(const MyString& lhs, const MyString& rhs)
 	return memcmp(lhs.GetStringData(), rhs.GetStringData(), lhs.GetLength()) == 0;
 }
 
-const bool operator!=(const MyString& lhs, const MyString& rhs)
+bool operator!=(const MyString& lhs, const MyString& rhs)
 {
 	return !(lhs == rhs);
 }
 
-const bool operator<(const MyString& lhs, const MyString& rhs)
+bool operator<(const MyString& lhs, const MyString& rhs)
 {
 	if (lhs.GetLength() >= rhs.GetLength())
 	{
@@ -205,7 +225,7 @@ const bool operator<(const MyString& lhs, const MyString& rhs)
 	}
 }
 
-const bool operator>(const MyString& lhs, const MyString& rhs)
+bool operator>(const MyString& lhs, const MyString& rhs)
 {
 	if (lhs.GetLength() <= rhs.GetLength())
 	{
@@ -217,12 +237,12 @@ const bool operator>(const MyString& lhs, const MyString& rhs)
 	}
 }
 
-const bool operator>=(const MyString& lhs, const MyString& rhs)
+bool operator>=(const MyString& lhs, const MyString& rhs)
 {
 	return !(lhs < rhs);
 }
 
-const bool operator<=(const MyString& lhs, const MyString& rhs)
+bool operator<=(const MyString& lhs, const MyString& rhs)
 {
 	return !(lhs > rhs);
 }
@@ -255,7 +275,6 @@ std::istream& operator>>(std::istream& stream, MyString& string)
 		return stream;
 	}
 
-	stream.clear(std::ios_base::failbit);
 	string = MyString(buffer.data(), buffer.size());
 
 	return stream;
