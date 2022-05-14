@@ -30,6 +30,11 @@ bool MyConstIterator::operator!=(const MyConstIterator& other) const
 	return m_data != other.data();
 }
 
+bool MyConstIterator::operator==(const MyConstIterator& other) const
+{
+	return !(*this != other);
+}
+
 MyConstIterator& MyConstIterator::operator++()
 {
 	++m_data;

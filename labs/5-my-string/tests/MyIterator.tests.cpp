@@ -51,6 +51,22 @@ TEST_CASE("Test functionality of const iterator")
 		REQUIRE(*cIt++ == 'l');
 		REQUIRE(*cIt == 'k');
 	}
+
+	SECTION("Test equation check for iterators")
+	{
+		MyString::const_iterator cIt1 = str.begin();
+		MyString::const_iterator cIt2 = str.begin();
+
+		REQUIRE(cIt1 == cIt2);
+
+		REQUIRE(cIt1++ == cIt2);
+		REQUIRE(cIt1 != cIt2);
+
+		++cIt2;
+		REQUIRE(cIt1 == cIt2);
+
+		REQUIRE(++cIt1 == ++cIt2);
+	}
 }
 
 TEST_CASE("Test functionality of non const iterator")

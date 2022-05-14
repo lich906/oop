@@ -19,6 +19,7 @@ public:
 	reference operator*() const;
 
 	bool operator!=(const MyConstIterator& other) const;
+	bool operator==(const MyConstIterator& other) const;
 
 	MyConstIterator& operator++();
 	MyConstIterator operator++(int);
