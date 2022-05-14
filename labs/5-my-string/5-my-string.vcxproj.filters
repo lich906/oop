@@ -24,12 +24,18 @@
     <ClCompile Include="src\MyIterator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\MyBaseIterator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\MyString.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\MyIterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MyBaseIterator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

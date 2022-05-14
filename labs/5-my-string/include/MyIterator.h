@@ -1,34 +1,7 @@
 #pragma once
-#include <iterator>
-class MyIterator;
-class MyConstIterator
-{
-public:
-	using iterator_category = std::forward_iterator_tag;
-	using value_type = const char;
-	using difference_type = ptrdiff_t;
-	using pointer = const char*;
-	using reference = const char&;
+#include "MyBaseIterator.h"
 
-	MyConstIterator();
-	MyConstIterator(pointer data);
-
-	pointer data() const;
-	pointer operator->() const;
-
-	reference operator*() const;
-
-	bool operator!=(const MyConstIterator& other) const;
-	bool operator==(const MyConstIterator& other) const;
-
-	MyConstIterator& operator++();
-	MyConstIterator operator++(int);
-
-private:
-	pointer m_data;
-};
-
-class MyIterator : public MyConstIterator
+class MyIterator : public MyBaseIterator
 {
 public:
 	using value_type = char;
@@ -38,7 +11,6 @@ public:
 	MyIterator();
 	MyIterator(pointer data);
 
-	const char* data() const;
 	pointer operator->() const;
 	
 	reference operator*() const;
@@ -46,6 +18,28 @@ public:
 	MyIterator& operator++();
 	MyIterator operator++(int);
 
-private:
-	pointer m_data;
+	MyIterator& operator--();
+	MyIterator operator--(int);
+};
+
+class MyConstIterator : public MyBaseIterator
+{
+public:
+	using value_type = const char;
+	using pointer = const char*;
+	using reference = const char&;
+
+	MyConstIterator();
+	MyConstIterator(char* data);
+	MyConstIterator(const MyIterator& it);
+
+	pointer operator->() const;
+
+	reference operator*() const;
+
+	MyConstIterator& operator++();
+	MyConstIterator operator++(int);
+
+	MyConstIterator& operator--();
+	MyConstIterator operator--(int);
 };

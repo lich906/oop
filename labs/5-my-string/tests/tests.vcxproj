@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\MyBaseIterator.cpp" />
     <ClCompile Include="..\src\MyIterator.cpp" />
     <ClCompile Include="..\src\MyString.cpp" />
     <ClCompile Include="MyIterator.tests.cpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="tests.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\MyBaseIterator.h" />
     <ClInclude Include="..\include\MyString.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

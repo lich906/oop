@@ -1,18 +1,18 @@
 #include "MyIterator.h"
 
 MyConstIterator::MyConstIterator()
-	: m_data(nullptr)
+	: MyBaseIterator()
 {
 }
 
-MyConstIterator::MyConstIterator(pointer data)
-	: m_data(data)
+MyConstIterator::MyConstIterator(char* data)
+	: MyBaseIterator(data)
 {
 }
 
-MyConstIterator::pointer MyConstIterator::data() const
+MyConstIterator::MyConstIterator(const MyIterator& it)
+	: MyBaseIterator(it)
 {
-	return m_data;
 }
 
 MyConstIterator::pointer MyConstIterator::operator->() const
@@ -23,16 +23,6 @@ MyConstIterator::pointer MyConstIterator::operator->() const
 const MyConstIterator::reference MyConstIterator::operator*() const
 {
 	return *m_data;
-}
-
-bool MyConstIterator::operator!=(const MyConstIterator& other) const
-{
-	return m_data != other.data();
-}
-
-bool MyConstIterator::operator==(const MyConstIterator& other) const
-{
-	return !(*this != other);
 }
 
 MyConstIterator& MyConstIterator::operator++()
@@ -48,19 +38,27 @@ MyConstIterator MyConstIterator::operator++(int)
 	return tmp;
 }
 
+MyConstIterator& MyConstIterator::operator--()
+{
+	--m_data;
+	return *this;
+}
+
+MyConstIterator MyConstIterator::operator--(int)
+{
+	MyConstIterator tmp = MyConstIterator(m_data);
+	--m_data;
+	return tmp;
+}
+
 MyIterator::MyIterator()
-	: m_data(nullptr)
+	: MyBaseIterator()
 {
 }
 
 MyIterator::MyIterator(pointer data)
-	: m_data(data)
+	: MyBaseIterator(data)
 {
-}
-
-const char* MyIterator::data() const
-{
-	return m_data;
 }
 
 MyIterator::pointer MyIterator::operator->() const
@@ -83,5 +81,18 @@ MyIterator MyIterator::operator++(int)
 {
 	MyIterator tmp = MyIterator(m_data);
 	++m_data;
+	return tmp;
+}
+
+MyIterator& MyIterator::operator--()
+{
+	--m_data;
+	return *this;
+}
+
+MyIterator MyIterator::operator--(int)
+{
+	MyIterator tmp = MyIterator(m_data);
+	--m_data;
 	return tmp;
 }

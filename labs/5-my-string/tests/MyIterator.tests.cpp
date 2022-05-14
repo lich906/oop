@@ -67,6 +67,32 @@ TEST_CASE("Test functionality of const iterator")
 
 		REQUIRE(++cIt1 == ++cIt2);
 	}
+
+	SECTION("Test decrementing of the iterator")
+	{
+		const MyString palindrome("redivider");
+		MyString::const_iterator beg = palindrome.begin();
+		MyString::const_iterator end = palindrome.end();
+
+		REQUIRE(*beg == 'r');
+
+		--end;
+		REQUIRE(*end == 'r');
+
+		++beg;
+		REQUIRE(*beg == 'e');
+
+		++++++beg;
+		REQUIRE(*beg == 'v');
+
+		--end;
+		REQUIRE(*end == 'e');
+		REQUIRE(beg != end);
+
+		------end;
+		REQUIRE(*beg == *end);
+		REQUIRE(beg == end);
+	}
 }
 
 TEST_CASE("Test functionality of non const iterator")
@@ -134,5 +160,29 @@ TEST_CASE("Test functionality of non const iterator")
 		REQUIRE(str == "Licring at the string :)");
 
 		REQUIRE(*it == 'r');
+	}
+
+	SECTION("Decrement the iterator and mutate string")
+	{
+		MyString::iterator it = str.end();
+		MyString::const_iterator cIt = str.end();
+
+		--it;
+		--cIt;
+		REQUIRE(*it == ')');
+		REQUIRE(*cIt == ')');
+		------it;
+		REQUIRE(*it == 'g');
+		*it = 'e';
+		--it;
+		*it = 'g';
+		*--it = 'n';
+		--it;
+		*it-- = 'o';
+		*it-- = 'p';
+
+		REQUIRE(*it == 's');
+
+		REQUIRE(str == "Looking at the sponge :)");
 	}
 }
