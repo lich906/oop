@@ -148,6 +148,36 @@ MyString::const_iterator MyString::cend() const
 	return const_iterator(m_stringData.get() + m_currentSize);
 }
 
+MyString::reverse_iterator MyString::rbegin()
+{
+	return std::make_reverse_iterator(end());
+}
+
+MyString::reverse_iterator MyString::rend()
+{
+	return std::make_reverse_iterator(begin());
+}
+
+MyString::const_reverse_iterator MyString::rbegin() const
+{
+	return std::make_reverse_iterator(end());
+}
+
+MyString::const_reverse_iterator MyString::rend() const
+{
+	return std::make_reverse_iterator(begin());
+}
+
+MyString::const_reverse_iterator MyString::crbegin() const
+{
+	return std::make_reverse_iterator(cend());
+}
+
+MyString::const_reverse_iterator MyString::crend() const
+{
+	return std::make_reverse_iterator(cbegin());
+}
+
 size_t MyString::GetLength() const
 {
 	return m_currentSize;

@@ -11,6 +11,8 @@ class MyString
 public:
 	using const_iterator = MyConstIterator;
 	using iterator = MyIterator;
+	using const_reverse_iterator = std::reverse_iterator<MyConstIterator>;
+	using reverse_iterator = std::reverse_iterator<MyIterator>;
 
 	MyString();
 	MyString(const char* pString);
@@ -37,6 +39,13 @@ public:
 	const_iterator end() const;
 	const_iterator cbegin() const;
 	const_iterator cend() const;
+
+	reverse_iterator rbegin();
+	reverse_iterator rend();
+	const_reverse_iterator rbegin() const;
+	const_reverse_iterator rend() const;
+	const_reverse_iterator crbegin() const;
+	const_reverse_iterator crend() const;
 
 private:
 	void ExtendCapacity(size_t fitSize);
