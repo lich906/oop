@@ -148,12 +148,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="5-my-string.cpp" />
-    <ClCompile Include="src\MyBaseIterator.cpp" />
     <ClCompile Include="src\MyString.cpp" />
     <ClCompile Include="src\MyIterator.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\MyBaseIterator.h" />
     <ClInclude Include="include\MyIterator.h" />
     <ClInclude Include="include\MyString.h" />
   </ItemGroup>
