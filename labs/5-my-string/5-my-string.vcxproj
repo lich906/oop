@@ -155,6 +155,11 @@
     <ClInclude Include="include\MyIterator.h" />
     <ClInclude Include="include\MyString.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="tests\tests.vcxproj">
+      <Project>{fb05a330-9f6b-43f8-9679-7e9cba4fb403}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -35,11 +35,13 @@ MyString::MyString(const MyString& other)
 }
 
 MyString::MyString(MyString&& other) noexcept
-	: m_currentSize(other.m_currentSize)
-	, m_currentCapacity(other.m_currentCapacity)
-	, m_stringData(other.m_stringData)
+	: m_currentSize()
+	, m_currentCapacity()
+	, m_stringData()
 {
-	other.m_stringData = nullptr;
+	std::swap(other.m_currentSize, m_currentSize);
+	std::swap(other.m_currentCapacity, m_currentCapacity);
+	std::swap(other.m_stringData, m_stringData);
 }
 
 MyString::MyString(const std::string& stlString)
@@ -257,14 +259,7 @@ bool operator<(const MyString& lhs, const MyString& rhs)
 
 bool operator>(const MyString& lhs, const MyString& rhs)
 {
-	if (lhs.GetLength() <= rhs.GetLength())
-	{
-		return memcmp(lhs.GetStringData(), rhs.GetStringData(), lhs.GetLength()) > 0;
-	}
-	else
-	{
-		return memcmp(lhs.GetStringData(), rhs.GetStringData(), rhs.GetLength()) >= 0;
-	}
+	return rhs < lhs;
 }
 
 bool operator>=(const MyString& lhs, const MyString& rhs)
