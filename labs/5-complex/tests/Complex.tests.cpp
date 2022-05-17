@@ -275,6 +275,8 @@ TEST_CASE("Multiplication of complex numbers")
 	}
 }
 
+// разделить тесты для + и +=
+
 TEST_CASE("Division of complex numbers")
 {
 	SECTION("Divide complex number by real number")
@@ -371,4 +373,6 @@ TEST_CASE("Input complex number from istream")
 		REQUIRE(x == Complex(8, -6));
 		REQUIRE(y == Complex(32.4, -23.98));
 	}
+
+	// добавить обработку случая типа 3+i
 }
