@@ -130,6 +130,17 @@ TEST_CASE("Initialize with valid url string")
 		REQUIRE(url.GetURL() == "http://www.youtube.com:1337/");
 	}
 
+	SECTION("Valid url with plain domain name")
+	{
+		HttpUrl url("http://localhost:1337");
+
+		REQUIRE(url.GetDomain() == "localhost");
+		REQUIRE(url.GetDocument() == "/");
+		REQUIRE(url.GetProtocol() == HttpUrl::Protocol::HTTP);
+		REQUIRE(url.GetPort() == 1337);
+		REQUIRE(url.GetURL() == "http://localhost:1337/");
+	}
+
 	SECTION("Valid url with port and without document")
 	{
 		HttpUrl url("http://www.youtube.com");
