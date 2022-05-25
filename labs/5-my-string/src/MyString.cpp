@@ -3,18 +3,21 @@
 MyString::MyString()
 	: m_stringData(std::shared_ptr<char[]>(new char[1]{ '\0' }))
 {
+	InitCapacity(m_currentSize);
 }
 
 MyString::MyString(const char* pString)
 	: m_currentSize(strlen(pString))
 {
+	InitCapacity(m_currentSize);
 	m_stringData = std::shared_ptr<char[]>(new char[m_currentCapacity]);
-	memcpy(m_stringData.get(), pString, m_currentCapacity);
+	memcpy(m_stringData.get(), pString, m_currentSize + 1);
 }
 
 MyString::MyString(const char* pString, size_t length)
 	: m_currentSize(length)
 {
+	InitCapacity(m_currentSize);
 	m_stringData = std::shared_ptr<char[]>(new char[m_currentCapacity]);
 	memcpy(m_stringData.get(), pString, m_currentSize);
 	m_stringData[m_currentSize] = '\0';
@@ -67,9 +70,13 @@ MyString& MyString::operator=(const MyString& other)
 
 MyString& MyString::operator=(MyString&& other) noexcept
 {
-	m_currentSize = other.GetLength();
-	m_currentCapacity = other.m_currentCapacity;
-	m_stringData = other.m_stringData;
+	m_currentSize = 0;
+	m_currentCapacity = 0;
+	m_stringData = nullptr;
+
+	std::swap(other.m_currentSize, m_currentSize);
+	std::swap(other.m_currentCapacity, m_currentCapacity);
+	std::swap(other.m_stringData, m_stringData);
 
 	return *this;
 }
@@ -221,8 +228,28 @@ void MyString::Clear()
 
 void MyString::ExtendCapacity(size_t fitSize)
 {
-	while (m_currentCapacity <= fitSize)
-		m_currentCapacity <<= 1;
+	while (m_currentCapacity <= fitSize && m_currentCapacity != 0xFFFFFFFF)
+	{
+		if (m_currentCapacity & 0x80000000)
+		{
+			m_currentCapacity |= m_currentCapacity >> 1;
+		}
+		else
+		{
+			m_currentCapacity <<= 1;
+		}
+	}
+}
+
+void MyString::InitCapacity(size_t fitSize)
+{
+	size_t capacity = 1;
+	while (fitSize)
+	{
+		capacity <<= 1;
+		fitSize >>= 1;
+	}
+	m_currentCapacity = capacity;
 }
 
 const MyString operator+(MyString lhs, const MyString& rhs)

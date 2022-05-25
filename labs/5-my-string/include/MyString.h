@@ -49,8 +49,9 @@ public:
 
 private:
 	void ExtendCapacity(size_t fitSize);
+	void InitCapacity(size_t fitSize);
 	size_t m_currentSize = 0;
-	size_t m_currentCapacity = m_currentSize + 1;
+	size_t m_currentCapacity;
 
 	std::shared_ptr<char[]> m_stringData;
 };
