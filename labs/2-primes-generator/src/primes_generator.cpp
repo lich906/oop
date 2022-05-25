@@ -33,7 +33,7 @@ std::set<int> GeneratePrimeNumbersSet(int upperBound)
 	{
 		if (sieve[i])
 		{
-			primesSet.insert(i);
+			primesSet.insert(primesSet.end(), i);
 		}
 	}
 
