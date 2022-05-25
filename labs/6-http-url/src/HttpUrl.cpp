@@ -1,16 +1,21 @@
 #include "HttpUrl.h"
 
-const std::string protocolRegex("^([hH][tT]{2}[pP][sS]?):\\/\\/.*");
-const std::string domainRegex("([a-zA-Z0-9-.]{2,63}\\.[a-zA-Z]{2,63})");
-const std::string portRegex(".*:([\\w]*)?(\\/.*|$)");
-const std::string documentRegex(".*:\\/\\/[\\w:.-]*\\/?([\\w.\\/\?&=%-]*)$");
+const std::string protocolRegex(R"(^([hH][tT]{2}[pP][sS]?):\/\/.*)");
+
+const std::string dnsDomainRegex(R"(((?:[\w-]{2,63}\.)*[\w-]{2,63}\.[a-zA-Z-]{2,63}))");
+const std::string ipAddressRegex(R"(((?:\d{1,3}\.){3}\d{1,3}))");
+const std::string detailIpAddressRegex(R"((\d+)\.(\d+)\.(\d+)\.(\d+))");
+const std::string simpleNameRegex(R"(([\w-]+))");
+
+const std::string portRegex(R"(.*:([\w]*)?(\/.*|$))");
+const std::string documentRegex(R"(.*:\/\/[\w:.-]*\/?([\w.\/\?&=%-]*)$)");
 
 HttpUrl::HttpUrl(const std::string& url)
 	: m_protocol(ParseProtocol(url))
 	, m_domain(ParseDomain(url))
 	, m_port(ParsePort(url))
 	, m_document(ParseDocument(url))
-{	
+{
 }
 
 HttpUrl::HttpUrl(const std::string& domain, const std::string& document, Protocol protocol)
@@ -26,7 +31,7 @@ HttpUrl::HttpUrl(
 {
 	if (!IsValidDomain(domain))
 	{
-		throw UrlParsingError("Invalid url domain");
+		throw UrlParsingError("Invalid domain");
 	}
 
 	m_domain = domain;
@@ -38,6 +43,7 @@ HttpUrl::HttpUrl(
 std::string HttpUrl::GetURL() const
 {
 	std::string urlStr;
+
 	switch (m_protocol)
 	{
 	case Protocol::HTTP:
@@ -81,7 +87,7 @@ unsigned short HttpUrl::GetPort() const
 	return m_port;
 }
 
-unsigned short HttpUrl::GetDefaultPort(Protocol protocol) const
+unsigned short HttpUrl::GetDefaultPort(Protocol protocol)
 {
 	switch (protocol)
 	{
@@ -94,12 +100,35 @@ unsigned short HttpUrl::GetDefaultPort(Protocol protocol) const
 	}
 }
 
-bool HttpUrl::IsValidDomain(const std::string& domain) const
+bool HttpUrl::IsValidDomain(const std::string& domain)
 {
-	return std::regex_match(domain, std::regex(domainRegex));
+	return 
+		std::regex_match(domain, std::regex(dnsDomainRegex))
+		|| IsValidIpAddress(domain)
+		|| std::regex_match(domain, std::regex(simpleNameRegex));
 }
 
-HttpUrl::Protocol HttpUrl::ParseProtocol(const std::string& url) const
+bool HttpUrl::IsValidIpAddress(const std::string& ipAddress)
+{
+	if (!std::regex_match(ipAddress, std::regex(ipAddressRegex)))
+	{
+		return false;
+	}
+
+	std::smatch matches;
+	std::regex_match(ipAddress, matches, std::regex(detailIpAddressRegex));
+	for (size_t i = 1; i <= 4; ++i)
+	{
+		if (std::stoi(matches[i].str()) > 0xFF)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+HttpUrl::Protocol HttpUrl::ParseProtocol(const std::string& url)
 {
 	std::smatch matches;
 	if (std::regex_match(url, matches, std::regex(protocolRegex)))
@@ -118,10 +147,15 @@ HttpUrl::Protocol HttpUrl::ParseProtocol(const std::string& url) const
 	throw UrlParsingError("Invalid protocol");
 }
 
-std::string HttpUrl::ParseDomain(const std::string& url) const
+std::string HttpUrl::ParseDomain(const std::string& url)
 {
+	// обрабатывать 127.0.0.1, localhost
 	std::smatch matches;
-	if (std::regex_match(url, matches, std::regex(".*:\\/\\/" + domainRegex + "(:|\\/|$).*")))
+	if (std::regex_match(url, matches, std::regex(R"(.*:\/\/)" + dnsDomainRegex + R"((:|\/|$).*)"))
+		|| (std::regex_match(url, matches, std::regex(R"(.*:\/\/)" + ipAddressRegex + R"((:|\/|$).*)"))
+			&& IsValidIpAddress(matches[1].str()))
+		|| std::regex_match(url, matches, std::regex(R"(.*:\/\/)" + simpleNameRegex + R"((:|\/|$).*)"))
+	)
 	{
 		return matches[1].str();
 	}
@@ -131,6 +165,7 @@ std::string HttpUrl::ParseDomain(const std::string& url) const
 
 unsigned short HttpUrl::ParsePort(const std::string& url) const
 {
+	// 0 порт не валиден
 	std::smatch matches;
 	if (std::regex_match(url, matches, std::regex(portRegex)))
 	{
@@ -139,7 +174,7 @@ unsigned short HttpUrl::ParsePort(const std::string& url) const
 			try
 			{
 				int port = std::stoi(matches[1].str());
-				if (port > 0xFFFF)
+				if (port > 0xFFFF || port <= 0)
 				{
 					throw UrlParsingError("Invalid port");
 				}
@@ -159,7 +194,7 @@ unsigned short HttpUrl::ParsePort(const std::string& url) const
 	throw UrlParsingError("Invalid port");
 }
 
-std::string HttpUrl::ParseDocument(const std::string& url) const
+std::string HttpUrl::ParseDocument(const std::string& url)
 {
 	std::smatch matches;
 	if (std::regex_match(url, matches, std::regex(documentRegex)))

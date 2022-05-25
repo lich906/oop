@@ -35,6 +35,17 @@ TEST_CASE("Initialize url specifying all components")
 		REQUIRE(url.GetPort() == 6112);
 		REQUIRE(url.GetURL() == "https://www.darkside.ru:6112/news/index.html");
 	}
+
+	SECTION("Specify ip address as domain name")
+	{
+		HttpUrl url("192.168.0.1", "/news/index.html", HttpUrl::Protocol::HTTPS, 6112);
+
+		REQUIRE(url.GetDomain() == "192.168.0.1");
+		REQUIRE(url.GetDocument() == "/news/index.html");
+		REQUIRE(url.GetProtocol() == HttpUrl::Protocol::HTTPS);
+		REQUIRE(url.GetPort() == 6112);
+		REQUIRE(url.GetURL() == "https://192.168.0.1:6112/news/index.html");
+	}
 }
 
 TEST_CASE("Initialize url without specifying port and/or protocol")
@@ -129,6 +140,47 @@ TEST_CASE("Initialize with valid url string")
 		REQUIRE(url.GetPort() == 80);
 		REQUIRE(url.GetURL() == "http://www.youtube.com/");
 	}
+
+	SECTION("Valid url with ip address")
+	{
+		HttpUrl url("http://127.0.0.1/index.html");
+
+		REQUIRE(url.GetDomain() == "127.0.0.1");
+		REQUIRE(url.GetDocument() == "/index.html");
+		REQUIRE(url.GetProtocol() == HttpUrl::Protocol::HTTP);
+		REQUIRE(url.GetPort() == 80);
+		REQUIRE(url.GetURL() == "http://127.0.0.1/index.html");
+	}
+
+	SECTION("Valid url with ip address")
+	{
+		HttpUrl url("http://255.255.255.255/index.html");
+
+		REQUIRE(url.GetDomain() == "255.255.255.255");
+		REQUIRE(url.GetDocument() == "/index.html");
+		REQUIRE(url.GetProtocol() == HttpUrl::Protocol::HTTP);
+		REQUIRE(url.GetPort() == 80);
+		REQUIRE(url.GetURL() == "http://255.255.255.255/index.html");
+	}
+}
+
+TEST_CASE("Try initialize with invalid domain")
+{
+	SECTION("Invalid ip address")
+	{
+		REQUIRE_THROWS_WITH(HttpUrl("256.0.1.255", "/index.html"), "Invalid domain");
+		REQUIRE_THROWS_WITH(HttpUrl("255.0.256.250", "/index.html"), "Invalid domain");
+	}
+
+	SECTION("Invalid domain")
+	{
+		REQUIRE_THROWS_WITH(HttpUrl(".www.some-site.com", "/index.html"), "Invalid domain");
+		REQUIRE_THROWS_WITH(HttpUrl("invalid-primary-domain.250", "/index.html"), "Invalid domain");
+		REQUIRE_THROWS_WITH(HttpUrl("invalid-primary-domain.", "/index.html"), "Invalid domain");
+		REQUIRE_THROWS_WITH(HttpUrl("invalid-subdomain..com", "/index.html"), "Invalid domain");
+		REQUIRE_THROWS_WITH(HttpUrl("a.invalid-subdomain.f.com", "/index.html"), "Invalid domain");
+		REQUIRE_THROWS_WITH(HttpUrl("ab.omaininvalid-subdomaininvalid-subdomaininvalid-subdomaininvalidi.ff.com", "/index.html"), "Invalid domain");
+	}
 }
 
 TEST_CASE("Try initialize with invalid url string")
@@ -142,7 +194,10 @@ TEST_CASE("Try initialize with invalid url string")
 
 	SECTION("Invalid domain")
 	{
-		REQUIRE_THROWS_WITH(HttpUrl("https://youtube/watch?v=uAwIBtov5EM"), "Invalid domain");
+		REQUIRE_THROWS_WITH(HttpUrl("https://www...com/watch?v=uAwIBtov5EM"), "Invalid domain");
+		REQUIRE_THROWS_WITH(HttpUrl("https://10.10.31./watch?v=uAwIBtov5EM"), "Invalid domain");
+		REQUIRE_THROWS_WITH(HttpUrl("https://256.255.0.1/watch?v=uAwIBtov5EM"), "Invalid domain");
+		REQUIRE_THROWS_WITH(HttpUrl("https://.255.0.1/watch?v=uAwIBtov5EM"), "Invalid domain");
 		REQUIRE_THROWS_WITH(HttpUrl("https://youtube.345/watch?v=uAwIBtov5EM"), "Invalid domain");
 		REQUIRE_THROWS_WITH(HttpUrl("https://youtubeyoutubeyoutubeyoutubeyoutubeyoutubeyoutubeyoutubeyoutubeyoutubeyoutubeyoutubeyoutubeyoutubeyoutube.com/watch?v=uAwIBtov5EM"), "Invalid domain");
 	}
@@ -151,6 +206,7 @@ TEST_CASE("Try initialize with invalid url string")
 	{
 		REQUIRE_THROWS_WITH(HttpUrl("https://www.youtube.com:334955/watch?v=uAwIBtov5EM"), "Invalid port");
 		REQUIRE_THROWS_WITH(HttpUrl("https://www.youtube.com:65536/watch?v=uAwIBtov5EM"), "Invalid port");
+		REQUIRE_THROWS_WITH(HttpUrl("https://www.youtube.com:0/watch?v=uAwIBtov5EM"), "Invalid port");
 	}
 
 	SECTION("Invalid document")

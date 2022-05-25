@@ -41,14 +41,16 @@ private:
 	static constexpr unsigned short defaultHttpPort = 80;
 	static constexpr unsigned short defaultHttpsPort = 443;
 
-	Protocol ParseProtocol(const std::string& url) const;
-	std::string ParseDomain(const std::string& url) const;
+	// сделать static или внешними функциями в безымянном пространстве имен
+	static Protocol ParseProtocol(const std::string& url);
+	static std::string ParseDomain(const std::string& url);
 	unsigned short ParsePort(const std::string& url) const;
-	std::string ParseDocument(const std::string& url) const;
+	static std::string ParseDocument(const std::string& url);
 
-	unsigned short GetDefaultPort(Protocol protocol) const;
+	static unsigned short GetDefaultPort(Protocol protocol);
 
-	bool IsValidDomain(const std::string& domain) const;
+	static bool IsValidDomain(const std::string& domain);
+	static bool IsValidIpAddress(const std::string& ipAddress);
 	
 	Protocol m_protocol;
 	std::string m_domain;
