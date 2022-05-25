@@ -29,7 +29,7 @@ bool CompareWithEntity(const std::string::const_iterator& first, const std::stri
 
 char DecodeNextChar(std::string::const_iterator& first, const std::string::const_iterator& end)
 {
-	for (auto const& [entityCode, ch] : decodeMap)
+	for (const auto& [ entityCode, ch ] : decodeMap)
 	{
 		if (CompareWithEntity(first, end, entityCode))
 		{
