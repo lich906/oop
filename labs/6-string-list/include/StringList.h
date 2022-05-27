@@ -25,6 +25,9 @@ public:
 	void Clear();
 
 private:
+	struct ListNode;
+	using NodePtr = ListNode*;
+
 	struct ListNode
 	{
 		ListNode(std::string data)
@@ -33,11 +36,9 @@ private:
 		}
 
 		std::string data;
-		ListNode* next = nullptr;
-		ListNode* prev = nullptr;
+		NodePtr next = nullptr;
+		NodePtr prev = nullptr;
 	};
-
-	using NodePtr = ListNode*;
 
 	NodePtr m_beginPtr = nullptr;
 	NodePtr m_endPtr = nullptr;
