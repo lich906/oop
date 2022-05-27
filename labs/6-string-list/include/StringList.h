@@ -1,6 +1,6 @@
 #pragma once
-#include <string>
 #include <stdexcept>
+#include <string>
 
 class StringList
 {
@@ -12,6 +12,7 @@ public:
 	~StringList();
 
 	bool IsEmpty() const;
+	operator bool() const { return !IsEmpty(); }
 
 	size_t GetLength() const;
 
@@ -34,7 +35,6 @@ private:
 		std::string data;
 		ListNode* next = nullptr;
 		ListNode* prev = nullptr;
-
 	};
 
 	using NodePtr = ListNode*;

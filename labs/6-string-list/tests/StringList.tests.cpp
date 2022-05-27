@@ -85,3 +85,16 @@ TEST_CASE("Test Clear method")
 	REQUIRE(list.IsEmpty());
 	REQUIRE(list.GetLength() == 0);
 }
+
+TEST_CASE("Test bool cast operator")
+{
+	std::string str1("Provide"), str2("Strong"), str3("Exception"), str4("Safety");
+
+	StringList list;
+	REQUIRE(list.IsEmpty());
+	REQUIRE(!list);
+
+	list.PushBack(str1);
+	REQUIRE(!list.IsEmpty());
+	REQUIRE(list);
+}
