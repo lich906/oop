@@ -143,7 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="6-string-list.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="src\StringList.cpp" />
   </ItemGroup>
   <ItemGroup>

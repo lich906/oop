@@ -48,6 +48,38 @@ StringList& StringList::PushFront(const std::string& data)
 	return *this;
 }
 
+StringList& StringList::PopBack()
+{
+	if (IsEmpty())
+		throw std::logic_error("List is empty");
+
+	NodePtr tmp = m_endPtr;
+	m_endPtr = m_endPtr->prev;
+	delete tmp;
+	--m_length;
+
+	if (IsEmpty())
+		m_beginPtr = nullptr;
+
+	return *this;
+}
+
+StringList& StringList::PopFront()
+{
+	if (IsEmpty())
+		throw std::logic_error("List is empty");
+
+	NodePtr tmp = m_beginPtr;
+	m_beginPtr = m_beginPtr->next;
+	delete tmp;
+	--m_length;
+
+	if (IsEmpty())
+		m_endPtr = nullptr;
+
+	return *this;
+}
+
 std::string StringList::GetBack() const
 {
 	if (IsEmpty())
@@ -64,7 +96,7 @@ std::string StringList::GetFront() const
 	return m_beginPtr->data;
 }
 
-void StringList::Clear()
+void StringList::Clear() noexcept
 {
 	if (!IsEmpty())
 	{
@@ -80,7 +112,7 @@ void StringList::Clear()
 	m_length = 0;
 }
 
-StringList::~StringList()
+StringList::~StringList() noexcept
 {
 	Clear();
 }

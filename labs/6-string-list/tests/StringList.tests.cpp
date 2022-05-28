@@ -98,3 +98,57 @@ TEST_CASE("Test bool cast operator")
 	REQUIRE(!list.IsEmpty());
 	REQUIRE(list);
 }
+
+TEST_CASE("Test PopBack method")
+{
+	std::string str1("Provide"), str2("Strong"), str3("Exception"), str4("Safety");
+
+	StringList list;
+	REQUIRE(list.IsEmpty());
+
+	list.PushBack(str1).PushFront(str2);
+	REQUIRE(!list.IsEmpty());
+	REQUIRE(list.GetLength() == 2);
+	REQUIRE(list.GetBack() == str1);
+
+	list.PopBack();
+	REQUIRE(list.GetLength() == 1);
+	REQUIRE(list.GetBack() == str2);
+
+	list.PushBack(str3);
+	REQUIRE(list.GetLength() == 2);
+	REQUIRE(list.GetBack() == str3);
+
+	list.PopBack().PopBack();
+	REQUIRE(list.IsEmpty());
+	REQUIRE_THROWS_AS(list.GetBack(), std::logic_error);
+	REQUIRE_THROWS_AS(list.GetFront(), std::logic_error);
+}
+
+TEST_CASE("Test PopFront method")
+{
+	std::string str1("Provide"), str2("Strong"), str3("Exception"), str4("Safety");
+
+	StringList list;
+	REQUIRE(list.IsEmpty());
+
+	list.PushFront(str1).PushBack(str2);
+	REQUIRE(!list.IsEmpty());
+	REQUIRE(list.GetLength() == 2);
+	REQUIRE(list.GetBack() == str2);
+	REQUIRE(list.GetFront() == str1);
+
+	list.PopFront();
+	REQUIRE(list.GetLength() == 1);
+	REQUIRE(list.GetBack() == str2);
+	REQUIRE(list.GetFront() == str2);
+
+	list.PushFront(str3);
+	REQUIRE(list.GetLength() == 2);
+	REQUIRE(list.GetFront() == str3);
+
+	list.PopFront().PopFront();
+	REQUIRE(list.IsEmpty());
+	REQUIRE_THROWS_AS(list.GetBack(), std::logic_error);
+	REQUIRE_THROWS_AS(list.GetFront(), std::logic_error);
+}

@@ -9,7 +9,7 @@ public:
 	StringList(StringList&&) = default;
 	StringList(const StringList&) = delete;
 
-	~StringList();
+	~StringList() noexcept;
 
 	bool IsEmpty() const;
 	operator bool() const { return !IsEmpty(); }
@@ -19,10 +19,13 @@ public:
 	StringList& PushBack(const std::string& data);
 	StringList& PushFront(const std::string& data);
 
+	StringList& PopBack();
+	StringList& PopFront();
+
 	std::string GetBack() const;
 	std::string GetFront() const;
 
-	void Clear();
+	void Clear() noexcept;
 
 private:
 	struct ListNode;
