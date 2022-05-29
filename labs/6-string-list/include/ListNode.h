@@ -1,8 +1,7 @@
 #pragma once
 #include <string>
 
-struct ListNode;
-using NodePtr = ListNode*;
+using NodePtr = struct ListNode*;
 
 struct ListNode
 {
