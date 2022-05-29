@@ -143,11 +143,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\ListIterator.cpp" />
     <ClCompile Include="..\src\StringList.cpp" />
     <ClCompile Include="StringList.tests.cpp" />
     <ClCompile Include="tests.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\ListIterator.h" />
+    <ClInclude Include="..\include\ListNode.h" />
     <ClInclude Include="..\include\StringList.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,5 +1,21 @@
 #include "StringList.h"
 
+StringList::StringList()
+	: m_beginPtr(new ListNode())
+	, m_endPtr(new ListNode())
+{
+	m_beginPtr->next = m_endPtr;
+	m_endPtr->prev = m_beginPtr;
+	m_beginPtr = m_endPtr;
+}
+
+StringList::~StringList() noexcept
+{
+	Clear();
+	delete m_beginPtr->prev;
+	delete m_endPtr;
+}
+
 bool StringList::IsEmpty() const
 {
 	return !m_length;
@@ -10,18 +26,29 @@ size_t StringList::GetLength() const
 	return m_length;
 }
 
+void StringList::AddNodeToEmptyList(NodePtr newNodePtr)
+{
+	newNodePtr->prev = m_beginPtr->prev;
+	newNodePtr->next = m_endPtr;
+	m_beginPtr->prev->next = newNodePtr;
+	m_endPtr->prev = newNodePtr;
+	m_beginPtr = newNodePtr;
+}
+
 StringList& StringList::PushBack(const std::string& data)
 {
+	NodePtr newNodePtr = new ListNode(data);
+
 	if (IsEmpty())
 	{
-		m_beginPtr = m_endPtr = new ListNode(data);
+		AddNodeToEmptyList(newNodePtr);
 	}
 	else
 	{
-		NodePtr newNodePtr = new ListNode(data);
-		m_endPtr->next = newNodePtr;
-		newNodePtr->prev = m_endPtr;
-		m_endPtr = newNodePtr;
+		newNodePtr->prev = m_endPtr->prev;
+		newNodePtr->next = m_endPtr;
+		m_endPtr->prev->next = newNodePtr;
+		m_endPtr->prev = newNodePtr;
 	}
 
 	++m_length;
@@ -31,15 +58,18 @@ StringList& StringList::PushBack(const std::string& data)
 
 StringList& StringList::PushFront(const std::string& data)
 {
+	NodePtr newNodePtr = new ListNode(data);
+
 	if (IsEmpty())
 	{
-		m_beginPtr = m_endPtr = new ListNode(data);
+		AddNodeToEmptyList(newNodePtr);
 	}
 	else
 	{
-		NodePtr newNodePtr = new ListNode(data);
-		m_beginPtr->prev = newNodePtr;
+		newNodePtr->prev = m_beginPtr->prev;
 		newNodePtr->next = m_beginPtr;
+		m_beginPtr->prev->next = newNodePtr;
+		m_beginPtr->prev = newNodePtr;
 		m_beginPtr = newNodePtr;
 	}
 
@@ -53,13 +83,18 @@ StringList& StringList::PopBack()
 	if (IsEmpty())
 		throw std::logic_error("List is empty");
 
-	NodePtr tmp = m_endPtr;
-	m_endPtr = m_endPtr->prev;
+	NodePtr tmp = m_endPtr->prev;
+
+	tmp->prev->next = m_endPtr;
+	m_endPtr->prev = tmp->prev;
+
+	if (tmp == m_beginPtr)
+	{
+		m_beginPtr = m_endPtr;
+	}
+
 	delete tmp;
 	--m_length;
-
-	if (IsEmpty())
-		m_beginPtr = nullptr;
 
 	return *this;
 }
@@ -70,25 +105,26 @@ StringList& StringList::PopFront()
 		throw std::logic_error("List is empty");
 
 	NodePtr tmp = m_beginPtr;
+
+	m_beginPtr->prev->next = m_beginPtr->next;
+	m_beginPtr->next->prev = m_beginPtr->prev;
 	m_beginPtr = m_beginPtr->next;
+
 	delete tmp;
 	--m_length;
-
-	if (IsEmpty())
-		m_endPtr = nullptr;
 
 	return *this;
 }
 
-std::string StringList::GetBack() const
+const std::string& StringList::GetBack() const
 {
 	if (IsEmpty())
 		throw std::logic_error("List is empty");
 
-	return m_endPtr->data;
+	return m_endPtr->prev->data;
 }
 
-std::string StringList::GetFront() const
+const std::string& StringList::GetFront() const
 {
 	if (IsEmpty())
 		throw std::logic_error("List is empty");
@@ -100,19 +136,76 @@ void StringList::Clear() noexcept
 {
 	if (!IsEmpty())
 	{
+		m_beginPtr->prev->next = m_endPtr;
+		m_endPtr->prev = m_beginPtr->prev;
+
 		NodePtr tmp;
-		while ((tmp = m_beginPtr) != nullptr)
+		while ((tmp = m_beginPtr) != m_endPtr)
 		{
 			m_beginPtr = m_beginPtr->next;
 			delete tmp;
 		}
-	}
 
-	m_endPtr = nullptr;
-	m_length = 0;
+		m_length = 0;
+	}
 }
 
-StringList::~StringList() noexcept
+StringList::Iterator StringList::begin()
 {
-	Clear();
+	return Iterator(m_beginPtr);
+}
+
+StringList::Iterator StringList::end()
+{
+	return Iterator(m_endPtr);
+}
+
+StringList::ConstIterator StringList::begin() const
+{
+	return ConstIterator(m_beginPtr);
+}
+
+StringList::ConstIterator StringList::end() const
+{
+	return ConstIterator(m_endPtr);
+}
+
+StringList::ConstIterator StringList::cbegin() const
+{
+	return ConstIterator(m_beginPtr);
+}
+
+StringList::ConstIterator StringList::cend() const
+{
+	return ConstIterator(m_endPtr);
+}
+
+StringList::ReverseIterator StringList::rbegin()
+{
+	return std::make_reverse_iterator(end());
+}
+
+StringList::ReverseIterator StringList::rend()
+{
+	return std::make_reverse_iterator(begin());
+}
+
+StringList::ConstReverseIterator StringList::rbegin() const
+{
+	return std::make_reverse_iterator(end());
+}
+
+StringList::ConstReverseIterator StringList::rend() const
+{
+	return std::make_reverse_iterator(begin());
+}
+
+StringList::ConstReverseIterator StringList::crbegin() const
+{
+	return std::make_reverse_iterator(end());
+}
+
+StringList::ConstReverseIterator StringList::crend() const
+{
+	return std::make_reverse_iterator(begin());
 }
