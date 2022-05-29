@@ -356,3 +356,50 @@ TEST_CASE("Test reverse const and non-const iterator")
 		REQUIRE(oss.str() == "Wafety Wxception Wtrong Wrovide ");
 	}
 }
+
+TEST_CASE("Test Insert method")
+{
+	std::string str1("Provide"), str2("Strong"), str3("Exception"), str4("Safety");
+	std::ostringstream oss;
+
+	StringList list;
+	REQUIRE(list.IsEmpty());
+
+	SECTION("Insert to begin pos")
+	{
+		list.Insert(list.begin(), str1);
+		REQUIRE(list.GetLength() == 1);
+		REQUIRE(list.GetFront() == str1);
+		REQUIRE(list.GetBack() == str1);
+	}
+
+	SECTION("Insert to end pos")
+	{
+		list.Insert(list.cend(), str2);
+		REQUIRE(list.GetLength() == 1);
+		REQUIRE(list.GetFront() == str2);
+		REQUIRE(list.GetBack() == str2);
+	}
+
+	SECTION("Insert to the middle")
+	{
+		list.Insert(list.cend(), str1).Insert(list.cend(), str2);
+		REQUIRE(list.GetLength() == 2);
+		REQUIRE(list.GetFront() == str1);
+		REQUIRE(list.GetBack() == str2);
+
+		list.Insert(++list.cbegin(), str3);
+		REQUIRE(list.GetLength() == 3);
+		REQUIRE(list.GetFront() == str1);
+		REQUIRE(list.GetBack() == str2);
+
+		REQUIRE(list.PopFront().GetFront() == str3);
+
+		list.Insert(--list.cend(), str4);
+		REQUIRE(list.GetLength() == 3);
+		REQUIRE(list.GetFront() == str3);
+		REQUIRE(list.GetBack() == str2);
+
+		REQUIRE(list.PopBack().GetBack() == str4);
+	}
+}

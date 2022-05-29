@@ -3,9 +3,13 @@
 #include <stdexcept>
 #include "ListNode.h"
 
+class StringList;
+
 class ListBaseIterator
 {
 public:
+	friend StringList;
+
 	using iterator_category = std::bidirectional_iterator_tag;
 	using difference_type = size_t;
 

@@ -43,6 +43,9 @@ public:
 	const std::string& GetBack() const;
 	const std::string& GetFront() const;
 
+	StringList& Insert(const ConstIterator& where, const std::string& data);
+	StringList& Erase(const ConstIterator& where);
+
 	void Clear() noexcept;
 
 private:

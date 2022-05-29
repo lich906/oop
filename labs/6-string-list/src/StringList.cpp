@@ -46,45 +46,12 @@ void StringList::AddNodeToEmptyList(NodePtr newNodePtr)
 
 StringList& StringList::PushBack(const std::string& data)
 {
-	NodePtr newNodePtr = new ListNode(data);
-
-	if (IsEmpty())
-	{
-		AddNodeToEmptyList(newNodePtr);
-	}
-	else
-	{
-		newNodePtr->prev = m_endPtr->prev;
-		newNodePtr->next = m_endPtr;
-		m_endPtr->prev->next = newNodePtr;
-		m_endPtr->prev = newNodePtr;
-	}
-
-	++m_length;
-
-	return *this;
+	return Insert(cend(), data);
 }
 
 StringList& StringList::PushFront(const std::string& data)
 {
-	NodePtr newNodePtr = new ListNode(data);
-
-	if (IsEmpty())
-	{
-		AddNodeToEmptyList(newNodePtr);
-	}
-	else
-	{
-		newNodePtr->prev = m_beginPtr->prev;
-		newNodePtr->next = m_beginPtr;
-		m_beginPtr->prev->next = newNodePtr;
-		m_beginPtr->prev = newNodePtr;
-		m_beginPtr = newNodePtr;
-	}
-
-	++m_length;
-
-	return *this;
+	return Insert(cbegin(), data);
 }
 
 StringList& StringList::PopBack()
@@ -139,6 +106,26 @@ const std::string& StringList::GetFront() const
 		throw std::logic_error("List is empty");
 
 	return m_beginPtr->data;
+}
+
+StringList& StringList::Insert(const ConstIterator& where, const std::string& data)
+{
+	NodePtr newNodePtr = new ListNode(data);
+	NodePtr wherePtr = where.m_nodePtr;
+
+	newNodePtr->next = wherePtr;
+	newNodePtr->prev = wherePtr->prev;
+	wherePtr->prev->next = newNodePtr;
+	wherePtr->prev = newNodePtr;
+
+	if (wherePtr == m_beginPtr)
+	{
+		m_beginPtr = newNodePtr;
+	}
+
+	++m_length;
+
+	return *this;
 }
 
 void StringList::Clear() noexcept
