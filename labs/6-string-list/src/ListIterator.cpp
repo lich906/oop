@@ -12,7 +12,7 @@ bool ListBaseIterator::operator==(const ListBaseIterator& other) const
 
 std::string* ListBaseIterator::operator->() const
 {
-	if (m_nodePtr->next == nullptr)
+	if (m_nodePtr->next == nullptr || m_nodePtr->prev == nullptr)
 		throw std::logic_error("Past-the-last element iterator access violation");
 
 	return &(m_nodePtr->data);
@@ -20,7 +20,7 @@ std::string* ListBaseIterator::operator->() const
 
 std::string& ListBaseIterator::operator*() const
 {
-	if (m_nodePtr->next == nullptr)
+	if (m_nodePtr->next == nullptr || m_nodePtr->prev == nullptr)
 		throw std::logic_error("Past-the-last element iterator dereference violation");
 
 	return m_nodePtr->data;
@@ -91,11 +91,9 @@ ListIterator& ListIterator::operator++()
 	return *this;
 }
 
-ListIterator& ListIterator::operator++(int)
+ListIterator ListIterator::operator++(int)
 {
-	ListIterator tmp(ListBaseIterator::operator++(1));
-
-	return tmp;
+	return ListIterator(ListBaseIterator::operator++(1));
 }
 
 ListIterator& ListIterator::operator--()
@@ -105,11 +103,9 @@ ListIterator& ListIterator::operator--()
 	return *this;
 }
 
-ListIterator& ListIterator::operator--(int)
+ListIterator ListIterator::operator--(int)
 {
-	ListIterator tmp(ListBaseIterator::operator--(1));
-
-	return tmp;
+	return ListIterator(ListBaseIterator::operator--(1));
 }
 
 ListConstIterator::ListConstIterator(NodePtr data)
@@ -139,11 +135,9 @@ ListConstIterator& ListConstIterator::operator++()
 	return *this;
 }
 
-ListConstIterator& ListConstIterator::operator++(int)
+ListConstIterator ListConstIterator::operator++(int)
 {
-	ListConstIterator tmp(ListBaseIterator::operator++(1));
-
-	return tmp;
+	return ListConstIterator(ListBaseIterator::operator++(1));
 }
 
 ListConstIterator& ListConstIterator::operator--()
@@ -153,9 +147,70 @@ ListConstIterator& ListConstIterator::operator--()
 	return *this;
 }
 
-ListConstIterator& ListConstIterator::operator--(int)
+ListConstIterator ListConstIterator::operator--(int)
 {
-	ListConstIterator tmp(ListBaseIterator::operator--(1));
+	return ListConstIterator(ListBaseIterator::operator--(1));
+}
 
-	return tmp;
+ListConstReverseIterator::ListConstReverseIterator(NodePtr data)
+	: ListConstIterator(data)
+{
+}
+
+ListConstReverseIterator::ListConstReverseIterator(const ListReverseIterator& other)
+	: ListConstIterator(other.m_nodePtr)
+{
+}
+
+ListConstReverseIterator& ListConstReverseIterator::operator++()
+{
+	ListConstIterator::operator--();
+
+	return *this;
+}
+
+ListConstReverseIterator ListConstReverseIterator::operator++(int)
+{
+	return ListConstReverseIterator(ListBaseIterator::operator--(1));
+}
+
+ListConstReverseIterator& ListConstReverseIterator::operator--()
+{
+	ListConstIterator::operator++();
+
+	return *this;
+}
+
+ListConstReverseIterator ListConstReverseIterator::operator--(int)
+{
+	return ListConstReverseIterator(ListBaseIterator::operator++(1));
+}
+
+ListReverseIterator::ListReverseIterator(NodePtr data)
+	: ListIterator(data)
+{
+}
+
+ListReverseIterator& ListReverseIterator::operator++()
+{
+	ListIterator::operator--();
+
+	return *this;
+}
+
+ListReverseIterator ListReverseIterator::operator++(int)
+{
+	return ListReverseIterator(ListBaseIterator::operator--(1));
+}
+
+ListReverseIterator& ListReverseIterator::operator--()
+{
+	ListIterator::operator++();
+
+	return *this;
+}
+
+ListReverseIterator ListReverseIterator::operator--(int)
+{
+	return ListReverseIterator(ListBaseIterator::operator++(1));
 }

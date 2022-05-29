@@ -174,30 +174,30 @@ StringList::ConstIterator StringList::cend() const
 
 StringList::ReverseIterator StringList::rbegin()
 {
-	return std::make_reverse_iterator(end());
+	return ReverseIterator(m_endPtr->prev);
 }
 
 StringList::ReverseIterator StringList::rend()
 {
-	return std::make_reverse_iterator(begin());
+	return ReverseIterator(m_beginPtr->prev);
 }
 
 StringList::ConstReverseIterator StringList::rbegin() const
 {
-	return std::make_reverse_iterator(end());
+	return ConstReverseIterator(m_endPtr->prev);
 }
 
 StringList::ConstReverseIterator StringList::rend() const
 {
-	return std::make_reverse_iterator(begin());
+	return ConstReverseIterator(m_beginPtr->prev);
 }
 
 StringList::ConstReverseIterator StringList::crbegin() const
 {
-	return std::make_reverse_iterator(end());
+	return ConstReverseIterator(m_endPtr->prev);
 }
 
 StringList::ConstReverseIterator StringList::crend() const
 {
-	return std::make_reverse_iterator(begin());
+	return ConstReverseIterator(m_beginPtr->prev);
 }

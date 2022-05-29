@@ -452,5 +452,6 @@ TEST_CASE("Test Erase method")
 	SECTION("Try erase past-the-last element")
 	{
 		REQUIRE_THROWS_AS(list.Erase(list.cend()), std::logic_error);
+		REQUIRE_THROWS_AS(list.Erase(list.crend()), std::logic_error);
 	}
 }

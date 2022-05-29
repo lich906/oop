@@ -6,8 +6,8 @@ class StringList
 public:
 	using Iterator = ListIterator;
 	using ConstIterator = ListConstIterator;
-	using ReverseIterator = std::reverse_iterator<ListIterator>;
-	using ConstReverseIterator = std::reverse_iterator<ListConstIterator>;
+	using ReverseIterator = ListReverseIterator;
+	using ConstReverseIterator = ListConstReverseIterator;
 
 	StringList();
 	StringList(StringList&&) = default;

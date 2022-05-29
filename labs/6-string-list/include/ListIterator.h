@@ -44,16 +44,16 @@ public:
 	reference operator*() const;
 
 	ListConstIterator& operator++();
-	ListConstIterator& operator++(int);
+	ListConstIterator operator++(int);
 
 	ListConstIterator& operator--();
-	ListConstIterator& operator--(int);
+	ListConstIterator operator--(int);
 };
 
 class ListIterator : public ListBaseIterator
 {
 public:
-	friend ListConstIterator;
+	friend class ListConstIterator;
 
 	using value_type = std::string;
 	using pointer = std::string*;
@@ -66,8 +66,35 @@ public:
 	reference operator*() const;
 
 	ListIterator& operator++();
-	ListIterator& operator++(int);
+	ListIterator operator++(int);
 
 	ListIterator& operator--();
-	ListIterator& operator--(int);
+	ListIterator operator--(int);
+};
+
+class ListConstReverseIterator : public ListConstIterator
+{
+public:
+	ListConstReverseIterator(NodePtr data);
+	ListConstReverseIterator(const class ListReverseIterator& other);
+
+	ListConstReverseIterator& operator++();
+	ListConstReverseIterator operator++(int);
+
+	ListConstReverseIterator& operator--();
+	ListConstReverseIterator operator--(int);
+};
+
+class ListReverseIterator : public ListIterator
+{
+public:
+	friend class ListConstReverseIterator;
+
+	ListReverseIterator(NodePtr data);
+
+	ListReverseIterator& operator++();
+	ListReverseIterator operator++(int);
+
+	ListReverseIterator& operator--();
+	ListReverseIterator operator--(int);
 };
