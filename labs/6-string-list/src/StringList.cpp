@@ -2,8 +2,17 @@
 
 StringList::StringList()
 	: m_beginPtr(new ListNode())
-	, m_endPtr(new ListNode())
 {
+	try
+	{
+		m_endPtr = new ListNode();
+	}
+	catch (const std::bad_alloc&)
+	{
+		delete m_beginPtr;
+		throw;
+	}
+
 	m_beginPtr->next = m_endPtr;
 	m_endPtr->prev = m_beginPtr;
 	m_beginPtr = m_endPtr;
