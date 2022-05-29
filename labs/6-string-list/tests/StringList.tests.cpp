@@ -360,7 +360,6 @@ TEST_CASE("Test reverse const and non-const iterator")
 TEST_CASE("Test Insert method")
 {
 	std::string str1("Provide"), str2("Strong"), str3("Exception"), str4("Safety");
-	std::ostringstream oss;
 
 	StringList list;
 	REQUIRE(list.IsEmpty());
@@ -383,7 +382,8 @@ TEST_CASE("Test Insert method")
 
 	SECTION("Insert to the middle")
 	{
-		list.Insert(list.cend(), str1).Insert(list.cend(), str2);
+		list.Insert(list.cend(), str1);
+		list.Insert(list.cend(), str2);
 		REQUIRE(list.GetLength() == 2);
 		REQUIRE(list.GetFront() == str1);
 		REQUIRE(list.GetBack() == str2);
@@ -401,5 +401,56 @@ TEST_CASE("Test Insert method")
 		REQUIRE(list.GetBack() == str2);
 
 		REQUIRE(list.PopBack().GetBack() == str4);
+	}
+}
+
+TEST_CASE("Test Erase method")
+{
+	std::string str1("Provide"), str2("Strong"), str3("Exception"), str4("Safety");
+
+	StringList list;
+	REQUIRE(list.IsEmpty());
+
+	list.PushBack(str1).PushBack(str2).PushBack(str3).PushBack(str4);
+	REQUIRE(list.GetLength() == 4);
+
+	SECTION("Erase first element")
+	{
+		REQUIRE(list.GetFront() == str1);
+		REQUIRE(list.GetLength() == 4);
+
+		list.Erase(list.cbegin());
+
+		REQUIRE(list.GetLength() == 3);
+		REQUIRE(list.GetFront() == str2);
+	}
+
+	SECTION("Erase last element")
+	{
+		REQUIRE(list.GetBack() == str4);
+		REQUIRE(list.GetLength() == 4);
+
+		list.Erase(--list.cend());
+
+		REQUIRE(list.GetLength() == 3);
+		REQUIRE(list.GetBack() == str3);
+	}
+
+	SECTION("Erase element in the middle")
+	{
+		REQUIRE(list.GetFront() == str1);
+		REQUIRE(list.GetLength() == 4);
+
+		list.Erase(++++list.cbegin()); // erase str3
+
+		REQUIRE(list.GetLength() == 3);
+		REQUIRE(list.GetFront() == str1);
+		REQUIRE(*(++++list.begin()) == str4);
+		REQUIRE(*(----list.end()) == str2);
+	}
+
+	SECTION("Try erase past-the-last element")
+	{
+		REQUIRE_THROWS_AS(list.Erase(list.cend()), std::logic_error);
 	}
 }

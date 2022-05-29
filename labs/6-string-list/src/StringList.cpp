@@ -35,59 +35,30 @@ size_t StringList::GetLength() const
 	return m_length;
 }
 
-void StringList::AddNodeToEmptyList(NodePtr newNodePtr)
-{
-	newNodePtr->prev = m_beginPtr->prev;
-	newNodePtr->next = m_endPtr;
-	m_beginPtr->prev->next = newNodePtr;
-	m_endPtr->prev = newNodePtr;
-	m_beginPtr = newNodePtr;
-}
-
 StringList& StringList::PushBack(const std::string& data)
 {
-	return Insert(cend(), data);
+	Insert(cend(), data);
+
+	return *this;
 }
 
 StringList& StringList::PushFront(const std::string& data)
 {
-	return Insert(cbegin(), data);
+	Insert(cbegin(), data);
+
+	return *this;
 }
 
 StringList& StringList::PopBack()
 {
-	if (IsEmpty())
-		throw std::logic_error("List is empty");
-
-	NodePtr tmp = m_endPtr->prev;
-
-	tmp->prev->next = m_endPtr;
-	m_endPtr->prev = tmp->prev;
-
-	if (tmp == m_beginPtr)
-	{
-		m_beginPtr = m_endPtr;
-	}
-
-	delete tmp;
-	--m_length;
+	Erase(--cend());
 
 	return *this;
 }
 
 StringList& StringList::PopFront()
 {
-	if (IsEmpty())
-		throw std::logic_error("List is empty");
-
-	NodePtr tmp = m_beginPtr;
-
-	m_beginPtr->prev->next = m_beginPtr->next;
-	m_beginPtr->next->prev = m_beginPtr->prev;
-	m_beginPtr = m_beginPtr->next;
-
-	delete tmp;
-	--m_length;
+	Erase(cbegin());
 
 	return *this;
 }
@@ -108,7 +79,7 @@ const std::string& StringList::GetFront() const
 	return m_beginPtr->data;
 }
 
-StringList& StringList::Insert(const ConstIterator& where, const std::string& data)
+StringList::Iterator StringList::Insert(const ListBaseIterator& where, const std::string& data)
 {
 	NodePtr newNodePtr = new ListNode(data);
 	NodePtr wherePtr = where.m_nodePtr;
@@ -125,7 +96,32 @@ StringList& StringList::Insert(const ConstIterator& where, const std::string& da
 
 	++m_length;
 
-	return *this;
+	return Iterator(newNodePtr);
+}
+
+StringList::Iterator StringList::Erase(const ListBaseIterator& where)
+{
+	if (IsEmpty())
+		throw std::logic_error("List is empty");
+
+	NodePtr wherePtr = where.m_nodePtr;
+
+	if (wherePtr->next == nullptr || wherePtr->prev == nullptr)
+		throw std::logic_error("Past-the-last element erase violation");
+
+	NodePtr followingPtr;
+	wherePtr->prev->next = followingPtr = wherePtr->next;
+	wherePtr->next->prev = wherePtr->prev;
+
+	if (wherePtr == m_beginPtr)
+	{
+		m_beginPtr = m_beginPtr->next;
+	}
+
+	delete wherePtr;
+	--m_length;
+
+	return Iterator(followingPtr);
 }
 
 void StringList::Clear() noexcept

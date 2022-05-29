@@ -43,14 +43,12 @@ public:
 	const std::string& GetBack() const;
 	const std::string& GetFront() const;
 
-	StringList& Insert(const ConstIterator& where, const std::string& data);
-	StringList& Erase(const ConstIterator& where);
+	Iterator Insert(const ListBaseIterator& where, const std::string& data);
+	Iterator Erase(const ListBaseIterator& where);
 
 	void Clear() noexcept;
 
 private:
-	void AddNodeToEmptyList(NodePtr newNodePtr);
-
 	NodePtr m_beginPtr = nullptr;
 	NodePtr m_endPtr = nullptr;
 	size_t m_length = 0;

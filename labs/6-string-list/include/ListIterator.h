@@ -3,12 +3,10 @@
 #include <stdexcept>
 #include "ListNode.h"
 
-class StringList;
-
 class ListBaseIterator
 {
 public:
-	friend StringList;
+	friend class StringList;
 
 	using iterator_category = std::bidirectional_iterator_tag;
 	using difference_type = size_t;
@@ -31,8 +29,6 @@ protected:
 	NodePtr m_nodePtr;
 };
 
-class ListIterator;
-
 class ListConstIterator : public ListBaseIterator
 {
 public:
@@ -41,7 +37,7 @@ public:
 	using reference = const std::string&;
 
 	ListConstIterator(NodePtr data);
-	ListConstIterator(const ListIterator& other);
+	ListConstIterator(const class ListIterator& other);
 
 	pointer operator->() const;
 
