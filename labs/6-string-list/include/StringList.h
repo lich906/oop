@@ -6,13 +6,17 @@ class StringList
 public:
 	using Iterator = ListIterator;
 	using ConstIterator = ListConstIterator;
-	using ReverseIterator = ListReverseIterator;
-	using ConstReverseIterator = ListConstReverseIterator;
+	using ReverseIterator = std::reverse_iterator<Iterator>;
+	using ConstReverseIterator = std::reverse_iterator<ConstIterator>;
 
 	StringList();
+
 	StringList(StringList&&) = default;
-	StringList(const StringList&) = delete; // реализовать и оператор
-	
+	StringList& operator=(StringList&&) = default;
+
+	StringList(const StringList& other); // реализовать + оператор
+	StringList& operator=(const StringList& other);
+
 	~StringList() noexcept;
 
 	Iterator begin();

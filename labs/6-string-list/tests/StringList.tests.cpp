@@ -452,6 +452,64 @@ TEST_CASE("Test Erase method")
 	SECTION("Try erase past-the-last element")
 	{
 		REQUIRE_THROWS_AS(list.Erase(list.cend()), std::logic_error);
-		REQUIRE_THROWS_AS(list.Erase(list.crend()), std::logic_error);
+		REQUIRE_THROWS_AS(list.Erase(--list.crend().base()), std::logic_error);
 	}
+}
+
+TEST_CASE("Test copy constructor")
+{
+	std::string str1("Provide"), str2("Strong"), str3("Exception"), str4("Safety");
+
+	StringList src;
+	REQUIRE(src.IsEmpty());
+
+	src.PushBack(str1).PushBack(str2).PushBack(str3).PushBack(str4);
+	REQUIRE(src.GetLength() == 4);
+
+	SECTION("Copy assignment operator")
+	{
+		StringList dest(src);
+		REQUIRE(dest);
+
+		REQUIRE(dest.GetLength() == 4);
+		REQUIRE(dest.GetFront() == str1);
+		REQUIRE(dest.GetBack() == str4);
+		dest.PopFront().PopBack();
+		REQUIRE(dest.GetFront() == str2);
+		REQUIRE(dest.GetBack() == str3);
+
+		REQUIRE(src.GetLength() == 4);
+		REQUIRE(src.GetFront() == str1);
+		REQUIRE(src.GetBack() == str4);
+	}
+
+	SECTION("Copy assignment operator")
+	{
+		StringList dest;
+		REQUIRE(!dest);
+
+		dest = src;
+		REQUIRE(dest.GetLength() == 4);
+		REQUIRE(dest.GetFront() == str1);
+		REQUIRE(dest.GetBack() == str4);
+		dest.PopFront().PopBack();
+		REQUIRE(dest.GetFront() == str2);
+		REQUIRE(dest.GetBack() == str3);
+
+		REQUIRE(src.GetLength() == 4);
+		REQUIRE(src.GetFront() == str1);
+		REQUIRE(src.GetBack() == str4);
+	}
+}
+
+TEST_CASE("Test default constructed iterator")
+{
+	StringList::ConstIterator iterator;
+
+	REQUIRE_THROWS_AS(*iterator, std::logic_error);
+	REQUIRE_THROWS_AS(++iterator, std::logic_error);
+	REQUIRE_THROWS_AS(iterator++, std::logic_error);
+	REQUIRE_THROWS_AS(--iterator, std::logic_error);
+	REQUIRE_THROWS_AS(iterator--, std::logic_error);
+	REQUIRE_THROWS_AS(iterator->empty(), std::logic_error);
 }

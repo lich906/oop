@@ -17,7 +17,10 @@ public:
 protected:
 	// сделать деструктор защищенным
 	// добавить конструктор по умолчанию
+	ListBaseIterator();
 	ListBaseIterator(NodePtr data);
+
+	~ListBaseIterator();
 
 	std::string* operator->() const;
 	std::string& operator*() const;
@@ -38,6 +41,7 @@ public:
 	using pointer = const std::string*;
 	using reference = const std::string&;
 
+	ListConstIterator();
 	ListConstIterator(NodePtr data);
 	ListConstIterator(const class ListIterator& other);
 
@@ -61,6 +65,7 @@ public:
 	using pointer = std::string*;
 	using reference = std::string&;
 
+	ListIterator();
 	ListIterator(NodePtr data);
 
 	pointer operator->() const;
@@ -72,32 +77,4 @@ public:
 
 	ListIterator& operator--();
 	ListIterator operator--(int);
-};
-
-// использовать std::reverse_iterator<T>
-class ListConstReverseIterator : public ListConstIterator
-{
-public:
-	ListConstReverseIterator(NodePtr data);
-	ListConstReverseIterator(const class ListReverseIterator& other);
-
-	ListConstReverseIterator& operator++();
-	ListConstReverseIterator operator++(int);
-
-	ListConstReverseIterator& operator--();
-	ListConstReverseIterator operator--(int);
-};
-
-class ListReverseIterator : public ListIterator
-{
-public:
-	friend class ListConstReverseIterator;
-
-	ListReverseIterator(NodePtr data);
-
-	ListReverseIterator& operator++();
-	ListReverseIterator operator++(int);
-
-	ListReverseIterator& operator--();
-	ListReverseIterator operator--(int);
 };

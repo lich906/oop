@@ -18,6 +18,37 @@ StringList::StringList()
 	m_beginPtr = m_endPtr;
 }
 
+StringList::StringList(const StringList& other)
+	: StringList()
+{
+	for (const std::string& element : other)
+	{
+		try
+		{
+			PushBack(element);
+		}
+		catch (const std::exception&)
+		{
+			Clear();
+			throw;
+		}
+	}
+}
+
+StringList& StringList::operator=(const StringList& other)
+{
+	if (this != &other)
+	{
+		StringList tmp(other);
+
+		std::swap(m_beginPtr, tmp.m_beginPtr);
+		std::swap(m_endPtr, tmp.m_endPtr);
+		std::swap(m_length, tmp.m_length);
+	}
+
+	return *this;
+}
+
 StringList::~StringList() noexcept
 {
 	Clear();
@@ -174,30 +205,30 @@ StringList::ConstIterator StringList::cend() const
 
 StringList::ReverseIterator StringList::rbegin()
 {
-	return ReverseIterator(m_endPtr->prev);
+	return std::make_reverse_iterator(end());
 }
 
 StringList::ReverseIterator StringList::rend()
 {
-	return ReverseIterator(m_beginPtr->prev);
+	return std::make_reverse_iterator(begin());
 }
 
 StringList::ConstReverseIterator StringList::rbegin() const
 {
-	return ConstReverseIterator(m_endPtr->prev);
+	return std::make_reverse_iterator(end());
 }
 
 StringList::ConstReverseIterator StringList::rend() const
 {
-	return ConstReverseIterator(m_beginPtr->prev);
+	return std::make_reverse_iterator(begin());
 }
 
 StringList::ConstReverseIterator StringList::crbegin() const
 {
-	return ConstReverseIterator(m_endPtr->prev);
+	return std::make_reverse_iterator(cend());
 }
 
 StringList::ConstReverseIterator StringList::crend() const
 {
-	return ConstReverseIterator(m_beginPtr->prev);
+	return std::make_reverse_iterator(cbegin());
 }

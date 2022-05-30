@@ -12,6 +12,9 @@ bool ListBaseIterator::operator==(const ListBaseIterator& other) const
 
 std::string* ListBaseIterator::operator->() const
 {
+	if (m_nodePtr == nullptr)
+		throw std::logic_error("Uninitialized iterator access violation");
+
 	if (m_nodePtr->next == nullptr || m_nodePtr->prev == nullptr)
 		throw std::logic_error("Past-the-last element iterator access violation");
 
@@ -20,6 +23,9 @@ std::string* ListBaseIterator::operator->() const
 
 std::string& ListBaseIterator::operator*() const
 {
+	if (m_nodePtr == nullptr)
+		throw std::logic_error("Uninitialized iterator dereference violation");
+
 	if (m_nodePtr->next == nullptr || m_nodePtr->prev == nullptr)
 		throw std::logic_error("Past-the-last element iterator dereference violation");
 
@@ -28,6 +34,9 @@ std::string& ListBaseIterator::operator*() const
 
 void ListBaseIterator::operator++()
 {
+	if (m_nodePtr == nullptr)
+		throw std::logic_error("Uninitialized iterator increment violation");
+
 	if (m_nodePtr->next == nullptr)
 		throw std::logic_error("Past-the-last element iterator increment violation");
 
@@ -36,6 +45,9 @@ void ListBaseIterator::operator++()
 
 NodePtr ListBaseIterator::operator++(int)
 {
+	if (m_nodePtr == nullptr)
+		throw std::logic_error("Uninitialized iterator increment violation");
+
 	if (m_nodePtr->next == nullptr)
 		throw std::logic_error("Past-the-last element iterator increment violation");
 
@@ -47,6 +59,9 @@ NodePtr ListBaseIterator::operator++(int)
 
 void ListBaseIterator::operator--()
 {
+	if (m_nodePtr == nullptr)
+		throw std::logic_error("Uninitialized iterator decrement violation");
+
 	if (m_nodePtr->prev == nullptr)
 		throw std::logic_error("Reverse past-the-last element iterator decrement violation");
 
@@ -55,6 +70,9 @@ void ListBaseIterator::operator--()
 
 NodePtr ListBaseIterator::operator--(int)
 {
+	if (m_nodePtr == nullptr)
+		throw std::logic_error("Uninitialized iterator decrement violation");
+
 	if (m_nodePtr->prev == nullptr)
 		throw std::logic_error("Reverse past-the-last element iterator decrement violation");
 
@@ -64,8 +82,22 @@ NodePtr ListBaseIterator::operator--(int)
 	return tmp;
 }
 
+ListBaseIterator::ListBaseIterator()
+	: m_nodePtr(nullptr)
+{
+}
+
 ListBaseIterator::ListBaseIterator(NodePtr data)
 	: m_nodePtr(data)
+{
+}
+
+ListBaseIterator::~ListBaseIterator()
+{
+}
+
+ListIterator::ListIterator()
+	: ListBaseIterator()
 {
 }
 
@@ -106,6 +138,11 @@ ListIterator& ListIterator::operator--()
 ListIterator ListIterator::operator--(int)
 {
 	return ListIterator(ListBaseIterator::operator--(1));
+}
+
+ListConstIterator::ListConstIterator()
+	: ListBaseIterator()
+{
 }
 
 ListConstIterator::ListConstIterator(NodePtr data)
@@ -150,67 +187,4 @@ ListConstIterator& ListConstIterator::operator--()
 ListConstIterator ListConstIterator::operator--(int)
 {
 	return ListConstIterator(ListBaseIterator::operator--(1));
-}
-
-ListConstReverseIterator::ListConstReverseIterator(NodePtr data)
-	: ListConstIterator(data)
-{
-}
-
-ListConstReverseIterator::ListConstReverseIterator(const ListReverseIterator& other)
-	: ListConstIterator(other.m_nodePtr)
-{
-}
-
-ListConstReverseIterator& ListConstReverseIterator::operator++()
-{
-	ListConstIterator::operator--();
-
-	return *this;
-}
-
-ListConstReverseIterator ListConstReverseIterator::operator++(int)
-{
-	return ListConstReverseIterator(ListBaseIterator::operator--(1));
-}
-
-ListConstReverseIterator& ListConstReverseIterator::operator--()
-{
-	ListConstIterator::operator++();
-
-	return *this;
-}
-
-ListConstReverseIterator ListConstReverseIterator::operator--(int)
-{
-	return ListConstReverseIterator(ListBaseIterator::operator++(1));
-}
-
-ListReverseIterator::ListReverseIterator(NodePtr data)
-	: ListIterator(data)
-{
-}
-
-ListReverseIterator& ListReverseIterator::operator++()
-{
-	ListIterator::operator--();
-
-	return *this;
-}
-
-ListReverseIterator ListReverseIterator::operator++(int)
-{
-	return ListReverseIterator(ListBaseIterator::operator--(1));
-}
-
-ListReverseIterator& ListReverseIterator::operator--()
-{
-	ListIterator::operator++();
-
-	return *this;
-}
-
-ListReverseIterator ListReverseIterator::operator--(int)
-{
-	return ListReverseIterator(ListBaseIterator::operator++(1));
 }
