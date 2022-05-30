@@ -346,7 +346,7 @@ TEST_CASE("Test istream >> operator overload for MyString")
 
 	SECTION("Leading whitespaces present and skipws flag is unset")
 	{
-		std::istringstream iss("  \t\n\  What a good idea.");
+		std::istringstream iss("  \t\n  What a good idea.");
 		MyString str;
 
 		iss >> std::noskipws >> str;

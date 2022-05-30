@@ -11,8 +11,8 @@ public:
 
 	StringList();
 	StringList(StringList&&) = default;
-	StringList(const StringList&) = delete;
-
+	StringList(const StringList&) = delete; // реализовать и оператор
+	
 	~StringList() noexcept;
 
 	Iterator begin();

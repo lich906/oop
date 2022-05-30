@@ -48,12 +48,14 @@ public:
 	const_reverse_iterator crend() const;
 
 private:
-	void ExtendCapacity(size_t fitSize);
-	void InitCapacity(size_t fitSize);
-	size_t m_currentSize = 0;
-	size_t m_currentCapacity;
+	size_t ExtendCapacity(size_t fitSize);
+	size_t InitCapacity(size_t fitSize);
+	std::unique_ptr<char[]> InitStringData();
 
-	std::shared_ptr<char[]> m_stringData;
+	size_t m_currentSize = 0;
+	size_t m_currentCapacity = InitCapacity(m_currentSize);
+	// использовать unique_ptr
+	std::unique_ptr<char[]> m_stringData;
 };
 
 const MyString operator+(MyString lhs, const MyString& rhs);

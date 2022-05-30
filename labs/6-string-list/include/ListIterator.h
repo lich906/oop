@@ -15,6 +15,8 @@ public:
 	bool operator==(const ListBaseIterator& other) const;
 
 protected:
+	// сделать деструктор защищенным
+	// добавить конструктор по умолчанию
 	ListBaseIterator(NodePtr data);
 
 	std::string* operator->() const;
@@ -72,6 +74,7 @@ public:
 	ListIterator operator--(int);
 };
 
+// использовать std::reverse_iterator<T>
 class ListConstReverseIterator : public ListConstIterator
 {
 public:

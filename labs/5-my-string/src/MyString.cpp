@@ -1,24 +1,21 @@
 #include "MyString.h"
 
 MyString::MyString()
-	: m_stringData(std::shared_ptr<char[]>(new char[1]{ '\0' }))
+	: m_stringData(InitStringData())
 {
-	InitCapacity(m_currentSize);
 }
 
 MyString::MyString(const char* pString)
 	: m_currentSize(strlen(pString))
 {
-	InitCapacity(m_currentSize);
-	m_stringData = std::shared_ptr<char[]>(new char[m_currentCapacity]);
+	m_stringData = std::make_unique<char[]>(m_currentCapacity);
 	memcpy(m_stringData.get(), pString, m_currentSize + 1);
 }
 
 MyString::MyString(const char* pString, size_t length)
 	: m_currentSize(length)
 {
-	InitCapacity(m_currentSize);
-	m_stringData = std::shared_ptr<char[]>(new char[m_currentCapacity]);
+	m_stringData = std::make_unique<char[]>(m_currentCapacity);
 	memcpy(m_stringData.get(), pString, m_currentSize);
 	m_stringData[m_currentSize] = '\0';
 }
@@ -27,20 +24,13 @@ MyString::MyString(const MyString& other)
 	: m_currentSize(other.GetLength())
 	, m_currentCapacity(other.m_currentCapacity)
 {
-	if (m_stringData == other.m_stringData)
-	{
-		return;
-	}
-
-	m_stringData = std::shared_ptr<char[]>(new char[m_currentCapacity]);
+	m_stringData = std::make_unique<char[]>(m_currentCapacity);
 	memcpy(m_stringData.get(), other.GetStringData(), m_currentSize);
 	m_stringData[m_currentSize] = '\0';
 }
 
 MyString::MyString(MyString&& other) noexcept
-	: m_currentSize()
-	, m_currentCapacity()
-	, m_stringData()
+	: m_stringData(InitStringData())
 {
 	std::swap(other.m_currentSize, m_currentSize);
 	std::swap(other.m_currentCapacity, m_currentCapacity);
@@ -54,13 +44,21 @@ MyString::MyString(const std::string& stlString)
 
 MyString& MyString::operator=(const MyString& other)
 {
-	m_currentSize = other.GetLength();
-
-	if (m_currentSize >= m_currentCapacity)
+	// сделать строгую гарантию без. искл
+	// проверка на самоприсваивание
+	if (m_stringData == other.m_stringData)
 	{
-		ExtendCapacity(m_currentSize);
-		m_stringData = std::shared_ptr<char[]>(new char[m_currentCapacity]);
+		return *this;
 	}
+
+	if (other.GetLength() >= m_currentCapacity)
+	{
+		size_t extendedCapacity = ExtendCapacity(other.GetLength());
+		m_stringData = std::make_unique<char[]>(extendedCapacity);
+		m_currentCapacity = extendedCapacity;
+	}
+
+	m_currentSize = other.GetLength();
 
 	memcpy(m_stringData.get(), other.GetStringData(), m_currentSize);
 	m_stringData[m_currentSize] = '\0';
@@ -71,8 +69,8 @@ MyString& MyString::operator=(const MyString& other)
 MyString& MyString::operator=(MyString&& other) noexcept
 {
 	m_currentSize = 0;
-	m_currentCapacity = 0;
-	m_stringData = nullptr;
+	m_currentCapacity = 1;
+	m_stringData = InitStringData();
 
 	std::swap(other.m_currentSize, m_currentSize);
 	std::swap(other.m_currentCapacity, m_currentCapacity);
@@ -90,11 +88,14 @@ MyString& MyString::operator+=(const MyString& other)
 
 	if (other.GetLength() + m_currentSize >= m_currentCapacity)
 	{
-		ExtendCapacity(other.GetLength() + m_currentSize);
-		auto newArray = std::shared_ptr<char[]>(new char[m_currentCapacity]);
+		size_t extendedCapacity = ExtendCapacity(other.GetLength() + m_currentSize);
+		// можно использовать make_shared
+		// строгая гарантия безоп. искл.
+		auto newArray = std::make_unique<char[]>(extendedCapacity);
 		memcpy(newArray.get(), GetStringData(), m_currentSize);
 		memcpy(newArray.get() + m_currentSize, other.GetStringData(), other.GetLength());
-		m_stringData = newArray;
+		m_stringData = std::move(newArray);
+		m_currentCapacity = extendedCapacity;
 	}
 	else
 	{
@@ -107,6 +108,8 @@ MyString& MyString::operator+=(const MyString& other)
 	return *this;
 }
 
+
+// возвращать const&
 const char MyString::operator[](size_t index) const
 {
 	if (index >= m_currentSize)
@@ -221,27 +224,28 @@ MyString MyString::SubString(size_t start, size_t length) const
 
 void MyString::Clear()
 {
-	m_stringData = std::shared_ptr<char[]>(new char[1]{ '\0' });
-	m_currentSize = 0;
-	m_currentCapacity = 1;
+	m_currentSize = 0; // просто обнулять size
+	m_stringData[0] = '\0';
 }
 
-void MyString::ExtendCapacity(size_t fitSize)
+size_t MyString::ExtendCapacity(size_t fitSize)
 {
-	while (m_currentCapacity <= fitSize && m_currentCapacity != 0xFFFFFFFF)
+	size_t capacity = m_currentCapacity;
+	while (capacity <= fitSize && capacity != 0xFFFFFFFF)
 	{
-		if (m_currentCapacity & 0x80000000)
+		if (capacity & 0x80000000)
 		{
-			m_currentCapacity |= m_currentCapacity >> 1;
+			capacity |= capacity >> 1;
 		}
 		else
 		{
-			m_currentCapacity <<= 1;
+			capacity <<= 1;
 		}
 	}
+	return capacity;
 }
 
-void MyString::InitCapacity(size_t fitSize)
+size_t MyString::InitCapacity(size_t fitSize)
 {
 	size_t capacity = 1;
 	while (fitSize)
@@ -249,7 +253,14 @@ void MyString::InitCapacity(size_t fitSize)
 		capacity <<= 1;
 		fitSize >>= 1;
 	}
-	m_currentCapacity = capacity;
+	return capacity;
+}
+
+std::unique_ptr<char[]> MyString::InitStringData()
+{
+	auto ptr = std::make_unique<char[]>(1);
+	ptr[0] = '\0';
+	return ptr;
 }
 
 const MyString operator+(MyString lhs, const MyString& rhs)
@@ -274,14 +285,8 @@ bool operator!=(const MyString& lhs, const MyString& rhs)
 
 bool operator<(const MyString& lhs, const MyString& rhs)
 {
-	if (lhs.GetLength() >= rhs.GetLength())
-	{
-		return memcmp(lhs.GetStringData(), rhs.GetStringData(), rhs.GetLength()) < 0;
-	}
-	else
-	{
-		return memcmp(lhs.GetStringData(), rhs.GetStringData(), lhs.GetLength()) <= 0;
-	}
+	// не будет работать на "канал-канализация"
+	return std::lexicographical_compare(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend());
 }
 
 bool operator>(const MyString& lhs, const MyString& rhs)
