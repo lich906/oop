@@ -143,7 +143,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="MyList.tests.cpp" />
+    <ClCompile Include="MyList.string.tests.cpp" />
+    <ClCompile Include="MyList.int.tests.cpp" />
     <ClCompile Include="tests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -18,7 +18,10 @@
     <ClCompile Include="tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MyList.tests.cpp">
+    <ClCompile Include="MyList.string.tests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MyList.int.tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
