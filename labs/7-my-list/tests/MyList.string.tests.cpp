@@ -107,6 +107,8 @@ TEST_CASE("Test PopBack method")
 
 	MyList<std::string> list;
 	REQUIRE(list.IsEmpty());
+	// добавить проверку Pop пустого списка
+	REQUIRE_THROWS_AS(list.PopBack(), std::logic_error);
 
 	list.PushBack(str1).PushFront(str2);
 	REQUIRE(!list.IsEmpty());
@@ -133,6 +135,7 @@ TEST_CASE("Test PopFront method")
 
 	MyList<std::string> list;
 	REQUIRE(list.IsEmpty());
+	REQUIRE_THROWS_AS(list.PopFront(), std::logic_error);
 
 	list.PushFront(str1).PushBack(str2);
 	REQUIRE(!list.IsEmpty());
@@ -356,6 +359,25 @@ TEST_CASE("Test reverse const and non-const iterator")
 		REQUIRE(list.GetBack() == "Wafety");
 		REQUIRE(oss.str() == "Wafety Wxception Wtrong Wrovide ");
 	}
+}
+
+TEST_CASE("Test range-based for")
+{
+	std::string str1("Provide"), str2("Strong"), str3("Exception"), str4("Safety");
+	std::ostringstream oss;
+
+	MyList<std::string> list;
+	REQUIRE(list.IsEmpty());
+
+	list.PushBack(str1).PushBack(str2).PushBack(str3).PushBack(str4);
+	REQUIRE(list.GetLength() == 4);
+
+	for (const std::string& element : list)
+	{
+		oss << element;
+	}
+
+	REQUIRE(oss.str() == "ProvideStrongExceptionSafety");
 }
 
 TEST_CASE("Test Insert method")
