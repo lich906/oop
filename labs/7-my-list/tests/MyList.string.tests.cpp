@@ -489,7 +489,7 @@ TEST_CASE("Test copy constructor")
 	src.PushBack(str1).PushBack(str2).PushBack(str3).PushBack(str4);
 	REQUIRE(src.GetLength() == 4);
 
-	SECTION("Copy assignment operator")
+	SECTION("Copy constructor")
 	{
 		MyList<std::string> dest(src);
 		REQUIRE(dest);
