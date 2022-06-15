@@ -225,3 +225,64 @@ TEST_CASE("Try initialize with invalid url string")
 		REQUIRE_THROWS_WITH(HttpUrl("https://www.youtube.com/watc^$&#@($)Btov5EM"), "Invalid document path");
 	}
 }
+
+TEST_CASE("Test protocol case insensitivity")
+{
+	SECTION("Valid url with HTTP protocol")
+	{
+		HttpUrl url("hTTp://www.google.com/index.html");
+
+		REQUIRE(url.GetDomain() == "www.google.com");
+		REQUIRE(url.GetDocument() == "/index.html");
+		REQUIRE(url.GetProtocol() == HttpUrl::Protocol::HTTP);
+		REQUIRE(url.GetPort() == 80);
+		REQUIRE(url.GetURL() == "http://www.google.com/index.html");
+	}
+
+	SECTION("Valid url with HTTPS protocol")
+	{
+		HttpUrl url("HtTpS://www.google.com/index.html");
+
+		REQUIRE(url.GetDomain() == "www.google.com");
+		REQUIRE(url.GetDocument() == "/index.html");
+		REQUIRE(url.GetProtocol() == HttpUrl::Protocol::HTTPS);
+		REQUIRE(url.GetPort() == 443);
+		REQUIRE(url.GetURL() == "https://www.google.com/index.html");
+	}
+
+	SECTION("Valid url with FTP protocol")
+	{
+		HttpUrl url("FTP://www.google.com/index.html");
+
+		REQUIRE(url.GetDomain() == "www.google.com");
+		REQUIRE(url.GetDocument() == "/index.html");
+		REQUIRE(url.GetProtocol() == HttpUrl::Protocol::FTP);
+		REQUIRE(url.GetPort() == 21);
+		REQUIRE(url.GetURL() == "ftp://www.google.com/index.html");
+	}
+}
+
+TEST_CASE("Test default port for FTP protocol")
+{
+	SECTION("Port not specified, using default port")
+	{
+		HttpUrl url("FTP://www.google.com/index.html");
+
+		REQUIRE(url.GetDomain() == "www.google.com");
+		REQUIRE(url.GetDocument() == "/index.html");
+		REQUIRE(url.GetProtocol() == HttpUrl::Protocol::FTP);
+		REQUIRE(url.GetPort() == 21);
+		REQUIRE(url.GetURL() == "ftp://www.google.com/index.html");
+	}
+
+	SECTION("Custom port specified")
+	{
+		HttpUrl url("FTP://www.google.com:1337/index.html");
+
+		REQUIRE(url.GetDomain() == "www.google.com");
+		REQUIRE(url.GetDocument() == "/index.html");
+		REQUIRE(url.GetProtocol() == HttpUrl::Protocol::FTP);
+		REQUIRE(url.GetPort() == 1337);
+		REQUIRE(url.GetURL() == "ftp://www.google.com:1337/index.html");
+	}
+}

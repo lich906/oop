@@ -11,7 +11,8 @@ public:
 	enum class Protocol
 	{
 		HTTP,
-		HTTPS
+		HTTPS,
+		FTP
 	};
 
 	HttpUrl(const std::string& url);
@@ -40,6 +41,7 @@ public:
 private:
 	static constexpr unsigned short defaultHttpPort = 80;
 	static constexpr unsigned short defaultHttpsPort = 443;
+	static constexpr unsigned short defaultFtpProtocol = 21;
 
 	// сделать static или внешними функциями в безымянном пространстве имен
 	static Protocol ParseProtocol(const std::string& url);

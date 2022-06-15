@@ -1,6 +1,6 @@
 #include "HttpUrl.h"
 
-const std::string protocolRegex(R"(^([hH][tT]{2}[pP][sS]?):\/\/.*)");
+const std::string protocolRegex(R"(^((?:http)|(?:https)|(?:ftp)):\/\/.*)");
 
 const std::string dnsDomainRegex(R"(((?:[\w-]{2,63}\.)*[\w-]{2,63}\.[a-zA-Z-]{2,63}))");
 const std::string ipAddressRegex(R"(((?:\d{1,3}\.){3}\d{1,3}))");
@@ -52,6 +52,9 @@ std::string HttpUrl::GetURL() const
 	case Protocol::HTTPS:
 		urlStr.append("https://");
 		break;
+	case Protocol::FTP:
+		urlStr.append("ftp://");
+		break;
 	default:
 		throw std::invalid_argument("Invalid protocol");
 	}
@@ -95,6 +98,8 @@ unsigned short HttpUrl::GetDefaultPort(Protocol protocol)
 		return defaultHttpPort;
 	case Protocol::HTTPS:
 		return defaultHttpsPort;
+	case Protocol::FTP:
+		return defaultFtpProtocol;
 	default:
 		throw std::invalid_argument("Default port for protocol not found");
 	}
@@ -131,7 +136,7 @@ bool HttpUrl::IsValidIpAddress(const std::string& ipAddress)
 HttpUrl::Protocol HttpUrl::ParseProtocol(const std::string& url)
 {
 	std::smatch matches;
-	if (std::regex_match(url, matches, std::regex(protocolRegex)))
+	if (std::regex_match(url, matches, std::regex(protocolRegex, std::regex_constants::icase)))
 	{
 		switch (matches[1].length())
 		{
@@ -139,6 +144,8 @@ HttpUrl::Protocol HttpUrl::ParseProtocol(const std::string& url)
 			return Protocol::HTTPS;
 		case 4:
 			return Protocol::HTTP;
+		case 3:
+			return Protocol::FTP;
 		default:
 			throw UrlParsingError("Invalid protocol");
 		}
