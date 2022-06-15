@@ -4,5 +4,5 @@
 class IPerson
 {
 public:
-	virtual std::string GetName() = 0;
+	virtual std::string GetName() const = 0;
 };

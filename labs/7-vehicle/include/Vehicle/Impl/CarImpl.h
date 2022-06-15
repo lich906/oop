@@ -19,5 +19,5 @@ protected:
 
 	~CarImpl() = default;
 
-	MakeOfCar m_makeOfCar;
+	const MakeOfCar m_makeOfCar;
 };
